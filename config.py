@@ -3,7 +3,7 @@ class DISCORD:
 class CLIENT:
     PREFIX: str = ","
     INVITE_URL: str = "https://discord.com/api/oauth2/authorize?client_id=1420609343283531776&permissions=8&scope=bot%20applications.commands"
-    SUPPORT_URL: str = ""
+    SUPPORT_URL: str = "https://discord.gg/warm"
     TWITCH_URL: str = "https://twitch.tv/nxyyontop"
     OWNER_IDS: list = [1137513168965476352]
     DESCRIPTION: str = "A bot to manage your Discord server."
