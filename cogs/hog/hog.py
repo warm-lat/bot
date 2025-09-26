@@ -23,7 +23,7 @@ posthog_instances = [posthog_cloud]
 if getattr(config.POSTHOG, 'TRACK_SELF', False):
     posthog_selfhost = Posthog(
         "phc_urcPFFBU0iLLTKBtmEfViMen8uFC8DiVnJorIcGmBBL",
-        host="https://hog.evict.bot"
+        host="https://hog.warm.lat"
     )
     posthog_instances.append(posthog_selfhost)
 
