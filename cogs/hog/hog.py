@@ -40,7 +40,7 @@ log = logging.getLogger("evict/posthog").setLevel(logging.ERROR)
 class Hog(Cog):
     def __init__(self, bot: Evict):
         self.bot = bot
-        self.description = "Posthog Analytics for Evict"
+        self.description = "Posthog Analytics for Warm"
         self.bot.after_invoke(self.after_invoke)
         self.error_cooldown = {}
 
@@ -150,7 +150,7 @@ class Hog(Cog):
             })
 
         for ph in posthog_instances:
-            properties_to_use = selfhost_properties if ph.host == "https://hog.evict.bot" else properties
+            properties_to_use = selfhost_properties if ph.host == "https://hog.warm.lat" else properties
             await self._send_analytics(ph, str(ctx.author.id), "command_invoked", properties_to_use, groups)
 
     # @Cog.listener("on_guild_join")
