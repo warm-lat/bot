@@ -3,6 +3,11 @@ class EMOJIS:
     class AUDIO:
         PREVIOUS: str = ""
         PAUSE: str = ""
+        SKIP: str = ""
+        REPEAT: str = ""
+        REPEAT_TRACK: str = ""
+        RESUME: str = ""
+        QUEUE: str = ""
     
     class TICKETS:
         TRASH: str = ""
