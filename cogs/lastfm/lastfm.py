@@ -300,7 +300,7 @@ class Lastfm(Cog):
         self.spotify_client = SpotifyClient(
             SpotifyClientCredentialsFlow(
                 client_id=LAVALINK.SPOTIFY_CLIENT_ID,
-                client_secret=LAVALINK.SPOTIFY.CLIENT_SECRET,
+                client_secret=LAVALINK.SPOTIFY_CLIENT_SECRET,
             ),
         )
 

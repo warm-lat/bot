@@ -2,6 +2,7 @@ class EMOJIS:
     
     class AUDIO:
         PREVIOUS: str = ""
+        PAUSE: str = ""
     
     class TICKETS:
         TRASH: str = ""
