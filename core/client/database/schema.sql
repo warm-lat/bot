@@ -46,6 +46,7 @@ CREATE SCHEMA track;
 CREATE SCHEMA transcribe;
 CREATE SCHEMA voice;
 CREATE SCHEMA voicemaster;
+CREATE SCHEMA verification;
 
 CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA public;
 COMMENT ON EXTENSION citext IS 'data type for case-insensitive character strings';
