@@ -47,8 +47,8 @@ class RATELIMITS:
     PER_1M: int = 75
 
 class DATABASE:
-    DSN: str = "postgresql://evictskid:qq3gpcgksmtj9ckg@45.131.65.6:8585/warm"
-    REDIS: str = "redis://default:jqcnpzlwlpqll4do@45.131.65.6:8586"
+    DSN: str = "postgresql://evictskid:qq3gpcgksmtj9ckg@warm-db-70f72q:5432/warm"
+    REDIS: str = "redis://default:jqcnpzlwlpqll4do@warm-cache-lihrnx:6379"
 
 class DISCORD:
     TOKEN: str = "MTQyMDYwOTM0MzI4MzUzMTc3Ng.G7Mk1E.nwns-aEzbAQFYK7UXCDpz2L3peMfYhroxYgujU"

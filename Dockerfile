@@ -44,6 +44,7 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Install Playwright browsers (needed for browser automation)
+RUN playwright install-deps
 RUN playwright install
 
 # Copy the application code
