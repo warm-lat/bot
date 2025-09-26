@@ -251,7 +251,8 @@ class Yugioh(Cog):
         )
         
         if not cards:
-            return await ctx.warn(f"{'You don\'t' if member == ctx.author else f'{member.name} doesn\'t'} have any cards!")
+            message = "You don't have any cards!" if member == ctx.author else f"{member.name} doesn't have any cards!"
+            return await ctx.warn(message)
 
         class CollectionView(discord.ui.View):
             def __init__(self, pages):

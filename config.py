@@ -1,5 +1,8 @@
 class EMOJIS:
     
+    class AUDIO:
+        PREVIOUS: str = ""
+    
     class TICKETS:
         TRASH: str = ""
         
@@ -16,6 +19,10 @@ class AUTHORIZATION:
     LOVENSE: str = "47WvqON2D9RDVfd8Tv7BJ2dXs-95Kwaws7AriGUdpH5_zl_aKLBzTVPiqQFQPNri"
     KRAKEN: str = ""
     FERNET_KEY: str = "Ye0cdyst0iGNFo7vlvfyjZx7fBsNnzu0Xc7m5wHIavo="
+    
+    class REDDIT:
+        CLIENT_ID: str = "7s2HJa0My0keJAiLvFhvZQ"
+        CLIENT_SECRET: str = "C2oX-F-4uR6r4q_6RvUq8LRLrqsR8g"
     
     
 

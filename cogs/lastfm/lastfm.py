@@ -53,7 +53,7 @@ from yarl import URL
 import cogs.lastfm.interface as lastfm
 import cogs.lastfm.interface as interface
 from cogs.lastfm.interface.spotify.track import SpotifyTrack
-from config import AUTHORIZATION
+from config import LAVALINK
 from main import Evict
 from tools import capture_time, executor_function
 from core.client.context import Context as _Context
@@ -299,8 +299,8 @@ class Lastfm(Cog):
         self.description = "Seamless integration between Evict and LastFM."
         self.spotify_client = SpotifyClient(
             SpotifyClientCredentialsFlow(
-                client_id=AUTHORIZATION.SPOTIFY.CLIENT_ID,
-                client_secret=AUTHORIZATION.SPOTIFY.CLIENT_SECRET,
+                client_id=LAVALINK.SPOTIFY_CLIENT_ID,
+                client_secret=LAVALINK.SPOTIFY.CLIENT_SECRET,
             ),
         )
 
