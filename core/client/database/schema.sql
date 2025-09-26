@@ -15,198 +15,56 @@ SET check_function_bodies = false;
 SET xmloption = content;
 SET client_min_messages = warning;
 SET row_security = off;
-
---
--- Name: alerts; Type: SCHEMA; Schema: -; Owner: root
---
-
-CREATE SCHEMA alerts;
-
-
-ALTER SCHEMA alerts OWNER TO root;
-
---
--- Name: audio; Type: SCHEMA; Schema: -; Owner: root
---
-
-CREATE SCHEMA audio;
-
-
-ALTER SCHEMA audio OWNER TO root;
-
---
--- Name: commands; Type: SCHEMA; Schema: -; Owner: root
---
-
-CREATE SCHEMA commands;
-
-
-ALTER SCHEMA commands OWNER TO root;
-
---
--- Name: disboard; Type: SCHEMA; Schema: -; Owner: root
---
-
-CREATE SCHEMA disboard;
-
-
-ALTER SCHEMA disboard OWNER TO root;
-
---
--- Name: feeds; Type: SCHEMA; Schema: -; Owner: root
---
-
-CREATE SCHEMA feeds;
-
-
-ALTER SCHEMA feeds OWNER TO root;
-
---
--- Name: fortnite; Type: SCHEMA; Schema: -; Owner: root
---
-
-CREATE SCHEMA fortnite;
-
-
-ALTER SCHEMA fortnite OWNER TO root;
-
---
--- Name: lastfm; Type: SCHEMA; Schema: -; Owner: root
---
-
-CREATE SCHEMA lastfm;
-
-
-ALTER SCHEMA lastfm OWNER TO root;
-
---
--- Name: level; Type: SCHEMA; Schema: -; Owner: root
---
-
-CREATE SCHEMA level;
-
-
-ALTER SCHEMA level OWNER TO root;
-
---
--- Name: reposters; Type: SCHEMA; Schema: -; Owner: root
---
-
-CREATE SCHEMA reposters;
-
-
-ALTER SCHEMA reposters OWNER TO root;
-
---
--- Name: reskin; Type: SCHEMA; Schema: -; Owner: root
---
-
-CREATE SCHEMA reskin;
-
-
-ALTER SCHEMA reskin OWNER TO root;
-
---
--- Name: snipe; Type: SCHEMA; Schema: -; Owner: root
---
-
-CREATE SCHEMA snipe;
-
-
-ALTER SCHEMA snipe OWNER TO root;
-
---
--- Name: ticket; Type: SCHEMA; Schema: -; Owner: root
---
-
-CREATE SCHEMA ticket;
-
-
-ALTER SCHEMA ticket OWNER TO root;
-
---
--- Name: timer; Type: SCHEMA; Schema: -; Owner: root
---
-
-CREATE SCHEMA timer;
-
-
-ALTER SCHEMA timer OWNER TO root;
-
---
--- Name: voice; Type: SCHEMA; Schema: -; Owner: root
---
-
-CREATE SCHEMA voice;
-
-
-ALTER SCHEMA voice OWNER TO root;
-
---
--- Name: voicemaster; Type: SCHEMA; Schema: -; Owner: postgres
---
-
-CREATE SCHEMA voicemaster;
-
-
-ALTER SCHEMA voicemaster OWNER TO postgres;
-
---
--- Name: track; Type: SCHEMA; Schema: -; Owner: root
---
-
-CREATE SCHEMA track;
-
-
-ALTER SCHEMA track OWNER TO root;
-
---
--- Name: vanity; Type: TABLE; Schema: track; Owner: root
---
-
-CREATE TABLE track.vanity (
+SET default_tablespace = '';
+SET default_table_access_method = heap;
+
+
+CREATE SCHEMA IF NOT EXISTS alerts;
+CREATE SCHEMA IF NOT EXISTS audio;
+CREATE SCHEMA IF NOT EXISTS auto;
+CREATE SCHEMA IF NOT EXISTS commands;
+CREATE SCHEMA IF NOT EXISTS counting;
+CREATE SCHEMA IF NOT EXISTS disboard;
+CREATE SCHEMA IF NOT EXISTS family;
+CREATE SCHEMA IF NOT EXISTS feeds;
+CREATE SCHEMA IF NOT EXISTS fortnite;
+CREATE SCHEMA IF NOT EXISTS fun;
+CREATE SCHEMA IF NOT EXISTS history;
+CREATE SCHEMA IF NOT EXISTS invoke_history;
+CREATE SCHEMA IF NOT EXISTS joindm;
+CREATE SCHEMA IF NOT EXISTS lastfm;
+CREATE SCHEMA IF NOT EXISTS level;
+CREATE SCHEMA IF NOT EXISTS music;
+CREATE SCHEMA IF NOT EXISTS porn;
+CREATE SCHEMA IF NOT EXISTS reposters;
+CREATE SCHEMA IF NOT EXISTS reskin;
+CREATE SCHEMA IF NOT EXISTS snipe;
+CREATE SCHEMA IF NOT EXISTS spam;
+CREATE SCHEMA IF NOT EXISTS statistics;
+CREATE SCHEMA IF NOT EXISTS stats;
+CREATE SCHEMA IF NOT EXISTS streaks;
+CREATE SCHEMA IF NOT EXISTS ticket;
+CREATE SCHEMA IF NOT EXISTS timer;
+CREATE SCHEMA IF NOT EXISTS track;
+CREATE SCHEMA IF NOT EXISTS transcribe;
+CREATE SCHEMA IF NOT EXISTS verification;
+CREATE SCHEMA IF NOT EXISTS voice;
+CREATE SCHEMA IF NOT EXISTS voicemaster;
+
+CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA public;
+COMMENT ON EXTENSION citext IS 'data type for case-insensitive character strings';
+
+CREATE TABLE IF NOT EXISTS track.vanity (
     vanity TEXT PRIMARY KEY,
     user_ids BIGINT[]
 );
 
-
-ALTER TABLE track.vanity OWNER TO root;
-
---
--- Name: username; Type: TABLE; Schema: track; Owner: root
---
-
-CREATE TABLE track.username (
+CREATE TABLE IF NOT EXISTS track.username (
     username TEXT PRIMARY KEY,
     user_ids BIGINT[]
 );
 
-
-ALTER TABLE track.username OWNER TO root;
-
---
--- Name: citext; Type: EXTENSION; Schema: -; Owner: -
---
-
-CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA public;
-
-
---
--- Name: EXTENSION citext; Type: COMMENT; Schema: -; Owner: 
---
-
-COMMENT ON EXTENSION citext IS 'data type for case-insensitive character strings';
-
-
-SET default_tablespace = '';
-
-SET default_table_access_method = heap;
-
---
--- Name: twitch; Type: TABLE; Schema: alerts; Owner: root
---
-
-CREATE TABLE alerts.twitch (
+CREATE TABLE IF NOT EXISTS alerts.twitch (
     guild_id bigint NOT NULL,
     channel_id bigint NOT NULL,
     twitch_id bigint NOT NULL,
@@ -216,77 +74,68 @@ CREATE TABLE alerts.twitch (
     template text
 );
 
-
-ALTER TABLE alerts.twitch OWNER TO root;
-
---
--- Name: config; Type: TABLE; Schema: audio; Owner: root
---
-
-CREATE TABLE audio.config (
+CREATE TABLE IF NOT EXISTS audio.config (
     guild_id bigint NOT NULL,
     volume integer NOT NULL
 );
 
+CREATE TABLE audio.playlist_tracks (
+    guild_id bigint NOT NULL,
+    user_id bigint NOT NULL,
+    playlist_url text NOT NULL,
+    track_title text NOT NULL,
+    track_uri text NOT NULL,
+    track_author text NOT NULL,
+    album_name text,
+    artwork_url text,
+    added_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP
+);
 
-ALTER TABLE audio.config OWNER TO root;
+CREATE TABLE audio.playlists (
+    guild_id bigint NOT NULL,
+    user_id bigint NOT NULL,
+    playlist_name text NOT NULL,
+    playlist_url text NOT NULL,
+    added_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+    track_count integer NOT NULL
+);
 
---
--- Name: statistics; Type: TABLE; Schema: audio; Owner: root
---
+CREATE TABLE audio.recently_played (
+    guild_id bigint NOT NULL,
+    user_id bigint NOT NULL,
+    track_title text NOT NULL,
+    track_uri text NOT NULL,
+    track_author text NOT NULL,
+    artwork_url text,
+    played_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    playlist_name text,
+    playlist_url text
+);
 
-CREATE TABLE audio.statistics (
+CREATE TABLE IF NOT EXISTS audio.statistics (
     guild_id bigint NOT NULL,
     user_id bigint NOT NULL,
     tracks_played integer DEFAULT 0 NOT NULL
 );
 
-
-ALTER TABLE audio.statistics OWNER TO root;
-
---
--- Name: disabled; Type: TABLE; Schema: commands; Owner: root
---
-
-CREATE TABLE commands.disabled (
+CREATE TABLE IF NOT EXISTS commands.disabled (
     guild_id bigint NOT NULL,
     channel_id bigint NOT NULL,
     command text NOT NULL
 );
 
-
-ALTER TABLE commands.disabled OWNER TO root;
-
---
--- Name: ignore; Type: TABLE; Schema: commands; Owner: root
---
-
-CREATE TABLE commands.ignore (
+CREATE TABLE IF NOT EXISTS commands.ignore (
     guild_id bigint NOT NULL,
     target_id bigint NOT NULL
 );
 
-
-ALTER TABLE commands.ignore OWNER TO root;
-
---
--- Name: restricted; Type: TABLE; Schema: commands; Owner: root
---
-
-CREATE TABLE commands.restricted (
+CREATE TABLE IF NOT EXISTS commands.restricted (
     guild_id bigint NOT NULL,
     role_id bigint NOT NULL,
     command text NOT NULL
 );
 
-
-ALTER TABLE commands.restricted OWNER TO root;
-
---
--- Name: usage; Type: TABLE; Schema: commands; Owner: root
---
-
-CREATE TABLE commands.usage (
+CREATE TABLE IF NOT EXISTS commands.usage (
     guild_id bigint NOT NULL,
     channel_id bigint NOT NULL,
     user_id bigint NOT NULL,
@@ -294,27 +143,13 @@ CREATE TABLE commands.usage (
     created_at timestamp with time zone DEFAULT now() NOT NULL
 );
 
-
-ALTER TABLE commands.usage OWNER TO root;
-
---
--- Name: bump; Type: TABLE; Schema: disboard; Owner: root
---
-
-CREATE TABLE disboard.bump (
+CREATE TABLE IF NOT EXISTS disboard.bump (
     guild_id bigint NOT NULL,
     user_id bigint NOT NULL,
     bumped_at timestamp with time zone DEFAULT now() NOT NULL
 );
 
-
-ALTER TABLE disboard.bump OWNER TO root;
-
---
--- Name: config; Type: TABLE; Schema: disboard; Owner: root
---
-
-CREATE TABLE disboard.config (
+CREATE TABLE IF NOT EXISTS disboard.config (
     guild_id bigint NOT NULL,
     status boolean DEFAULT true NOT NULL,
     channel_id bigint,
@@ -325,14 +160,7 @@ CREATE TABLE disboard.config (
     next_bump timestamp with time zone
 );
 
-
-ALTER TABLE disboard.config OWNER TO root;
-
---
--- Name: instagram; Type: TABLE; Schema: feeds; Owner: root
---
-
-CREATE TABLE feeds.instagram (
+CREATE TABLE IF NOT EXISTS feeds.instagram (
     guild_id bigint NOT NULL,
     channel_id bigint NOT NULL,
     instagram_id bigint NOT NULL,
@@ -340,14 +168,7 @@ CREATE TABLE feeds.instagram (
     template text
 );
 
-
-ALTER TABLE feeds.instagram OWNER TO root;
-
---
--- Name: pinterest; Type: TABLE; Schema: feeds; Owner: root
---
-
-CREATE TABLE feeds.pinterest (
+CREATE TABLE IF NOT EXISTS feeds.pinterest (
     guild_id bigint NOT NULL,
     channel_id bigint NOT NULL,
     pinterest_id text NOT NULL,
@@ -358,27 +179,13 @@ CREATE TABLE feeds.pinterest (
     only_new boolean DEFAULT false NOT NULL
 );
 
-
-ALTER TABLE feeds.pinterest OWNER TO root;
-
---
--- Name: reddit; Type: TABLE; Schema: feeds; Owner: root
---
-
-CREATE TABLE feeds.reddit (
+CREATE TABLE IF NOT EXISTS feeds.reddit (
     guild_id bigint NOT NULL,
     channel_id bigint NOT NULL,
     subreddit_name text NOT NULL
 );
 
-
-ALTER TABLE feeds.reddit OWNER TO root;
-
---
--- Name: soundcloud; Type: TABLE; Schema: feeds; Owner: root
---
-
-CREATE TABLE feeds.soundcloud (
+CREATE TABLE IF NOT EXISTS feeds.soundcloud (
     guild_id bigint NOT NULL,
     channel_id bigint NOT NULL,
     soundcloud_id bigint NOT NULL,
@@ -386,14 +193,7 @@ CREATE TABLE feeds.soundcloud (
     template text
 );
 
-
-ALTER TABLE feeds.soundcloud OWNER TO root;
-
---
--- Name: tiktok; Type: TABLE; Schema: feeds; Owner: root
---
-
-CREATE TABLE feeds.tiktok (
+CREATE TABLE IF NOT EXISTS feeds.tiktok (
     guild_id bigint NOT NULL,
     channel_id bigint NOT NULL,
     tiktok_id bigint NOT NULL,
@@ -401,14 +201,7 @@ CREATE TABLE feeds.tiktok (
     template text
 );
 
-
-ALTER TABLE feeds.tiktok OWNER TO root;
-
---
--- Name: twitter; Type: TABLE; Schema: feeds; Owner: root
---
-
-CREATE TABLE feeds.twitter (
+CREATE TABLE IF NOT EXISTS feeds.twitter (
     guild_id bigint NOT NULL,
     channel_id bigint NOT NULL,
     twitter_id bigint NOT NULL,
@@ -417,14 +210,7 @@ CREATE TABLE feeds.twitter (
     color text
 );
 
-
-ALTER TABLE feeds.twitter OWNER TO root;
-
---
--- Name: youtube; Type: TABLE; Schema: feeds; Owner: root
---
-
-CREATE TABLE feeds.youtube (
+CREATE TABLE IF NOT EXISTS feeds.youtube (
     guild_id bigint NOT NULL,
     channel_id bigint NOT NULL,
     youtube_id text NOT NULL,
@@ -433,14 +219,7 @@ CREATE TABLE feeds.youtube (
     shorts boolean DEFAULT false NOT NULL
 );
 
-
-ALTER TABLE feeds.youtube OWNER TO root;
-
---
--- Name: authorization; Type: TABLE; Schema: fortnite; Owner: root
---
-
-CREATE TABLE fortnite."authorization" (
+CREATE TABLE IF NOT EXISTS fortnite."authorization" (
     user_id bigint NOT NULL,
     display_name text NOT NULL,
     account_id text NOT NULL,
@@ -449,41 +228,20 @@ CREATE TABLE fortnite."authorization" (
     refresh_token text NOT NULL
 );
 
-
-ALTER TABLE fortnite."authorization" OWNER TO root;
-
---
--- Name: reminder; Type: TABLE; Schema: fortnite; Owner: root
---
-
-CREATE TABLE fortnite.reminder (
+CREATE TABLE IF NOT EXISTS fortnite.reminder (
     user_id bigint NOT NULL,
     item_id text NOT NULL,
     item_name text NOT NULL,
     item_type text NOT NULL
 );
 
-
-ALTER TABLE fortnite.reminder OWNER TO root;
-
---
--- Name: rotation; Type: TABLE; Schema: fortnite; Owner: root
---
-
-CREATE TABLE fortnite.rotation (
+CREATE TABLE IF NOT EXISTS fortnite.rotation (
     guild_id bigint NOT NULL,
     channel_id bigint NOT NULL,
     message text
 );
 
-
-ALTER TABLE fortnite.rotation OWNER TO root;
-
---
--- Name: albums; Type: TABLE; Schema: lastfm; Owner: root
---
-
-CREATE TABLE lastfm.albums (
+CREATE TABLE IF NOT EXISTS lastfm.albums (
     user_id bigint NOT NULL,
     username text NOT NULL,
     artist public.citext NOT NULL,
@@ -491,28 +249,14 @@ CREATE TABLE lastfm.albums (
     plays bigint NOT NULL
 );
 
-
-ALTER TABLE lastfm.albums OWNER TO root;
-
---
--- Name: artists; Type: TABLE; Schema: lastfm; Owner: root
---
-
-CREATE TABLE lastfm.artists (
+CREATE TABLE IF NOT EXISTS lastfm.artists (
     user_id bigint NOT NULL,
     username text NOT NULL,
     artist public.citext NOT NULL,
     plays bigint NOT NULL
 );
 
-
-ALTER TABLE lastfm.artists OWNER TO root;
-
---
--- Name: config; Type: TABLE; Schema: lastfm; Owner: root
---
-
-CREATE TABLE lastfm.config (
+CREATE TABLE IF NOT EXISTS lastfm.config (
     user_id bigint NOT NULL,
     username public.citext NOT NULL,
     color bigint,
@@ -522,40 +266,19 @@ CREATE TABLE lastfm.config (
     last_indexed timestamp with time zone DEFAULT now() NOT NULL
 );
 
-
-ALTER TABLE lastfm.config OWNER TO root;
-
---
--- Name: crowns; Type: TABLE; Schema: lastfm; Owner: root
---
-
-CREATE TABLE lastfm.crowns (
+CREATE TABLE IF NOT EXISTS lastfm.crowns (
     guild_id bigint NOT NULL,
     user_id bigint NOT NULL,
     artist public.citext NOT NULL,
     claimed_at timestamp with time zone DEFAULT now() NOT NULL
 );
 
-
-ALTER TABLE lastfm.crowns OWNER TO root;
-
---
--- Name: hidden; Type: TABLE; Schema: lastfm; Owner: root
---
-
-CREATE TABLE lastfm.hidden (
+CREATE TABLE IF NOT EXISTS lastfm.hidden (
     guild_id bigint NOT NULL,
     user_id bigint NOT NULL
 );
 
-
-ALTER TABLE lastfm.hidden OWNER TO root;
-
---
--- Name: tracks; Type: TABLE; Schema: lastfm; Owner: root
---
-
-CREATE TABLE lastfm.tracks (
+CREATE TABLE IF NOT EXISTS lastfm.tracks (
     user_id bigint NOT NULL,
     username text NOT NULL,
     artist public.citext NOT NULL,
@@ -563,14 +286,7 @@ CREATE TABLE lastfm.tracks (
     plays bigint NOT NULL
 );
 
-
-ALTER TABLE lastfm.tracks OWNER TO root;
-
---
--- Name: config; Type: TABLE; Schema: level; Owner: root
---
-
-CREATE TABLE level.config (
+CREATE TABLE IF NOT EXISTS level.config (
     guild_id bigint NOT NULL,
     status boolean DEFAULT true NOT NULL,
     cooldown integer DEFAULT 60 NOT NULL,
@@ -586,14 +302,7 @@ CREATE TABLE level.config (
     effort_booster bigint DEFAULT 10 NOT NULL
 );
 
-
-ALTER TABLE level.config OWNER TO root;
-
---
--- Name: member; Type: TABLE; Schema: level; Owner: root
---
-
-CREATE TABLE level.member (
+CREATE TABLE IF NOT EXISTS level.member (
     guild_id bigint NOT NULL,
     user_id bigint NOT NULL,
     xp integer DEFAULT 0 NOT NULL,
@@ -602,54 +311,26 @@ CREATE TABLE level.member (
     last_message timestamp with time zone DEFAULT now() NOT NULL
 );
 
-
-ALTER TABLE level.member OWNER TO root;
-
---
--- Name: notification; Type: TABLE; Schema: level; Owner: root
---
-
-CREATE TABLE level.notification (
+CREATE TABLE IF NOT EXISTS level.notification (
     guild_id bigint NOT NULL,
     channel_id bigint,
     dm boolean DEFAULT false NOT NULL,
     template text
 );
 
-
-ALTER TABLE level.notification OWNER TO root;
-
---
--- Name: role; Type: TABLE; Schema: level; Owner: root
---
-
-CREATE TABLE level.role (
+CREATE TABLE IF NOT EXISTS level.role (
     guild_id bigint NOT NULL,
     role_id bigint NOT NULL,
     level integer NOT NULL
 );
 
-
-ALTER TABLE level.role OWNER TO root;
-
---
--- Name: afk; Type: TABLE; Schema: public; Owner: root
---
-
-CREATE TABLE public.afk (
+CREATE TABLE IF NOT EXISTS public.afk (
     user_id bigint NOT NULL,
     status text DEFAULT 'AFK'::text NOT NULL,
     left_at timestamp with time zone DEFAULT now() NOT NULL
 );
 
-
-ALTER TABLE public.afk OWNER TO root;
-
---
--- Name: aliases; Type: TABLE; Schema: public; Owner: root
---
-
-CREATE TABLE public.aliases (
+CREATE TABLE IF NOT EXISTS public.aliases (
     guild_id bigint NOT NULL,
     name text NOT NULL,
     invoke text NOT NULL,
@@ -657,13 +338,13 @@ CREATE TABLE public.aliases (
 );
 
 
-ALTER TABLE public.aliases OWNER TO root;
+
 
 --
 -- Name: antinuke; Type: TABLE; Schema: public; Owner: root
 --
 
-CREATE TABLE public.antinuke (
+CREATE TABLE IF NOT EXISTS public.antinuke (
     guild_id bigint NOT NULL,
     whitelist bigint[] DEFAULT '{}'::bigint[] NOT NULL,
     trusted_admins bigint[] DEFAULT '{}'::bigint[] NOT NULL,
@@ -677,13 +358,13 @@ CREATE TABLE public.antinuke (
 );
 
 
-ALTER TABLE public.antinuke OWNER TO root;
+
 
 --
 -- Name: antiraid; Type: TABLE; Schema: public; Owner: root
 --
 
-CREATE TABLE public.antiraid (
+CREATE TABLE IF NOT EXISTS public.antiraid (
     guild_id bigint NOT NULL,
     locked boolean DEFAULT false NOT NULL,
     joins jsonb,
@@ -693,13 +374,13 @@ CREATE TABLE public.antiraid (
 );
 
 
-ALTER TABLE public.antiraid OWNER TO root;
+
 
 --
 -- Name: auto_role; Type: TABLE; Schema: public; Owner: root
 --
 
-CREATE TABLE public.auto_role (
+CREATE TABLE IF NOT EXISTS public.auto_role (
     guild_id bigint NOT NULL,
     role_id bigint NOT NULL,
     action text NOT NULL,
@@ -707,13 +388,13 @@ CREATE TABLE public.auto_role (
 );
 
 
-ALTER TABLE public.auto_role OWNER TO root;
+
 
 --
 -- Name: autokick; Type: TABLE; Schema: public; Owner: postgres
 --
 
-CREATE TABLE public.autokick (
+CREATE TABLE IF NOT EXISTS public.autokick (
     user_id bigint,
     guild_id bigint,
     reason text,
@@ -721,13 +402,13 @@ CREATE TABLE public.autokick (
 );
 
 
-ALTER TABLE public.autokick OWNER TO postgres;
+
 
 --
 -- Name: backup; Type: TABLE; Schema: public; Owner: root
 --
 
-CREATE TABLE public.backup (
+CREATE TABLE IF NOT EXISTS public.backup (
     key text NOT NULL,
     guild_id bigint NOT NULL,
     user_id bigint NOT NULL,
@@ -736,37 +417,36 @@ CREATE TABLE public.backup (
 );
 
 
-ALTER TABLE public.backup OWNER TO root;
+
 
 --
 -- Name: birthdays; Type: TABLE; Schema: public; Owner: root
 --
 
-CREATE TABLE public.birthdays (
+CREATE TABLE IF NOT EXISTS public.birthdays (
     user_id bigint NOT NULL,
     birthday timestamp without time zone NOT NULL
 );
 
 
-ALTER TABLE public.birthdays OWNER TO root;
+
 
 --
 -- Name: blacklist; Type: TABLE; Schema: public; Owner: root
 --
 
-CREATE TABLE public.blacklist (
+CREATE TABLE IF NOT EXISTS public.blacklist (
     user_id bigint NOT NULL,
     information text
 );
 
 
-ALTER TABLE public.blacklist OWNER TO root;
 
 --
 -- Name: blunt; Type: TABLE; Schema: public; Owner: postgres
 --
 
-CREATE TABLE public.blunt (
+CREATE TABLE IF NOT EXISTS public.blunt (
     guild_id bigint NOT NULL,
     user_id bigint,
     hits bigint DEFAULT 0,
@@ -775,13 +455,13 @@ CREATE TABLE public.blunt (
 );
 
 
-ALTER TABLE public.blunt OWNER TO postgres;
+
 
 --
 -- Name: boost_message; Type: TABLE; Schema: public; Owner: root
 --
 
-CREATE TABLE public.boost_message (
+CREATE TABLE IF NOT EXISTS public.boost_message (
     guild_id bigint NOT NULL,
     channel_id bigint NOT NULL,
     template text NOT NULL,
@@ -789,26 +469,25 @@ CREATE TABLE public.boost_message (
 );
 
 
-ALTER TABLE public.boost_message OWNER TO root;
 
 --
 -- Name: booster_role; Type: TABLE; Schema: public; Owner: root
 --
 
-CREATE TABLE public.booster_role (
+CREATE TABLE IF NOT EXISTS public.booster_role (
     guild_id bigint NOT NULL,
     user_id bigint NOT NULL,
     role_id bigint NOT NULL
 );
 
 
-ALTER TABLE public.booster_role OWNER TO root;
+
 
 --
 -- Name: boosters_lost; Type: TABLE; Schema: public; Owner: root
 --
 
-CREATE TABLE public.boosters_lost (
+CREATE TABLE IF NOT EXISTS public.boosters_lost (
     guild_id bigint NOT NULL,
     user_id bigint NOT NULL,
     lasted_for interval NOT NULL,
@@ -816,25 +495,25 @@ CREATE TABLE public.boosters_lost (
 );
 
 
-ALTER TABLE public.boosters_lost OWNER TO root;
+
 
 --
 -- Name: cases; Type: TABLE; Schema: public; Owner: postgres
 --
 
-CREATE TABLE public.cases (
+CREATE TABLE IF NOT EXISTS public.cases (
     guild_id bigint,
     count integer
 );
 
 
-ALTER TABLE public.cases OWNER TO postgres;
+
 
 --
 -- Name: clownboard; Type: TABLE; Schema: public; Owner: postgres
 --
 
-CREATE TABLE public.clownboard (
+CREATE TABLE IF NOT EXISTS public.clownboard (
     guild_id bigint NOT NULL,
     channel_id bigint NOT NULL,
     self_clown boolean DEFAULT true NOT NULL,
@@ -843,13 +522,13 @@ CREATE TABLE public.clownboard (
 );
 
 
-ALTER TABLE public.clownboard OWNER TO postgres;
+
 
 --
 -- Name: clownboard_entry; Type: TABLE; Schema: public; Owner: postgres
 --
 
-CREATE TABLE public.clownboard_entry (
+CREATE TABLE IF NOT EXISTS public.clownboard_entry (
     guild_id bigint NOT NULL,
     clown_id bigint NOT NULL,
     channel_id bigint NOT NULL,
@@ -858,51 +537,50 @@ CREATE TABLE public.clownboard_entry (
 );
 
 
-ALTER TABLE public.clownboard_entry OWNER TO postgres;
+
 
 --
 -- Name: confess; Type: TABLE; Schema: public; Owner: postgres
 --
 
-CREATE TABLE public.confess (
+CREATE TABLE IF NOT EXISTS public.confess (
     guild_id bigint,
     channel_id bigint,
     confession integer
 );
 
 
-ALTER TABLE public.confess OWNER TO postgres;
+
 
 --
 -- Name: confess_members; Type: TABLE; Schema: public; Owner: postgres
 --
 
-CREATE TABLE public.confess_members (
+CREATE TABLE IF NOT EXISTS public.confess_members (
     guild_id bigint,
     user_id bigint,
     confession integer
 );
 
 
-ALTER TABLE public.confess_members OWNER TO postgres;
 
 --
 -- Name: confess_mute; Type: TABLE; Schema: public; Owner: postgres
 --
 
-CREATE TABLE public.confess_mute (
+CREATE TABLE IF NOT EXISTS public.confess_mute (
     guild_id bigint,
     user_id bigint
 );
 
 
-ALTER TABLE public.confess_mute OWNER TO postgres;
+
 
 --
 -- Name: config; Type: TABLE; Schema: public; Owner: postgres
 --
 
-CREATE TABLE public.config (
+CREATE TABLE IF NOT EXISTS public.config (
     guild_id bigint NOT NULL,
     prefix text DEFAULT ','::text,
     baserole bigint,
@@ -914,13 +592,13 @@ CREATE TABLE public.config (
 );
 
 
-ALTER TABLE public.config OWNER TO postgres;
+
 
 --
 -- Name: counter; Type: TABLE; Schema: public; Owner: root
 --
 
-CREATE TABLE public.counter (
+CREATE TABLE IF NOT EXISTS public.counter (
     guild_id bigint NOT NULL,
     channel_id bigint NOT NULL,
     option text NOT NULL,
@@ -929,13 +607,13 @@ CREATE TABLE public.counter (
 );
 
 
-ALTER TABLE public.counter OWNER TO root;
+
 
 --
 -- Name: crypto; Type: TABLE; Schema: public; Owner: root
 --
 
-CREATE TABLE public.crypto (
+CREATE TABLE IF NOT EXISTS public.crypto (
     user_id bigint NOT NULL,
     channel_id bigint NOT NULL,
     transaction_id text NOT NULL,
@@ -944,51 +622,51 @@ CREATE TABLE public.crypto (
 );
 
 
-ALTER TABLE public.crypto OWNER TO root;
+
 
 --
 -- Name: fake_permissions; Type: TABLE; Schema: public; Owner: postgres
 --
 
-CREATE TABLE public.fake_permissions (
+CREATE TABLE IF NOT EXISTS public.fake_permissions (
     guild_id bigint NOT NULL,
     role_id bigint NOT NULL,
     permission text NOT NULL
 );
 
 
-ALTER TABLE public.fake_permissions OWNER TO postgres;
+
 
 --
 -- Name: feedback; Type: TABLE; Schema: public; Owner: root
 --
 
-CREATE TABLE public.feedback (
+CREATE TABLE IF NOT EXISTS public.feedback (
     user_id bigint NOT NULL,
     message text NOT NULL,
     created_at timestamp with time zone DEFAULT now() NOT NULL
 );
 
 
-ALTER TABLE public.feedback OWNER TO root;
+
 
 --
 -- Name: gallery; Type: TABLE; Schema: public; Owner: root
 --
 
-CREATE TABLE public.gallery (
+CREATE TABLE IF NOT EXISTS public.gallery (
     guild_id bigint NOT NULL,
     channel_id bigint NOT NULL
 );
 
 
-ALTER TABLE public.gallery OWNER TO root;
+
 
 --
 -- Name: giveaway; Type: TABLE; Schema: public; Owner: root
 --
 
-CREATE TABLE public.giveaway (
+CREATE TABLE IF NOT EXISTS public.giveaway (
     guild_id bigint NOT NULL,
     user_id bigint NOT NULL,
     channel_id bigint NOT NULL,
@@ -1002,13 +680,13 @@ CREATE TABLE public.giveaway (
 );
 
 
-ALTER TABLE public.giveaway OWNER TO root;
+
 
 --
 -- Name: goodbye_message; Type: TABLE; Schema: public; Owner: root
 --
 
-CREATE TABLE public.goodbye_message (
+CREATE TABLE IF NOT EXISTS public.goodbye_message (
     guild_id bigint NOT NULL,
     channel_id bigint NOT NULL,
     template text NOT NULL,
@@ -1016,64 +694,63 @@ CREATE TABLE public.goodbye_message (
 );
 
 
-ALTER TABLE public.goodbye_message OWNER TO root;
 
 --
 -- Name: guildblacklist; Type: TABLE; Schema: public; Owner: postgres
 --
 
-CREATE TABLE public.guildblacklist (
+CREATE TABLE IF NOT EXISTS public.guildblacklist (
     guild_id bigint NOT NULL,
     information text
 );
 
 
-ALTER TABLE public.guildblacklist OWNER TO postgres;
+
 
 --
 -- Name: highlights; Type: TABLE; Schema: public; Owner: root
 --
 
-CREATE TABLE public.highlights (
+CREATE TABLE IF NOT EXISTS public.highlights (
     guild_id bigint NOT NULL,
     user_id bigint NOT NULL,
     word text NOT NULL
 );
 
 
-ALTER TABLE public.highlights OWNER TO root;
+
 
 --
 -- Name: jail; Type: TABLE; Schema: public; Owner: postgres
 --
 
-CREATE TABLE public.jail (
+CREATE TABLE IF NOT EXISTS public.jail (
     guild_id bigint,
     user_id bigint,
     roles text
 );
 
 
-ALTER TABLE public.jail OWNER TO postgres;
+
 
 --
 -- Name: logging; Type: TABLE; Schema: public; Owner: root
 --
 
-CREATE TABLE public.logging (
+CREATE TABLE IF NOT EXISTS public.logging (
     guild_id bigint NOT NULL,
     channel_id bigint NOT NULL,
     events integer NOT NULL
 );
 
 
-ALTER TABLE public.logging OWNER TO root;
+
 
 --
 -- Name: mod; Type: TABLE; Schema: public; Owner: postgres
 --
 
-CREATE TABLE public.mod (
+CREATE TABLE IF NOT EXISTS public.mod (
     guild_id bigint,
     channel_id bigint,
     jail_id bigint,
@@ -1081,13 +758,12 @@ CREATE TABLE public.mod (
 );
 
 
-ALTER TABLE public.mod OWNER TO postgres;
 
 --
 -- Name: name_history; Type: TABLE; Schema: public; Owner: root
 --
 
-CREATE TABLE public.name_history (
+CREATE TABLE IF NOT EXISTS public.name_history (
     user_id bigint NOT NULL,
     username text NOT NULL,
     is_nickname boolean DEFAULT false NOT NULL,
@@ -1096,13 +772,13 @@ CREATE TABLE public.name_history (
 );
 
 
-ALTER TABLE public.name_history OWNER TO root;
+
 
 --
 -- Name: payment; Type: TABLE; Schema: public; Owner: root
 --
 
-CREATE TABLE public.payment (
+CREATE TABLE IF NOT EXISTS public.payment (
     guild_id bigint NOT NULL,
     customer_id bigint NOT NULL,
     method text NOT NULL,
@@ -1112,62 +788,60 @@ CREATE TABLE public.payment (
 );
 
 
-ALTER TABLE public.payment OWNER TO root;
+
 
 --
 -- Name: pingonjoin; Type: TABLE; Schema: public; Owner: postgres
 --
 
-CREATE TABLE public.pingonjoin (
+CREATE TABLE IF NOT EXISTS public.pingonjoin (
     channel_id bigint,
     guild_id bigint
 );
 
 
-ALTER TABLE public.pingonjoin OWNER TO postgres;
 
 --
 -- Name: prefixex; Type: TABLE; Schema: public; Owner: postgres
 --
 
-CREATE TABLE public.prefixex (
+CREATE TABLE IF NOT EXISTS public.prefixex (
     guild_id bigint,
     prefix text
 );
 
 
-ALTER TABLE public.prefixex OWNER TO postgres;
+
 
 --
 -- Name: publisher; Type: TABLE; Schema: public; Owner: root
 --
 
-CREATE TABLE public.publisher (
+CREATE TABLE IF NOT EXISTS public.publisher (
     guild_id bigint NOT NULL,
     channel_id bigint NOT NULL
 );
 
 
-ALTER TABLE public.publisher OWNER TO root;
 
 --
 -- Name: pubsub; Type: TABLE; Schema: public; Owner: root
 --
 
-CREATE TABLE public.pubsub (
+CREATE TABLE IF NOT EXISTS public.pubsub (
     id text NOT NULL,
     expires_at timestamp with time zone NOT NULL,
     created_at timestamp with time zone DEFAULT now() NOT NULL
 );
 
 
-ALTER TABLE public.pubsub OWNER TO root;
+
 
 --
 -- Name: quoter; Type: TABLE; Schema: public; Owner: root
 --
 
-CREATE TABLE public.quoter (
+CREATE TABLE IF NOT EXISTS public.quoter (
     guild_id bigint NOT NULL,
     channel_id bigint,
     emoji text,
@@ -1175,13 +849,12 @@ CREATE TABLE public.quoter (
 );
 
 
-ALTER TABLE public.quoter OWNER TO root;
 
 --
 -- Name: reaction_role; Type: TABLE; Schema: public; Owner: root
 --
 
-CREATE TABLE public.reaction_role (
+CREATE TABLE IF NOT EXISTS public.reaction_role (
     guild_id bigint NOT NULL,
     channel_id bigint NOT NULL,
     message_id bigint NOT NULL,
@@ -1190,26 +863,26 @@ CREATE TABLE public.reaction_role (
 );
 
 
-ALTER TABLE public.reaction_role OWNER TO root;
+
 
 --
 -- Name: reaction_trigger; Type: TABLE; Schema: public; Owner: root
 --
 
-CREATE TABLE public.reaction_trigger (
+CREATE TABLE IF NOT EXISTS public.reaction_trigger (
     guild_id bigint NOT NULL,
     trigger public.citext NOT NULL,
     emoji text NOT NULL
 );
 
 
-ALTER TABLE public.reaction_trigger OWNER TO root;
+
 
 --
 -- Name: reminders; Type: TABLE; Schema: public; Owner: postgres
 --
 
-CREATE TABLE public.reminders (
+CREATE TABLE IF NOT EXISTS public.reminders (
     user_id bigint NOT NULL,
     reminder text NOT NULL,
     remind_at timestamp with time zone NOT NULL,
@@ -1217,13 +890,13 @@ CREATE TABLE public.reminders (
 );
 
 
-ALTER TABLE public.reminders OWNER TO postgres;
+
 
 --
 -- Name: reskin_user; Type: TABLE; Schema: public; Owner: postgres
 --
 
-CREATE TABLE public.reskin_user (
+CREATE TABLE IF NOT EXISTS public.reskin_user (
     user_id bigint,
     toggled boolean,
     username text,
@@ -1231,13 +904,13 @@ CREATE TABLE public.reskin_user (
 );
 
 
-ALTER TABLE public.reskin_user OWNER TO postgres;
+
 
 --
 -- Name: response_trigger; Type: TABLE; Schema: public; Owner: root
 --
 
-CREATE TABLE public.response_trigger (
+CREATE TABLE IF NOT EXISTS public.response_trigger (
     guild_id bigint NOT NULL,
     trigger public.citext NOT NULL,
     template text NOT NULL,
@@ -1249,13 +922,13 @@ CREATE TABLE public.response_trigger (
 );
 
 
-ALTER TABLE public.response_trigger OWNER TO root;
+
 
 --
 -- Name: roleplay; Type: TABLE; Schema: public; Owner: root
 --
 
-CREATE TABLE public.roleplay (
+CREATE TABLE IF NOT EXISTS public.roleplay (
     user_id bigint NOT NULL,
     target_id bigint NOT NULL,
     category text NOT NULL,
@@ -1263,25 +936,25 @@ CREATE TABLE public.roleplay (
 );
 
 
-ALTER TABLE public.roleplay OWNER TO root;
+
 
 --
 -- Name: selfprefix; Type: TABLE; Schema: public; Owner: postgres
 --
 
-CREATE TABLE public.selfprefix (
+CREATE TABLE IF NOT EXISTS public.selfprefix (
     user_id bigint,
     prefix text
 );
 
 
-ALTER TABLE public.selfprefix OWNER TO postgres;
+
 
 --
 -- Name: settings; Type: TABLE; Schema: public; Owner: root
 --
 
-CREATE TABLE public.settings (
+CREATE TABLE IF NOT EXISTS public.settings (
     guild_id bigint NOT NULL,
     prefixes text[] DEFAULT '{}'::text[] NOT NULL,
     reskin boolean DEFAULT false NOT NULL,
@@ -1310,25 +983,23 @@ CREATE TABLE public.settings (
 );
 
 
-ALTER TABLE public.settings OWNER TO root;
 
 --
 -- Name: shutup; Type: TABLE; Schema: public; Owner: postgres
 --
 
-CREATE TABLE public.shutup (
+CREATE TABLE IF NOT EXISTS public.shutup (
     guild_id bigint,
     user_id bigint
 );
 
 
-ALTER TABLE public.shutup OWNER TO postgres;
 
 --
 -- Name: starboard; Type: TABLE; Schema: public; Owner: root
 --
 
-CREATE TABLE public.starboard (
+CREATE TABLE IF NOT EXISTS public.starboard (
     guild_id bigint NOT NULL,
     channel_id bigint NOT NULL,
     self_star boolean DEFAULT true NOT NULL,
@@ -1338,13 +1009,12 @@ CREATE TABLE public.starboard (
 );
 
 
-ALTER TABLE public.starboard OWNER TO root;
 
 --
 -- Name: starboard_entry; Type: TABLE; Schema: public; Owner: root
 --
 
-CREATE TABLE public.starboard_entry (
+CREATE TABLE IF NOT EXISTS public.starboard_entry (
     guild_id bigint NOT NULL,
     star_id bigint NOT NULL,
     channel_id bigint NOT NULL,
@@ -1353,13 +1023,12 @@ CREATE TABLE public.starboard_entry (
 );
 
 
-ALTER TABLE public.starboard_entry OWNER TO root;
 
 --
 -- Name: sticky_message; Type: TABLE; Schema: public; Owner: root
 --
 
-CREATE TABLE public.sticky_message (
+CREATE TABLE IF NOT EXISTS public.sticky_message (
     guild_id bigint NOT NULL,
     channel_id bigint NOT NULL,
     message_id bigint NOT NULL,
@@ -1367,49 +1036,45 @@ CREATE TABLE public.sticky_message (
 );
 
 
-ALTER TABLE public.sticky_message OWNER TO root;
 
 --
 -- Name: thread; Type: TABLE; Schema: public; Owner: root
 --
 
-CREATE TABLE public.thread (
+CREATE TABLE IF NOT EXISTS public.thread (
     guild_id bigint NOT NULL,
     thread_id bigint NOT NULL
 );
 
 
-ALTER TABLE public.thread OWNER TO root;
 
 --
 -- Name: timezones; Type: TABLE; Schema: public; Owner: root
 --
 
-CREATE TABLE public.timezones (
+CREATE TABLE IF NOT EXISTS public.timezones (
     user_id bigint NOT NULL,
     timezone text NOT NULL
 );
 
 
-ALTER TABLE public.timezones OWNER TO root;
 
 --
 -- Name: uwulock; Type: TABLE; Schema: public; Owner: postgres
 --
 
-CREATE TABLE public.uwulock (
+CREATE TABLE IF NOT EXISTS public.uwulock (
     guild_id bigint,
     user_id bigint
 );
 
 
-ALTER TABLE public.uwulock OWNER TO postgres;
 
 --
 -- Name: vanity; Type: TABLE; Schema: public; Owner: root
 --
 
-CREATE TABLE public.vanity (
+CREATE TABLE IF NOT EXISTS public.vanity (
     guild_id bigint NOT NULL,
     channel_id bigint,
     role_id bigint,
@@ -1417,13 +1082,13 @@ CREATE TABLE public.vanity (
 );
 
 
-ALTER TABLE public.vanity OWNER TO root;
+
 
 --
 -- Name: vanity_sniper; Type: TABLE; Schema: public; Owner: root
 --
 
-CREATE TABLE public.vanity_sniper (
+CREATE TABLE IF NOT EXISTS public.vanity_sniper (
     guild_id bigint NOT NULL,
     status boolean DEFAULT true NOT NULL,
     channel_id bigint,
@@ -1431,26 +1096,25 @@ CREATE TABLE public.vanity_sniper (
 );
 
 
-ALTER TABLE public.vanity_sniper OWNER TO root;
 
 --
 -- Name: vape; Type: TABLE; Schema: public; Owner: postgres
 --
 
-CREATE TABLE public.vape (
+CREATE TABLE IF NOT EXISTS public.vape (
     user_id bigint NOT NULL,
     flavor text,
     hits bigint DEFAULT 0 NOT NULL
 );
 
 
-ALTER TABLE public.vape OWNER TO postgres;
+
 
 --
 -- Name: webhook; Type: TABLE; Schema: public; Owner: root
 --
 
-CREATE TABLE public.webhook (
+CREATE TABLE IF NOT EXISTS public.webhook (
     identifier text NOT NULL,
     guild_id bigint NOT NULL,
     channel_id bigint NOT NULL,
@@ -1459,13 +1123,13 @@ CREATE TABLE public.webhook (
 );
 
 
-ALTER TABLE public.webhook OWNER TO root;
+
 
 --
 -- Name: welcome_message; Type: TABLE; Schema: public; Owner: root
 --
 
-CREATE TABLE public.welcome_message (
+CREATE TABLE IF NOT EXISTS public.welcome_message (
     guild_id bigint NOT NULL,
     channel_id bigint NOT NULL,
     template text NOT NULL,
@@ -1473,65 +1137,64 @@ CREATE TABLE public.welcome_message (
 );
 
 
-ALTER TABLE public.welcome_message OWNER TO root;
+
 
 --
 -- Name: whitelist; Type: TABLE; Schema: public; Owner: root
 --
 
-CREATE TABLE public.whitelist (
+CREATE TABLE IF NOT EXISTS public.whitelist (
     guild_id bigint NOT NULL,
     status boolean DEFAULT false NOT NULL,
     action text DEFAULT 'kick'::text NOT NULL
 );
 
 
-ALTER TABLE public.whitelist OWNER TO root;
+
 
 --
 -- Name: disabled; Type: TABLE; Schema: reposters; Owner: root
 --
 
-CREATE TABLE reposters.disabled (
+CREATE TABLE IF NOT EXISTS reposters.disabled (
     guild_id bigint NOT NULL,
     channel_id bigint NOT NULL,
     reposter text NOT NULL
 );
 
 
-ALTER TABLE reposters.disabled OWNER TO root;
 
 --
 -- Name: config; Type: TABLE; Schema: reskin; Owner: root
 --
 
-CREATE TABLE reskin.config (
+CREATE TABLE IF NOT EXISTS reskin.config (
     user_id bigint NOT NULL,
     username text,
     avatar_url text
 );
 
 
-ALTER TABLE reskin.config OWNER TO root;
+
 
 --
 -- Name: webhook; Type: TABLE; Schema: reskin; Owner: root
 --
 
-CREATE TABLE reskin.webhook (
+CREATE TABLE IF NOT EXISTS reskin.webhook (
     guild_id bigint NOT NULL,
     channel_id bigint NOT NULL,
     webhook_id bigint NOT NULL
 );
 
 
-ALTER TABLE reskin.webhook OWNER TO root;
+
 
 --
 -- Name: filter; Type: TABLE; Schema: snipe; Owner: root
 --
 
-CREATE TABLE snipe.filter (
+CREATE TABLE IF NOT EXISTS snipe.filter (
     guild_id bigint NOT NULL,
     invites boolean DEFAULT false NOT NULL,
     links boolean DEFAULT false NOT NULL,
@@ -1539,25 +1202,25 @@ CREATE TABLE snipe.filter (
 );
 
 
-ALTER TABLE snipe.filter OWNER TO root;
+
 
 --
 -- Name: ignore; Type: TABLE; Schema: snipe; Owner: root
 --
 
-CREATE TABLE snipe.ignore (
+CREATE TABLE IF NOT EXISTS snipe.ignore (
     guild_id bigint NOT NULL,
     user_id bigint NOT NULL
 );
 
 
-ALTER TABLE snipe.ignore OWNER TO root;
+
 
 --
 -- Name: button; Type: TABLE; Schema: ticket; Owner: root
 --
 
-CREATE TABLE ticket.button (
+CREATE TABLE IF NOT EXISTS ticket.button (
     identifier text NOT NULL,
     guild_id bigint NOT NULL,
     template text,
@@ -1566,13 +1229,13 @@ CREATE TABLE ticket.button (
 );
 
 
-ALTER TABLE ticket.button OWNER TO root;
+
 
 --
 -- Name: config; Type: TABLE; Schema: ticket; Owner: root
 --
 
-CREATE TABLE ticket.config (
+CREATE TABLE IF NOT EXISTS ticket.config (
     guild_id bigint NOT NULL,
     channel_id bigint NOT NULL,
     message_id bigint NOT NULL,
@@ -1582,13 +1245,13 @@ CREATE TABLE ticket.config (
 );
 
 
-ALTER TABLE ticket.config OWNER TO root;
+
 
 --
 -- Name: open; Type: TABLE; Schema: ticket; Owner: root
 --
 
-CREATE TABLE ticket.open (
+CREATE TABLE IF NOT EXISTS ticket.open (
     identifier text NOT NULL,
     guild_id bigint NOT NULL,
     channel_id bigint NOT NULL,
@@ -1596,13 +1259,12 @@ CREATE TABLE ticket.open (
 );
 
 
-ALTER TABLE ticket.open OWNER TO root;
 
 --
 -- Name: message; Type: TABLE; Schema: timer; Owner: root
 --
 
-CREATE TABLE timer.message (
+CREATE TABLE IF NOT EXISTS timer.message (
     guild_id bigint NOT NULL,
     channel_id bigint NOT NULL,
     template text NOT NULL,
@@ -1611,13 +1273,12 @@ CREATE TABLE timer.message (
 );
 
 
-ALTER TABLE timer.message OWNER TO root;
 
 --
 -- Name: purge; Type: TABLE; Schema: timer; Owner: root
 --
 
-CREATE TABLE timer.purge (
+CREATE TABLE IF NOT EXISTS timer.purge (
     guild_id bigint NOT NULL,
     channel_id bigint NOT NULL,
     "interval" integer NOT NULL,
@@ -1626,26 +1287,25 @@ CREATE TABLE timer.purge (
 );
 
 
-ALTER TABLE timer.purge OWNER TO root;
-
 --
 -- Name: channels; Type: TABLE; Schema: voice; Owner: root
 --
 
-CREATE TABLE voice.channels (
+CREATE TABLE IF NOT EXISTS voice.channels (
     guild_id bigint NOT NULL,
     channel_id bigint NOT NULL,
     owner_id bigint NOT NULL
 );
 
 
-ALTER TABLE voice.channels OWNER TO root;
+
+
 
 --
 -- Name: config; Type: TABLE; Schema: voice; Owner: root
 --
 
-CREATE TABLE voice.config (
+CREATE TABLE IF NOT EXISTS voice.config (
     guild_id bigint NOT NULL,
     category_id bigint NOT NULL,
     channel_id bigint NOT NULL,
@@ -1655,26 +1315,25 @@ CREATE TABLE voice.config (
 );
 
 
-ALTER TABLE voice.config OWNER TO root;
 
 --
 -- Name: channels; Type: TABLE; Schema: voicemaster; Owner: postgres
 --
 
-CREATE TABLE voicemaster.channels (
+CREATE TABLE IF NOT EXISTS voicemaster.channels (
     guild_id bigint NOT NULL,
     channel_id bigint NOT NULL,
     owner_id bigint
 );
 
 
-ALTER TABLE voicemaster.channels OWNER TO postgres;
+
 
 --
 -- Name: configuration; Type: TABLE; Schema: voicemaster; Owner: postgres
 --
 
-CREATE TABLE voicemaster.configuration (
+CREATE TABLE IF NOT EXISTS voicemaster.configuration (
     guild_id bigint NOT NULL,
     category_id bigint,
     interface_id bigint,
@@ -1685,14 +1344,14 @@ CREATE TABLE voicemaster.configuration (
 );
 
 
-ALTER TABLE voicemaster.configuration OWNER TO postgres;
+
 
 --
 -- Name: twitch twitch_pkey; Type: CONSTRAINT; Schema: alerts; Owner: root
 --
 
 ALTER TABLE ONLY alerts.twitch
-    ADD CONSTRAINT twitch_pkey PRIMARY KEY (guild_id, twitch_id);
+    ADD CONSTRAINT IF NOT EXISTS twitch_pkey PRIMARY KEY (guild_id, twitch_id);
 
 
 --
@@ -2467,15 +2126,14 @@ ALTER TABLE ONLY ticket.button
 -- Name: history; Type: SCHEMA; Schema: -; Owner: root
 --
 
-CREATE SCHEMA history;
 
-ALTER SCHEMA history OWNER TO root;
+
 
 --
 -- Name: moderation; Type: TABLE; Schema: history; Owner: root
 --
 
-CREATE TABLE history.moderation (
+CREATE TABLE IF NOT EXISTS history.moderation (
     id SERIAL PRIMARY KEY,
     guild_id BIGINT NOT NULL,
     case_id INTEGER NOT NULL,
@@ -2487,21 +2145,9 @@ CREATE TABLE history.moderation (
     duration INTEGER
 );
 
-ALTER TABLE history.moderation OWNER TO root;
 
---
--- Name: auto; Type: SCHEMA; Schema: -; Owner: root
---
 
-CREATE SCHEMA auto;
-
-ALTER SCHEMA auto OWNER TO root;
-
---
--- Name: media; Type: TABLE; Schema: auto; Owner: root
---
-
-CREATE TABLE auto.media (
+CREATE TABLE IF NOT EXISTS auto.media (
     id SERIAL PRIMARY KEY,
     guild_id BIGINT NOT NULL,
     channel_id BIGINT NOT NULL,
@@ -2510,21 +2156,8 @@ CREATE TABLE auto.media (
     CONSTRAINT unique_media_config UNIQUE (guild_id, channel_id, type)
 );
 
-ALTER TABLE auto.media OWNER TO root;
 
---
--- Name: statistics; Type: SCHEMA; Schema: -; Owner: root
---
-
-CREATE SCHEMA statistics;
-
-ALTER SCHEMA statistics OWNER TO root;
-
---
--- Name: daily; Type: TABLE; Schema: statistics; Owner: root
---
-
-CREATE TABLE statistics.daily (
+CREATE TABLE IF NOT EXISTS statistics.daily (
     guild_id BIGINT NOT NULL,
     date DATE NOT NULL DEFAULT CURRENT_DATE,
     commands_used INTEGER DEFAULT 0 NOT NULL,
@@ -2533,21 +2166,19 @@ CREATE TABLE statistics.daily (
     PRIMARY KEY (guild_id, date)
 );
 
-ALTER TABLE statistics.daily OWNER TO root;
 
 --
 -- Name: invoke_history; Type: SCHEMA; Schema: -; Owner: root
 --
 
-CREATE SCHEMA invoke_history;
 
-ALTER SCHEMA invoke_history OWNER TO root;
+
 
 --
 -- Name: commands; Type: TABLE; Schema: invoke_history; Owner: root
 --
 
-CREATE TABLE invoke_history.commands (
+CREATE TABLE IF NOT EXISTS invoke_history.commands (
     id SERIAL PRIMARY KEY,
     guild_id BIGINT NOT NULL,
     user_id BIGINT NOT NULL,
@@ -2556,21 +2187,19 @@ CREATE TABLE invoke_history.commands (
     timestamp TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 
-ALTER TABLE invoke_history.commands OWNER TO root;
 
 --
 -- Name: music; Type: SCHEMA; Schema: -; Owner: root
 --
 
-CREATE SCHEMA music;
 
-ALTER SCHEMA music OWNER TO root;
+
 
 --
 -- Name: history; Type: TABLE; Schema: music; Owner: root
 --
 
-CREATE TABLE music.history (
+CREATE TABLE IF NOT EXISTS music.history (
     id SERIAL PRIMARY KEY,
     guild_id BIGINT NOT NULL,
     user_id BIGINT NOT NULL,
@@ -2582,7 +2211,7 @@ CREATE TABLE music.history (
     played_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 
-CREATE TABLE music.playlists (
+CREATE TABLE IF NOT EXISTS music.playlists (
     id SERIAL PRIMARY KEY,
     guild_id BIGINT NOT NULL,
     user_id BIGINT NOT NULL,
@@ -2592,7 +2221,7 @@ CREATE TABLE music.playlists (
     updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 
-CREATE TABLE music.playlist_tracks (
+CREATE TABLE IF NOT EXISTS music.playlist_tracks (
     id SERIAL PRIMARY KEY,
     playlist_id INTEGER REFERENCES music.playlists(id) ON DELETE CASCADE,
     title TEXT NOT NULL,
@@ -2605,11 +2234,10 @@ CREATE TABLE music.playlist_tracks (
 );
 
 -- Create verification schema
-CREATE SCHEMA verification;
-ALTER SCHEMA verification OWNER TO root;
+
 
 -- Verification settings per guild
-CREATE TABLE verification.settings (
+CREATE TABLE IF NOT EXISTS verification.settings (
     guild_id BIGINT PRIMARY KEY,
     enabled BOOLEAN DEFAULT false,
     level TEXT DEFAULT 'base' CHECK (level IN ('base', 'medium')),
@@ -2622,7 +2250,7 @@ CREATE TABLE verification.settings (
 );
 
 -- Active verification sessions
-CREATE TABLE verification.sessions (
+CREATE TABLE IF NOT EXISTS verification.sessions (
     session_id TEXT PRIMARY KEY,
     guild_id BIGINT NOT NULL,
     user_id BIGINT NOT NULL,
@@ -2634,7 +2262,7 @@ CREATE TABLE verification.sessions (
 );
 
 -- Verification logs
-CREATE TABLE verification.logs (
+CREATE TABLE IF NOT EXISTS verification.logs (
     id SERIAL PRIMARY KEY,
     guild_id BIGINT NOT NULL,
     user_id BIGINT NOT NULL,
@@ -2647,11 +2275,10 @@ CREATE TABLE verification.logs (
 -- After the last schema creation and before PostgreSQL dump complete
 
 -- Create transcribe schema
-CREATE SCHEMA transcribe;
-ALTER SCHEMA transcribe OWNER TO root;
+
 
 -- Auto-transcribe channels
-CREATE TABLE transcribe.channels (
+CREATE TABLE IF NOT EXISTS transcribe.channels (
     guild_id BIGINT NOT NULL,
     channel_id BIGINT NOT NULL,
     added_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
@@ -2659,7 +2286,7 @@ CREATE TABLE transcribe.channels (
 );
 
 -- Rate limiting for auto-transcribe
-CREATE TABLE transcribe.rate_limit (
+CREATE TABLE IF NOT EXISTS transcribe.rate_limit (
     guild_id BIGINT NOT NULL,
     channel_id BIGINT NOT NULL,
     last_used TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,

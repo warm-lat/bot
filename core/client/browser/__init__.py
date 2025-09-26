@@ -3,7 +3,7 @@ from http.cookiejar import MozillaCookieJar
 from logging import getLogger
 from secrets import token_urlsafe
 from typing import AsyncGenerator, Literal, Optional
-
+import sys, asyncio
 from anyio import CapacityLimiter
 from playwright.async_api import (
     Browser,
@@ -16,6 +16,13 @@ from pydantic import BaseConfig, BaseModel
 
 import config
 
+# Ensure Windows event loop policy is set before any async operations
+if sys.platform == "win32":
+    try:
+        asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
+    except Exception as e:
+        print(f"Warning: Could not set Windows event loop policy: {e}")
+    
 log = getLogger("evict/browser")
 jar = MozillaCookieJar()
 jar.load("cookies.txt")
@@ -54,28 +61,71 @@ class BrowserHandler:
             await self.browser.close()
 
     async def init(self) -> None:
-        await self.cleanup()
-        self.playwright = await async_playwright().start()
-        self.browser = await self.playwright.chromium.launch()
-        self.context = await self.browser.new_context(
-            user_agent=(
-                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
-                "(KHTML, like Gecko) Chrome/93.0.4577.63 Safari/537.36"
-            ),
-            proxy={"server": "http://127.1:40000"},
-        )
-        await self.context.add_cookies(
-            [
-                cookie.dict(exclude_unset=True)
-                for _cookie in jar
-                if (cookie := CookieModel.from_orm(_cookie))
-            ]  # type: ignore
-        )
+        try:
+            await self.cleanup()
+            
+            # Try to start playwright with error handling
+            try:
+                self.playwright = await async_playwright().start()
+                log.info("Playwright started successfully")
+            except NotImplementedError as e:
+                log.error(f"Playwright failed to start due to event loop policy: {e}")
+                # Try setting the event loop policy again
+                if sys.platform == "win32":
+                    asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
+                    log.info("Reset Windows event loop policy, retrying...")
+                    self.playwright = await async_playwright().start()
+                else:
+                    raise
+            except Exception as e:
+                log.error(f"Failed to start Playwright: {e}")
+                raise
+            
+            self.browser = await self.playwright.chromium.launch(
+                headless=True,
+                args=[
+                    '--no-sandbox',
+                    '--disable-dev-shm-usage',
+                    '--disable-web-security',
+                    '--disable-blink-features=AutomationControlled'
+                ]
+            )
+            log.info("Browser launched successfully")
+            
+            self.context = await self.browser.new_context(
+                user_agent=(
+                    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
+                    "(KHTML, like Gecko) Chrome/140.0.7339.16 Safari/537.36"
+                ),
+                proxy={"server": "http://127.1:40000"} if hasattr(config, 'USE_PROXY') and getattr(config, 'USE_PROXY', False) else None,
+            )
+            log.info("Browser context created successfully")
+            
+            # Load cookies with error handling
+            try:
+                await self.context.add_cookies(
+                    [
+                        cookie.dict(exclude_unset=True)
+                        for _cookie in jar
+                        if (cookie := CookieModel.from_orm(_cookie))
+                    ]  # type: ignore
+                )
+                log.info("Cookies loaded successfully")
+            except Exception as e:
+                log.warning(f"Failed to load cookies: {e}")
+                
+        except Exception as e:
+            log.error(f"Failed to initialize browser: {e}")
+            # Don't re-raise the exception to allow the bot to continue without browser functionality
+            log.warning("Browser functionality will be disabled")
+            self.playwright = None
+            self.browser = None
+            self.context = None
 
     @asynccontextmanager
     async def borrow_page(self) -> AsyncGenerator[Page, None]:
         if not self.context:
-            raise RuntimeError("Browser context is not initialized.")
+            raise RuntimeError("Browser context is not initialized or browser functionality is disabled.")
 
         await self.limiter.acquire()
         identifier, page = token_urlsafe(12), await self.context.new_page()
@@ -86,3 +136,7 @@ class BrowserHandler:
             self.limiter.release()
             await page.close()
             log.debug("Released page ID %s.", identifier)
+            
+    def is_available(self) -> bool:
+        """Check if browser functionality is available."""
+        return self.playwright is not None and self.browser is not None and self.context is not None

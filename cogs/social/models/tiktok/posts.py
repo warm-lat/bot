@@ -75,6 +75,11 @@ async def fetch(
     """
     Fetches a user's recent posts.
     """
+    
+    # Check if browser is available
+    if not browser.is_available():
+        log.warning("Browser is not available for TikTok posts fetching")
+        return None
 
     res = cls()
     event = asyncio.Event()
@@ -119,16 +124,20 @@ async def fetch(
 
             event.set()
 
-    async with browser.borrow_page() as page:
-        page.on("response", handle_resp)
-        await page.goto(url, wait_until="commit")
+    try:
+        async with browser.borrow_page() as page:
+            page.on("response", handle_resp)
+            await page.goto(url, wait_until="commit")
 
-        try:
-            await asyncio.wait_for(event.wait(), timeout=10)
-        except asyncio.TimeoutError:
-            log.warning("Timeout while waiting for response from @%s", username)
-            return None
-        finally:
-            page.remove_listener("response", handle_resp)
+            try:
+                await asyncio.wait_for(event.wait(), timeout=10)
+            except asyncio.TimeoutError:
+                log.warning("Timeout while waiting for response from @%s", username)
+                return None
+            finally:
+                page.remove_listener("response", handle_resp)
+    except RuntimeError as e:
+        log.error("Failed to fetch TikTok posts for @%s: %s", username, e)
+        return None
 
     return res if event.is_set() else None

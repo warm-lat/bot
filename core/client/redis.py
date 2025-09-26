@@ -23,7 +23,7 @@ import config
 log = getLogger("evict/redis")
 
 
-REDIS_URL = f"redis://{config.REDIS.HOST}"
+REDIS_URL = f"{config.DATABASE.REDIS}"
 
 INCREMENT_SCRIPT = b"""
     local current

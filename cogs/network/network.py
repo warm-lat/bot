@@ -1930,7 +1930,7 @@ class Network(Cog):
                                         await member.add_roles(role, reason="Instance purchased")
 
                             embed = Embed(
-                                title="Thank You for Purchasing an Evict Instance!",
+                                title="Thank You for Purchasing a warm Instance!",
                                 description=(
                                     "Your instance purchase has been processed successfully! 🎉\n\n"
                                     "To complete the setup process, there's a small monthly hosting fee of $3 to "
@@ -2004,7 +2004,7 @@ class Network(Cog):
                                     "- `[prefix]customize` - Change bot appearance\n"
                                     "- `[prefix]activity` - Set bot status/activity\n\n"
                                     "Want custom commands? Create a ticket in our "
-                                    "[support server](https://discord.gg/evict)\n\n"
+                                    "[support server](https://discord.gg/warm)\n\n"
                                     "If you need any assistance, our support team is ready to help!"
                                 ),
                                 color=0x2ecc71
@@ -2044,7 +2044,7 @@ class Network(Cog):
                                 )
 
                             embed = Embed(
-                                title="Thank You for Supporting evict!",
+                                title="Thank You for Supporting warm!",
                                 description=(
                                     "Your donation has been received and processed successfully! 🎉\n\n"
                                     "You now have access to premium features including:\n"
@@ -2052,7 +2052,7 @@ class Network(Cog):
                                     "- Extended limits for OpenAI features\n"
                                     "- Enhanced transcription capabilities\n"
                                     "- Priority support\n\n"
-                                    "Thank you for helping keep evict running! ❤️"
+                                    "Thank you for helping keep warm running! ❤️"
                                 ),
                                 color=0x2ecc71
                             )
@@ -2168,7 +2168,7 @@ class Network(Cog):
                             embed = Embed(
                                 title="Payment Failed",
                                 description=(
-                                    "Your payment to evict could not be processed.\n\n"
+                                    "Your payment to warm could not be processed.\n\n"
                                     f"Reason: {error_message}\n\n"
                                     "You can try again with a different payment method or contact your bank "
                                     "if you believe this is an error."
@@ -2309,7 +2309,7 @@ class Network(Cog):
             return web.Response(
                 status=302,
                 headers={
-                    "Location": "https://evict.bot/connected" 
+                    "Location": "https://warm.lat/connected" 
                 }
             )
 
@@ -6122,23 +6122,23 @@ class Network(Cog):
                 None, 
                 lambda: dns.resolver.resolve(domain, 'CNAME')
             )
-            cname_valid = any(str(record.target).rstrip('.') == 'cname.evict.bot' for record in cname_records)
+            cname_valid = any(str(record.target).rstrip('.') == 'cname.warm.lat' for record in cname_records)
             
             if not cname_valid:
                 return web.json_response({
                     "error": "CNAME record not properly configured",
-                    "details": "Domain should point to cname.evict.bot"
+                    "details": "Domain should point to cname.warm.lat"
                 }, status=400)
                 
             txt_records = await self.bot.loop.run_in_executor(
                 None, 
-                lambda: dns.resolver.resolve(f'_evict-verify.{domain}', 'TXT')
+                lambda: dns.resolver.resolve(f'__warm-verification.{domain}', 'TXT')
             )
             
             owner = None
             for record in txt_records:
                 txt_value = str(record).strip('"')
-                if txt_value.startswith("evict-verify="):
+                if txt_value.startswith("warm-verification="):
                     owner = txt_value.split("=")[1]
                     break
                     
@@ -6501,21 +6501,21 @@ class Network(Cog):
                 return web.json_response({
                     "session": session_token,
                     "expires_at": expires_at.isoformat(),
-                    "verification_url": f"https://evict.bot/verify/email/{session_token}"
+                    "verification_url": f"https://warm.lat/verify/email/{session_token}"
                 })
 
             elif settings['level'] == 2:
                 return web.json_response({
                     "session": session_token,
                     "expires_at": expires_at.isoformat(),
-                    "oauth_url": f"https://www.last.fm/api/auth?api_key={self.bot.config.lastfm.key}&cb=https://evict.bot/verify/oauth/callback&state={session_token}"
+                    "oauth_url": f"https://www.last.fm/api/auth?api_key={self.bot.config.lastfm.key}&cb=https://warm.lat/verify/oauth/callback&state={session_token}"
                 })
 
             elif settings['level'] == 3: 
                 return web.json_response({
                     "session": session_token,
                     "expires_at": expires_at.isoformat(),
-                    "captcha_url": f"https://evict.bot/verify/captcha/{session_token}"
+                    "captcha_url": f"https://warm.lat/verify/captcha/{session_token}"
                 })
 
             elif settings['level'] == 4:  

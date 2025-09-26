@@ -1722,6 +1722,16 @@ class Utility(Extended, Cog):
         if not url.startswith(("http://", "https://")):
             url = f"https://{url}"
 
+        # Check if browser is available
+        if not hasattr(ctx.bot, 'browser') or not ctx.bot.browser.is_available():
+            if isinstance(ctx.interaction, Interaction):
+                return await ctx.interaction.followup.send(
+                    "Screenshot functionality is currently unavailable. Browser service is not running."
+                )
+            return await ctx.warn(
+                "Screenshot functionality is currently unavailable. Browser service is not running."
+            )
+
         try:
             async with ctx.bot.browser.borrow_page() as page:
                 await page.emulate_media(color_scheme="dark")

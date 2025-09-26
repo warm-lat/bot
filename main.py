@@ -1,9 +1,10 @@
 import os
+os.environ['PYTHONDONTWRITEBYTECODE'] = '1'
 import psutil
 import onnxruntime
 import discord
 import secrets
-import os
+import sys
 import importlib
 import glob
 import asyncpg
@@ -14,6 +15,9 @@ import config
 import asyncio
 import discord_ios
 import psutil
+
+if sys.platform == "win32":
+    asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
 from contextlib import suppress
 from datetime import datetime, timedelta
@@ -553,8 +557,15 @@ class Evict(commands.AutoShardedBot):
             log.info("Initialized monitoring systems")
 
             self.browser = BrowserHandler()
-            await self.browser.init()
-            log.info("Initialized browser")
+            try:
+                await self.browser.init()
+                if self.browser.is_available():
+                    log.info("Initialized browser successfully")
+                else:
+                    log.warning("Browser initialization completed but browser is not available")
+            except Exception as e:
+                log.error(f"Failed to initialize browser: {e}")
+                log.warning("Continuing without browser functionality")
 
             self.voice_update_task = self.loop.create_task(self.update_voice_times())
             log.info("Started voice update task")
@@ -578,7 +589,7 @@ class Evict(commands.AutoShardedBot):
 
     async def connect_nodes(self) -> None:
         for _ in range(config.LAVALINK.NODE_COUNT):
-            identifier = "evict"
+            identifier = "warm"
             try:
                 await NodePool().create_node(
                     bot=self,
@@ -587,8 +598,8 @@ class Evict(commands.AutoShardedBot):
                     password=config.LAVALINK.PASSWORD,
                     secure=True,
                     identifier="Listen [USA#1]",
-                    spotify_client_id=config.AUTHORIZATION.SPOTIFY.CLIENT_ID,
-                    spotify_client_secret=config.AUTHORIZATION.SPOTIFY.CLIENT_SECRET,
+                    spotify_client_id=config.LAVALINK.SPOTIFY_CLIENT_ID,
+                    spotify_client_secret=config.LAVALINK.SPOTIFY_CLIENT_SECRET,
                 )
                 log.info(f"Successfully connected to node {identifier}")
             except Exception as e:

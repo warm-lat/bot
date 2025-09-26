@@ -79,9 +79,9 @@ async def init(connection: Connection):
         decoder=DECODER,
     )
 
-    # with open("core/client/database/schema.sql", "r", encoding="UTF-8") as buffer:
-    # schema = buffer.read()
-    # await connection.execute(schema)
+    #with open("core/client/database/schema.sql", "r", encoding="UTF-8") as buffer:
+    #    schema = buffer.read()
+    #    await connection.execute(schema)
 
 
 async def connect() -> Database:
