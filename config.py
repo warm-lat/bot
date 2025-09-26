@@ -18,7 +18,7 @@ class EMOJIS:
         WARN: str = ""
         
 class POSTHOG:
-    TRACK_SELF: bool = True
+    TRACK_SELF: bool = False
 
 class AUTHORIZATION:
     OPENAI: str = "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"
