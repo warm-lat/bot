@@ -37,6 +37,9 @@ class LASTFM:
 
 class COLORS:
     NEUTRAL: int = 0x2F3136
+    APPROVE: int = 0x57F287
+    DENY: int = 0xED4245
+    WARNING: int = 0xFEE75C
 
     
 class CLIENT:
