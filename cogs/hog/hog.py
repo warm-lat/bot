@@ -14,7 +14,7 @@ from discord.app_commands import Command as AppCommand
 from discord.ext.commands import HybridCommand
 
 posthog_cloud = Posthog(
-    "phc_9CO68Be49weXo25XXmg0CY7wwFLl2HMzW5qoXWdH1J8", 
+    "phc_CLedkEpMu2ugug8R7tQadCi46yFGnRjoPy3SjNB0foe", 
     host="https://us.i.posthog.com"
 )
 
