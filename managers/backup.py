@@ -79,40 +79,40 @@ class BackupManager:
                     pass
             return None
 
-    async def create_schema_backup(self, timestamp: datetime) -> bool:
-        """
-        Create schema-only backup of all databases.
-        """
-        date_folder = timestamp.strftime("%Y-%m-%d")
-        time_str = timestamp.strftime("%H%M%S")
-        filename = f"schemas_{time_str}.sql.gz"
-        
-        local_dir = self.schemas_dir / date_folder
-        local_dir.mkdir(exist_ok=True)
-        local_path = local_dir / filename
+    #async def create_schema_backup(self, timestamp: datetime) -> bool:
+    #    """
+    #    Create schema-only backup of all databases.
+    #    """
+    #    date_folder = timestamp.strftime("%Y-%m-%d")
+    #    time_str = timestamp.strftime("%H%M%S")
+    #    filename = f"schemas_{time_str}.sql.gz"
+    #    
+    #    local_dir = self.schemas_dir / date_folder
+    #    local_dir.mkdir(exist_ok=True)
+    #    local_path = local_dir / filename
 
-        command = (
-            "PGPASSWORD=admin pg_dumpall -h localhost -U postgres "
-            "--schema-only --clean --if-exists"
-        )
+    #    command = (
+    #        "PGPASSWORD=admin pg_dumpall -h localhost -U postgres "
+    #        "--schema-only --clean --if-exists"
+    #    )
 
-        if data := await self._run_pg_dump(command):
-            try:
-                with gzip.open(local_path, 'wb') as f:
-                    f.write(data)
-                del data  
+    #    if data := await self._run_pg_dump(command):
+    #        try:
+    #            with gzip.open(local_path, 'wb') as f:
+    #                f.write(data)
+    #            del data  
                 
-                remote_path = f"/schemas/{date_folder}/{filename}"
-                success = self._upload_to_bunny(local_path, remote_path)
+    #            remote_path = f"/schemas/{date_folder}/{filename}"
+    #            success = self._upload_to_bunny(local_path, remote_path)
                 
-                if success:
-                    log.info(f"Created schema backup: {filename}")
-                    return True
-            except Exception as e:
-                log.error(f"Failed to write backup: {e}")
-                if local_path.exists():
-                    local_path.unlink()
-        return False
+    #            if success:
+    #                log.info(f"Created schema backup: {filename}")
+    #                return True
+    #        except Exception as e:
+    #            log.error(f"Failed to write backup: {e}")
+    #            if local_path.exists():
+    #                local_path.unlink()
+    #    return False
 
     async def create_full_backup(self, timestamp: datetime) -> bool:
         """

@@ -7,27 +7,27 @@ import subprocess
 
 log = logging.getLogger(__name__)
 
-def run_pg_dump(command: str) -> Optional[bytes]:
-    """
-    Execute pg_dump command in a separate process.
-    """
-    try:
-        process = subprocess.Popen(
-            command,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            shell=True
-        )
-        stdout, stderr = process.communicate()
-        
-        if process.returncode != 0:
-            log.error(f"Backup failed: {stderr.decode()}")
-            return None
-            
-        return stdout
-    except Exception as e:
-        log.error(f"Backup error: {e}")
-        return None 
+#def run_pg_dump(command: str) -> Optional[bytes]:
+#    """
+#    Execute pg_dump command in a separate process.
+#    """
+#    try:
+#        process = subprocess.Popen(
+#            command,
+#            stdout=subprocess.PIPE,
+#            stderr=subprocess.PIPE,
+#            shell=True
+#        )
+#        stdout, stderr = process.communicate()
+#        
+#        if process.returncode != 0:
+#            log.error(f"Backup failed: {stderr.decode()}")
+#            return None
+#            
+#        return stdout
+#    except Exception as e:
+#        log.error(f"Backup error: {e}")
+#        return None 
 
 def process_bunny_upload(local_path: Path, remote_path: str, bunny_host: str, bunny_user: str, bunny_pass: str) -> bool:
     """

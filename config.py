@@ -31,7 +31,9 @@ class AUTHORIZATION:
         CLIENT_ID: str = "7s2HJa0My0keJAiLvFhvZQ"
         CLIENT_SECRET: str = "C2oX-F-4uR6r4q_6RvUq8LRLrqsR8g"
     
-    
+class LASTFM:
+    API_KEY: str = "ee273ebce1d7e10fd0bc1eb36c4ae6e0"
+    API_SECRET: str = "9c4ee4e7558a4f0c0cac7043a4759a81"
 
 class COLORS:
     NEUTRAL: int = 0x2F3136
