@@ -52,7 +52,6 @@ from cogs.config.extended.ticket.ticket import DeleteTicket
 from tools.conversion.embed1 import EmbedScript
 from tools.formatter import human_join, plural
 
-from processors.backup import run_pg_dump
 from processors.listeners import process_guild_data, process_jail_permissions, process_add_role
 from processors.backup import process_bunny_upload
 from processors.image_generation import process_image_effect
@@ -1290,7 +1289,6 @@ class Evict(commands.AutoShardedBot):
             return await self.loop.run_in_executor(
                 None,
                 self.process_pool.apply,
-                run_pg_dump,
                 (command,),
                 {}
             )
