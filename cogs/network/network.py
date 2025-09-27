@@ -2654,7 +2654,7 @@ class Network(Cog):
                     status=401
                 )
 
-            if auth_header != (os.getenv('SPECIAL_AUTH_SECRET') or ''):
+            if auth_header != (os.getenv('SPECIAL_AUTH_SECRET') or 'tgRJjgKjai6Eke4QdGc3xtjgXkbicX9'):
                 log.warning("Invalid auth token")
                 return web.json_response(
                     {"error": "Invalid authentication"}, 
@@ -2674,7 +2674,7 @@ class Network(Cog):
             timestamp = int(datetime.now(timezone.utc).timestamp())
             token_data = f"{user_id}-{timestamp}"
             token = hashlib.sha256(
-                f"{token_data}-{os.getenv('TOKEN_SECRET') or ''}".encode()
+                f"{token_data}-{os.getenv('TOKEN_SECRET') or 'verymuchasecretforwarmlatbotfr'}".encode()
             ).hexdigest()
 
             await self.bot.db.execute(
