@@ -31,7 +31,7 @@ import psutil
 import time
 import asyncio
 
-log = getLogger("evict/system")
+log = getLogger("warm/system")
 poj_cache = {}
 
 # posthog_selfhost = None

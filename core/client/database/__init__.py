@@ -10,7 +10,7 @@ import config
 
 from .settings import Settings
 
-log = getLogger("evict/db")
+log = getLogger("warm/db")
 
 
 def ENCODER(self: Any) -> str:

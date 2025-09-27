@@ -1,6 +1,6 @@
 from logging import getLogger
 
-log = getLogger("evict/processors")
+log = getLogger("warm/processors")
 
 def process_guild_data(guild_data: dict) -> dict:
     """

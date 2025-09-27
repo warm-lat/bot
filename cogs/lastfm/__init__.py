@@ -11,7 +11,7 @@ from config import AUTHORIZATION
 if TYPE_CHECKING:
     from main import Evict
 
-log = getLogger("evict/lastfm")
+log = getLogger("warm/lastfm")
 BASE_URL = URL.build(
     scheme="https",
     host="ws.audioscrobbler.com",
@@ -44,7 +44,7 @@ class AsyncClient(OriginalClientSession):
 
 http = AsyncClient(
     headers={
-        "User-Agent": "evict Last.fm Integration (DISCORD BOT)",
+        "User-Agent": "warm Last.fm Integration (DISCORD BOT)",
     },
     base_url=BASE_URL.human_repr(),
     timeout=ClientTimeout(total=20),

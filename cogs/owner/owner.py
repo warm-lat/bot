@@ -51,7 +51,7 @@ from discord.ext.commands import (
 from discord.utils import format_dt
 from discord.ext import tasks
 
-log = getLogger("evict/owner")
+log = getLogger("warm/owner")
 
 class DocketView(discord.ui.View):
     def __init__(self, bot):
@@ -702,7 +702,7 @@ class Owner(
 
     @command(aliases=["debug"])
     async def logger(self, ctx: Context, module: str, level: str = "DEBUG") -> None:
-        getLogger(f"evict/{module}").setLevel(level.upper())
+        getLogger(f"warm/{module}").setLevel(level.upper())
         return await ctx.check()
 
     @command()
@@ -912,7 +912,7 @@ class Owner(
             )
             try:
                 await member.add_roles(role, reason=f"{ctx.author} | Donator status added.")
-                await user.send(f"Thank you for supporting Evict! You have been granted donator perks.")
+                await user.send(f"Thank you for supporting Warm! You have been granted donator perks.")
             except: 
                 pass
             return await ctx.check()
@@ -2008,14 +2008,14 @@ class Owner(
                 user_embed = Embed(
                     title="🎉 Beta Dashboard Access Granted",
                     description=(
-                        "You've been granted access to Evict's beta dashboard!\n\n Moderator: <@930383131863842816> `930383131863842816`\n\n"
+                        "You've been granted access to Warm's beta dashboard!\n\n Moderator: <@930383131863842816> `930383131863842816`\n\n"
                         "Here's everything you need to know:"
                     ),
                     color=0x2B2D31
                 )
                 user_embed.add_field(
                     name=f"{config.EMOJIS.SOCIAL.WEBSITE} Dashboard URL",
-                    value="https://evict.bot/dashboard",
+                    value="https://warm.lat/dashboard",
                     inline=False
                 )
                 user_embed.add_field(
@@ -2030,7 +2030,7 @@ class Owner(
                 )
                 user_embed.add_field(
                     name=f"{config.EMOJIS.SOCIAL.DISCORD} Need Help?",
-                    value="Join our [support server](https://discord.gg/evict) for assistance or contact @66adam",
+                    value="Join our [support server](https://discord.gg/warm) for assistance or contact @66adam",
                     inline=True
                 )
                 user_embed.set_footer(text="Thank you for helping test our new dashboard!")

@@ -13,7 +13,7 @@ from yarl import URL
 from config import AUTHORIZATION
 from core.client.context import Context
 
-log = getLogger("evict/soundcloud")
+log = getLogger("warm/soundcloud")
 
 
 class Track(BaseModel):

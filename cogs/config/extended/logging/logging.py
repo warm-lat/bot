@@ -42,7 +42,7 @@ from managers.paginator import Paginator
 
 from .enums import LogType
 
-log = getLogger("evict/logging")
+log = getLogger("warm/logging")
 
 
 class Logging(MixinMeta, metaclass=CompositeMetaClass):

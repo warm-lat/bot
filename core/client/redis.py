@@ -20,7 +20,7 @@ from xxhash import xxh32_hexdigest
 
 import config
 
-log = getLogger("evict/redis")
+log = getLogger("warm/redis")
 
 
 REDIS_URL = f"{config.DATABASE.REDIS}"
@@ -54,7 +54,7 @@ class Redis(DefaultRedis):
     async def from_url(
         cls,
         url: str = REDIS_URL,
-        name: str = "evict",
+        name: str = "warm",
         attempts: int = 100,
         timeout: int = 120,
         **kwargs,

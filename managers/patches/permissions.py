@@ -98,7 +98,7 @@ def donator(booster: bool = False):
 
             if not user or not user.premium_since:
                 raise CommandError(
-                    f"You must **boost** the Evict [**Discord Server**](https://discord.gg/evict) to use `{ctx.command.qualified_name}`"
+                    f"You must **boost** the Warm [**Discord Server**](https://discord.gg/warm) to use `{ctx.command.qualified_name}`"
                 )
 
             return True
@@ -123,8 +123,8 @@ def donator(booster: bool = False):
             return True
 
         raise CommandError(
-            f"You must be a **donator** to use `{ctx.command.qualified_name}`, run `;donate` - [**Discord Server**](https://discord.gg/evict)\n"
-            "Alternatively, you can vote for Evict on [Top.gg](https://top.gg/bot/1203514684326805524) (lasts 6 hours)"
+            f"You must be a **donator** to use `{ctx.command.qualified_name}`, run `;donate` - [**Discord Server**](https://discord.gg/warm)\n"
+            "Alternatively, you can vote for Warm on [Top.gg](https://top.gg/bot/1420609343283531776) (lasts 6 hours)"
         )
 
     return check(predicate)

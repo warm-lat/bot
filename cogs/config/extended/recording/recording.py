@@ -13,7 +13,7 @@ import io
 import time
 from discord import Embed
 
-log = getLogger("evict/recording")
+log = getLogger("warm/recording")
 
 class WaveSink:
     def __init__(self):
@@ -68,8 +68,8 @@ class Recording(MixinMeta, metaclass=CompositeMetaClass):
             super().__init__(bot)
             self.bot = bot
             self.name = "Voice Recording"
-            self.bunny_api_key = "30a5d679-42c5-4c5c-ba408eb1719c-a367-489a"
-            self.bunny_storage_zone = "evict-voice"
+            self.bunny_api_key = "e7f156b0-cac9-4a5c-ac98bc76c5f6-9a39-4f53"
+            self.bunny_storage_zone = "warm-voice"
             self.active_recordings = {}
         except Exception as e:
             log.error(f"Failed to initialize Recording cog: {e}")
@@ -102,19 +102,19 @@ class Recording(MixinMeta, metaclass=CompositeMetaClass):
         """Upload a file to BunnyCDN"""
         try:
             headers = {
-                "AccessKey": "30a5d679-42c5-4c5c-ba408eb1719c-a367-489a"
+                "AccessKey": "e7f156b0-cac9-4a5c-ac98bc76c5f6-9a39-4f53"
             }
             
             async with aiohttp.ClientSession() as session:
                 async with session.put(
-                    f"https://storage.bunnycdn.com/evict-voice/recordings/{recording_id}.mp3",
+                    f"https://ny.storage.bunnycdn.com/warm-voice/recordings/{recording_id}.mp3",
                     headers=headers,
                     data=open(file_path, 'rb')
                 ) as resp:
                     if resp.status != 201:
                         raise Exception(f"Failed to upload: Status {resp.status}")
                     
-                    return f"https://evict-voice.b-cdn.net/recordings/{recording_id}.mp3"
+                    return f"https://warm-voice.b-cdn.net/recordings/{recording_id}.mp3"
                 
         except Exception as e:
             log.error(f"Failed to upload to BunnyCDN: {e}")
@@ -322,10 +322,10 @@ class Recording(MixinMeta, metaclass=CompositeMetaClass):
     async def recording_delete(self, ctx: Context, recording_id: str):
         """Delete a recording"""
         try:
-            headers = {"AccessKey": "30a5d679-42c5-4c5c-ba408eb1719c-a367-489a"}
+            headers = {"AccessKey": "e7f156b0-cac9-4a5c-ac98bc76c5f6-9a39-4f53"}
             async with aiohttp.ClientSession() as session:
                 async with session.delete(
-                    f"https://storage.bunnycdn.com/evict-voice/recordings/{recording_id}.mp3",
+                    f"https://ny.storage.bunnycdn.com/warm-voice/recordings/{recording_id}.mp3",
                     headers=headers
                 ) as resp:
                     if resp.status not in (200, 404):

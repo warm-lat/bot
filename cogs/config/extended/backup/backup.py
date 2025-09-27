@@ -16,7 +16,7 @@ from managers.paginator import Paginator
 from .models import BackupLoader, BackupViewer, dump
 from .types import BooleanArgs
 
-log = getLogger("evict/backup")
+log = getLogger("warm/backup")
 
 
 class Backup(MixinMeta, metaclass=CompositeMetaClass):

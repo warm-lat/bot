@@ -14,7 +14,7 @@
             "EMBED": {
                 "DESCRIPTION_LINE_ONE": "مبرمج ومنظم من قبل [x](https://discord.com/users/598125772754124823), [adam](https://discord.com/users/930383131863842816), [harry](https://discordapp.com/users/187747524646404105)",
                 "DESCRIPTION_LINE_TWO": "استخدام {cached_commands} أوامر عبر {total_cogs} كوغات ({extended_cogs} وحدات في المجموع)",
-                "FOOTER": "evict/v{version} • آخر تحديث: {latest_commit}"
+                "FOOTER": "warm/v{version} • آخر تحديث: {latest_commit}"
             }
         },
         "ping": {

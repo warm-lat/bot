@@ -16,7 +16,7 @@ from tools.formatter import plural
 
 from .base import BaseRecord, Feed
 
-log = getLogger("evict/pinterest")
+log = getLogger("warm/pinterest")
 
 
 class Record(BaseRecord):

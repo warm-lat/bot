@@ -22,7 +22,7 @@ from core.client.context import Context
 if TYPE_CHECKING:
     from cogs.social.social import Social
 
-log = getLogger("evict/social")
+log = getLogger("warm/social")
 
 
 class ReposterSettings(TypedDict):

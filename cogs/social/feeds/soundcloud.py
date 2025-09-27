@@ -15,7 +15,7 @@ from tools.conversion.script import Script
 
 from .base import BaseRecord, Feed
 
-log = getLogger("evict/soundcloud")
+log = getLogger("warm/soundcloud")
 
 
 class Record(BaseRecord):

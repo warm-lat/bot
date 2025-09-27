@@ -9,7 +9,7 @@ from core.client.context import Context
 from tools.formatter import plural
 from managers.paginator import Paginator
 
-log = getLogger("evict/publisher")
+log = getLogger("warm/publisher")
 
 
 class Publisher(MixinMeta, metaclass=CompositeMetaClass):

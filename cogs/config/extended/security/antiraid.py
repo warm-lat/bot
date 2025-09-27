@@ -903,7 +903,7 @@ class AntiRaid(MixinMeta, metaclass=CompositeMetaClass):
                 actions=actions,
                 enabled=True,
                 exempt_roles=exempt_roles,
-                reason="Created via Evict antiraid filter command"
+                reason="Created via Warm antiraid filter command"
             )
             return await ctx.approve(f"Created {filter_type} filter with **{flags.punishment}** punishment")
 
@@ -929,7 +929,7 @@ class AntiRaid(MixinMeta, metaclass=CompositeMetaClass):
             updated = False
             
             for rule in rules:
-                if rule.name.startswith("Evict -"):
+                if rule.name.startswith("Warm -"):
                     if isinstance(target, Role):
                         if target not in rule.exempt_roles:
                             await rule.edit(exempt_roles=[*rule.exempt_roles, target])
@@ -958,7 +958,7 @@ class AntiRaid(MixinMeta, metaclass=CompositeMetaClass):
             updated = False
             
             for rule in rules:
-                if rule.name.startswith("Evict -"):
+                if rule.name.startswith("Warm -"):
                     if role.id in rule.exempt_roles:
                         await rule.edit(exempt_roles=[r for r in rule.exempt_roles if r != role.id])
                         updated = True
@@ -982,7 +982,7 @@ class AntiRaid(MixinMeta, metaclass=CompositeMetaClass):
             exempt_roles = set()
             
             for rule in rules:
-                if rule.name.startswith("Evict -"):
+                if rule.name.startswith("Warm -"):
                     exempt_roles.update(rule.exempt_roles)
             
             if not exempt_roles:

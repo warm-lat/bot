@@ -41,7 +41,7 @@
               ]
             }
           ],
-          "FOOTER": "evict/v{version} • آخر تحديث: {latest_commit}"
+          "FOOTER": "warm/v{version} • آخر تحديث: {latest_commit}"
         }
       },
       "ping": {

@@ -1,7 +1,7 @@
 from logging import getLogger
 from typing import Dict, List, Optional
 
-log = getLogger("evict/processors")
+log = getLogger("warm/processors")
 
 def process_audit_threshold(
     action_history: List[Dict], 

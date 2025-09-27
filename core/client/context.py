@@ -236,7 +236,7 @@ class Context(OriginalContext):
         """
         return await self.bot.db.fetchrow(
             """
-            SELECT * FROM reskin
+            SELECT * FROM public.reskin_user
             WHERE user_id = $1 
             AND toggled = $2
             """,
@@ -250,7 +250,7 @@ class Context(OriginalContext):
         """
         record = await self.bot.db.fetchrow(
             """
-            SELECT * FROM reskin
+            SELECT * FROM public.reskin_user
             WHERE user_id = $1
             """, 
             self.author.id
@@ -273,7 +273,7 @@ class Context(OriginalContext):
             if len(webhooks) > 0:
                 webhook = webhooks[0]
             else:
-                webhook = await self.channel.create_webhook(name="evict - reskin")
+                webhook = await self.channel.create_webhook(name="warm - reskin")
 
             kwargs.update(
                 {
@@ -303,7 +303,7 @@ class Context(OriginalContext):
 
         record = await self.bot.db.fetchrow(
             """
-            SELECT * FROM reskin
+            SELECT * FROM public.reskin_user
             WHERE user_id = $1
             """, 
             self.author.id
@@ -671,7 +671,7 @@ class Context(OriginalContext):
         if webhooks:
             return webhooks[0]
         
-        return await self.channel.create_webhook(name="evict - reskin")
+        return await self.channel.create_webhook(name="warm - reskin")
 
 class Embed(discord.Embed):
     def __init__(

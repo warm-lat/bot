@@ -41,7 +41,7 @@
               ]
             }
           ],
-          "FOOTER": "evict/v{version} • Akher Commit: {latest_commit}"
+          "FOOTER": "warm/v{version} • Akher Commit: {latest_commit}"
         }
       },
       "ping": {

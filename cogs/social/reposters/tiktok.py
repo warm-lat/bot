@@ -115,7 +115,7 @@ class TikTok(Reposter):
                     embed=embed if ctx.settings.reposter_embed else None,
                     file=File(
                         BytesIO(video_data),
-                        filename=f"Evict{self.name}{token_urlsafe(4)}.mp4",
+                        filename=f"Warm-{self.name}{token_urlsafe(4)}.mp4",
                     ),
                     no_reference=ctx.settings.reposter_delete,
                 )

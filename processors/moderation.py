@@ -2,7 +2,7 @@ from logging import getLogger
 from typing import Dict, Optional, Union
 from datetime import timedelta
 
-log = getLogger("evict/processors")
+log = getLogger("warm/processors")
 
 def process_mod_action(
     action_data: Dict[str, Union[str, int, timedelta, None]]

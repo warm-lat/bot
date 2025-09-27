@@ -15,7 +15,7 @@ from core.client.context import Context
 
 from logging import getLogger
 
-log = getLogger("evict/roleplay")
+log = getLogger("warm/roleplay")
 
 ACTIONS = {
     "bite": "bites",
@@ -214,7 +214,7 @@ class RoleplayContext:
     async def cdn(self, ctx: Context, category: str, max:int, member: Union[Member, User, None] = parameter(
                 default=lambda ctx: ctx.author)) -> Message:
             """
-            Requests the API for Evicts' CDN
+            Requests the API for Warm's CDN
             and structures the embed.
             """             
             amount = 0

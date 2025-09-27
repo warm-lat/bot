@@ -26,7 +26,7 @@ from main import Evict
 #             ctx.author.id
 #         )
 #         if not is_allowed:
-#             await ctx.warn("You don't have access to economy commands yet, please read https://discord.com/channels/892675627373699072/1315003375296839741/1331888247860887582 in [the support server](https://discord.gg/evict)!")
+#             await ctx.warn("You don't have access to economy commands yet, please read https://discord.com/channels/892675627373699072/1315003375296839741/1331888247860887582 in [the support server](https://discord.gg/warm)!")
 #             return False
 #         return True
 #     return commands.check(predicate)

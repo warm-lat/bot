@@ -21,7 +21,7 @@ from tools.formatter import plural, vowel
 from managers.paginator import Paginator
 from tools.conversion.script import Script
 
-log = getLogger("evict/alerts")
+log = getLogger("warm/alerts")
 
 
 class TwitchAlerts(MixinMeta, metaclass=CompositeMetaClass):

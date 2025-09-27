@@ -100,7 +100,7 @@ from tools.conversion.script import Script
 from managers.paginator import Paginator
 from managers.patches.permissions import donator
 
-log = getLogger("evict/mod")
+log = getLogger("warm/mod")
 MASS_ROLE_CONCURRENCY = MaxConcurrency(1, per=BucketType.guild, wait=False)
 
 FAKE_PERMISSIONS_TABLE = "fake_permissions"

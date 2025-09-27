@@ -30,7 +30,7 @@ from tools.conversion import Status
 from tools.formatter import plural, shorten
 from managers.paginator import Paginator
 
-log = getLogger("evict/star")
+log = getLogger("warm/star")
 
 
 class StarboardRecord(TypedDict):

@@ -47,7 +47,7 @@ if TYPE_CHECKING:
     from core.client.context import Context
 
 TMP_ROOT = AsyncPath("/tmp")
-CACHE_ROOT = TMP_ROOT / "evict"
+CACHE_ROOT = TMP_ROOT / "warm"
 
 fernet = Fernet(config.AUTHORIZATION.FERNET_KEY)
 
@@ -186,7 +186,7 @@ def capture_time(
 ) -> Generator:
     start = time()
     if not log:
-        log = getLogger("evict/utils")
+        log = getLogger("warm/utils")
 
     if not msg:
         msg = log.findCaller()[2]

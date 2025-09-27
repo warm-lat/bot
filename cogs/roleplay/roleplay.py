@@ -26,7 +26,7 @@ from discord.ext import commands
 
 from logging import getLogger
 
-log = getLogger("evict/roleplay")
+log = getLogger("warm/roleplay")
 
 BASE_URL = URL.build(
     scheme="https",

@@ -198,7 +198,7 @@ class Spotify(MixinMeta, metaclass=CompositeMetaClass):
         button = discord.ui.Button(
             style=discord.ButtonStyle.url,
             label="Connect Spotify",
-            url="https://evict.bot/login?forSpotify=true"
+            url="https://warm.lat/login?forSpotify=true"
         )
         view.add_item(button)
         

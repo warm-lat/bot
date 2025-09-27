@@ -3,7 +3,7 @@ from io import BytesIO
 from logging import getLogger
 from datetime import datetime, timedelta
 
-log = getLogger("evict/processors")
+log = getLogger("warm/processors")
 
 def process_bulk_messages(message_data: list) -> bytes:
     """

@@ -19,7 +19,7 @@ from tools.conversion.script import Script
 
 from .base import BaseRecord, Feed
 
-log = getLogger("evict/tiktok")
+log = getLogger("warm/tiktok")
 
 
 class Record(BaseRecord):

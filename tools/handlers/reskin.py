@@ -8,7 +8,7 @@ class ValidReskinName(commands.Converter):
         texts = list(
             map(
                 lambda t: t.strip(),
-                open("/root/evict/tools/handlers/text.txt", "r").read().splitlines(),
+                open("text.txt", "r").read().splitlines(),
             )
         )
 

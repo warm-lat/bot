@@ -347,7 +347,7 @@ class Level(MixinMeta, metaclass=CompositeMetaClass):
             if (member := ctx.guild.get_member(record["user_id"]))
         ]
         members.append(
-            f"\nThe level leaderboard can also be viewed [here](https://evict.bot/leaderboard/{ctx.guild.id})"
+            f"\nThe level leaderboard can also be viewed [here](https://warm.lat/leaderboard/{ctx.guild.id})"
         )
         if not members:
             return await ctx.warn("No level data has been recorded yet!")
@@ -368,7 +368,7 @@ class Level(MixinMeta, metaclass=CompositeMetaClass):
         View the server's level leaderboard on the web.
         """
 
-        return await ctx.send(f"https://evict.bot/leaderboard/{ctx.guild.id}")
+        return await ctx.send(f"https://warm.lat/leaderboard/{ctx.guild.id}")
 
     @level.command(
         name="toggle",

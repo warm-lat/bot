@@ -319,16 +319,16 @@ class Interface(View):
         embed.add_field(
             name="**Button Usage**",
             value=(
-                f"{config.EMOJIS.INTERFACE.LOCK} — [`Lock`](https://discord.gg/evict) the voice channel\n"
-                f"{config.EMOJIS.INTERFACE.UNLOCK} — [`Unlock`](https://discord.gg/evict) the voice channel\n"
-                f"{config.EMOJIS.INTERFACE.GHOST} — [`Ghost`](https://discord.gg/evict) the voice channel\n"
-                f"{config.EMOJIS.INTERFACE.REVEAL} — [`Reveal`](https://discord.gg/evict) the voice channel\n"
-                f"{config.EMOJIS.INTERFACE.CLAIM} — [`Claim`](https://discord.gg/evict) the voice channel\n"
-                f"{config.EMOJIS.INTERFACE.DISCONNECT} — [`Disconnect`](https://discord.gg/evict) a member\n"
-                f"{config.EMOJIS.INTERFACE.ACTIVITY} — [`Start`](https://discord.gg/evict) a new voice channel activity\n"
-                f"{config.EMOJIS.INTERFACE.INFORMATION} — [`View`](https://discord.gg/evict) channel information\n"
-                f"{config.EMOJIS.INTERFACE.INCREASE} — [`Increase`](https://discord.gg/evict) the user limit\n"
-                f"{config.EMOJIS.INTERFACE.DECREASE} — [`Decrease`](https://discord.gg/evict) the user limit\n"
+                f"{config.EMOJIS.INTERFACE.LOCK} — [`Lock`](https://discord.gg/warm) the voice channel\n"
+                f"{config.EMOJIS.INTERFACE.UNLOCK} — [`Unlock`](https://discord.gg/warm) the voice channel\n"
+                f"{config.EMOJIS.INTERFACE.GHOST} — [`Ghost`](https://discord.gg/warm) the voice channel\n"
+                f"{config.EMOJIS.INTERFACE.REVEAL} — [`Reveal`](https://discord.gg/warm) the voice channel\n"
+                f"{config.EMOJIS.INTERFACE.CLAIM} — [`Claim`](https://discord.gg/warm) the voice channel\n"
+                f"{config.EMOJIS.INTERFACE.DISCONNECT} — [`Disconnect`](https://discord.gg/warm) a member\n"
+                f"{config.EMOJIS.INTERFACE.ACTIVITY} — [`Start`](https://discord.gg/warm) a new voice channel activity\n"
+                f"{config.EMOJIS.INTERFACE.INFORMATION} — [`View`](https://discord.gg/warm) channel information\n"
+                f"{config.EMOJIS.INTERFACE.INCREASE} — [`Increase`](https://discord.gg/warm) the user limit\n"
+                f"{config.EMOJIS.INTERFACE.DECREASE} — [`Decrease`](https://discord.gg/warm) the user limit\n"
             ),
         )
         return embed

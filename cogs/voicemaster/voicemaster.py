@@ -1200,7 +1200,7 @@ class VoiceMaster(Cog):
         field_value = ""
         for action, emoji in interface_emojis.items():
             emoji_display = emoji if emoji.startswith('<') and emoji.endswith('>') else emoji
-            field_value += f"{emoji_display} — [`{action.title()}`](https://discord.gg/evict) "
+            field_value += f"{emoji_display} — [`{action.title()}`](https://discord.gg/warm) "
             field_value += "the voice channel\n" if action not in ['DISCONNECT', 'ACTIVITY', 'INFORMATION', 'INCREASE', 'DECREASE'] else {
                 'DISCONNECT': "a member\n",
                 'ACTIVITY': "a new voice channel activity\n",

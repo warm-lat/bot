@@ -20,7 +20,7 @@ import time
 import os
 from logging import getLogger
 
-log = getLogger("evict/porn")
+log = getLogger("warm/porn")
 
 class Porn(MixinMeta, metaclass=CompositeMetaClass):
     """

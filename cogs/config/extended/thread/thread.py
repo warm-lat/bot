@@ -10,7 +10,7 @@ from core.client.context import Context
 from tools.formatter import plural
 from managers.paginator import Paginator
 
-log = getLogger("evict/watcher")
+log = getLogger("warm/watcher")
 
 
 class Thread(MixinMeta, metaclass=CompositeMetaClass):

@@ -23,7 +23,7 @@ from .models import Transaction, usd_price
 #   created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
 # );
 
-log = getLogger("evict/crypto")
+log = getLogger("warm/crypto")
 
 
 class Crypto(MixinMeta, metaclass=CompositeMetaClass):

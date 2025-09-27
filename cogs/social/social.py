@@ -170,7 +170,7 @@ class Social(Alerts, Cog):
         """
         await ctx.settings.update(reposter_prefix=not ctx.settings.reposter_prefix)
         return await ctx.approve(
-            f"{'Now' if ctx.settings.reposter_prefix else 'No longer'} using `evict` as the reposter prefix"
+            f"{'Now' if ctx.settings.reposter_prefix else 'No longer'} using `warm` as the reposter prefix"
         )
 
     @reposter.command(name="delete", aliases=["del"])

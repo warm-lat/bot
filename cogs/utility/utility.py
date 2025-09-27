@@ -108,7 +108,7 @@ from typing import (
     Union
 )
 
-log = getLogger("evict/utility")
+log = getLogger("warm/utility")
 
 IMAGE_TYPES = (".png", ".jpg", ".jpeg", ".gif", ".webp")
 STICKER_KB = 512
@@ -183,12 +183,12 @@ class CryptoButton(discord.ui.Button):
                 f"{config.EMOJIS.MISC.ETHEREUM} **Ethereum (ETH): **`0xEc65518168b3d5A4032CfC244C5EE3c368700FBE`\n"
                 f"{config.EMOJIS.MISC.XRP} **XRP (XRP): **`rw2ciyaNshpHe7bCHo4bRWq6pqqynnWKQg`\n"
                 f"{config.EMOJIS.MISC.LITECOIN}**LTC (Litecoin): **`ltc1qfl5pg0ds68p9fm8h4tez8qm87xdhl64n3xrttv`\n"
-                "\nWe also accept donations via the tip.cc Discord bot, please use `$tip @66adam <amount> <currency>`. Currency **must be** one of the listed above.\n"
-                "\nAfter sending, please open a ticket in our [Discord server](https://discord.gg/evict) with your transaction hash. Payment via Crypto is not automated."
+                "\nWe also accept donations via the tip.cc Discord bot, please use `$tip @_mism. <amount> <currency>`. Currency **must be** one of the listed above.\n"
+                "\nAfter sending, please open a ticket in our [Discord server](https://discord.gg/warm) with your transaction hash. Payment via Crypto is not automated."
             ),
             color=discord.Color.gold()
         )
-        embed.set_footer(text="Thank you for supporting Evict! ❤️")
+        embed.set_footer(text="Thank you for supporting Warm! ❤️")
         await interaction.response.edit_message(embed=embed, view=CryptoView())
 
 class DonateView(discord.ui.View):
@@ -198,7 +198,7 @@ class DonateView(discord.ui.View):
         self.add_item(
             discord.ui.Button(
                 label="Card & Cashapp Payment",
-                url="https://donate.stripe.com/cN26ra4tXgrg3T2cMR",
+                url="https://donate.stripe.com/",
                 style=discord.ButtonStyle.url,
                 emoji=config.EMOJIS.SOCIAL.WEBSITE
             )
@@ -358,15 +358,15 @@ class Utility(Extended, Cog):
                         file_ext = data['format_type']
                         file = discord.File(
                             io.BytesIO(image_data), 
-                            filename=f"evict-{file_hash}.{file_ext}"
+                            filename=f"warm-{file_hash}.{file_ext}"
                         )
                         
-                        embed = Embed(color=color, title="Powered by Evict", url=f"{config.CLIENT.INVITE_URL}")
-                        embed.set_image(url=f"attachment://evict-{file_hash}.{file_ext}")
+                        embed = Embed(color=color, title="Powered by Warm", url=f"{config.CLIENT.INVITE_URL}")
+                        embed.set_image(url=f"attachment://warm-{file_hash}.{file_ext}")
                         
                         filename_without_ext = data['filename'].split('.')[0]
                         embed.set_footer(
-                            text=f"{data['category']} • id: {filename_without_ext} • /avreport • discord.gg/evict"
+                            text=f"{data['category']} • id: {filename_without_ext} • /avreport • discord.gg/warm"
                         )
                         
                         await channel.send(embed=embed, file=file)
@@ -542,7 +542,7 @@ class Utility(Extended, Cog):
 
                         if user:
                             embed = Embed(
-                                description=f"The vanity `{before.vanity_url_code}` you have set to track with **evict** is now available.\n> {config.EMOJIS.CONTEXT.WARN} You are receiving this message because you have setup vanity tracking with **evict**",
+                                description=f"The vanity `{before.vanity_url_code}` you have set to track with **warm** is now available.\n> {config.EMOJIS.CONTEXT.WARN} You are receiving this message because you have setup vanity tracking with **warm**",
                             )
                             await user.send(embed=embed)
                     except Exception as e:
@@ -602,7 +602,7 @@ class Utility(Extended, Cog):
                     user = self.bot.get_user(user_id)
                     if user:
                         embed = Embed(
-                            description=f"The username `{before.name}` you have set to track with **evict** is now available.\n> {config.EMOJIS.CONTEXT.WARN} You are receiving this message because you have setup username tracking with **evict**",
+                            description=f"The username `{before.name}` you have set to track with **warm** is now available.\n> {config.EMOJIS.CONTEXT.WARN} You are receiving this message because you have setup username tracking with **warm**",
                         )
                         await user.send(embed=embed)
                 except Exception:
@@ -1702,7 +1702,7 @@ class Utility(Extended, Cog):
 
             return await ctx.neutral(data["data"]["url"])
 
-    @hybrid_command(aliases=["ss"], example="https://evict.bot --delay 5")
+    @hybrid_command(aliases=["ss"], example="https://warm.lat --delay 5")
     @discord.app_commands.allowed_installs(guilds=True, users=True)
     @discord.app_commands.allowed_contexts(guilds=True, dms=True, private_channels=True)
     @cooldown(1, 5, BucketType.guild)
@@ -1760,10 +1760,10 @@ class Utility(Extended, Cog):
                     "The screenshot contains potentially unsafe content and cannot be displayed."
                 )
             
-            file = File(BytesIO(screenshot), filename="evict-screenshot.png")
+            file = File(BytesIO(screenshot), filename="warm-screenshot.png")
 
             embed = Embed()
-            embed.set_image(url="attachment://evict-screenshot.png")
+            embed.set_image(url="attachment://warm-screenshot.png")
             embed.set_footer(text=f"took {time_taken} seconds to screenshot.")
 
             if isinstance(ctx.interaction, Interaction):
@@ -1861,7 +1861,7 @@ class Utility(Extended, Cog):
         """Manage notifications for vanities and usernames."""
         await ctx.send_help(ctx.command)
 
-    @notify.command(name="add", example="vanity evict")
+    @notify.command(name="add", example="vanity warm")
     async def notify_add(
         self, ctx: Context, type: Literal["vanity", "username"], desired: str
     ):
@@ -1871,8 +1871,8 @@ class Utility(Extended, Cog):
         table = f"track.{type}"
 
         confirmation_message = (
-            f"Are you sure you would like evict to notify you if the {type} `{desired}` is available?\n"
-            f"> By agreeing, you allow evict to send you a direct message if the set {type} is available"
+            f"Are you sure you would like warm to notify you if the {type} `{desired}` is available?\n"
+            f"> By agreeing, you allow warm to send you a direct message if the set {type} is available"
         )
 
         confirmed = await ctx.prompt(confirmation_message)
@@ -1936,7 +1936,7 @@ class Utility(Extended, Cog):
 
         await ctx.send(embed=embed)
 
-    @notify.command(name="remove", example="vanity evict")
+    @notify.command(name="remove", example="vanity warm")
     async def notify_remove(
         self, ctx: Context, type: Literal["vanity", "username"], desired: str
     ):
@@ -3940,7 +3940,7 @@ class Utility(Extended, Cog):
         embed = Embed(
             title="<:donor1:1320054420616249396> Donator Benefits",
             description=(
-                "Support Evict's development and get access to exclusive features!\n\n"
+                "Support Warm's development and get access to exclusive features!\n\n"
                 "**Monthly Perks:**\n"
                 "- $15 worth of DALL-E & OpenAI credits every 2 weeks & More image size options\n" 
                 "- Higher quality image generation options\n"
@@ -3954,12 +3954,12 @@ class Utility(Extended, Cog):
                 "- Non-square sizes cost 2x more\n"
                 "- GPT-4 Vision: $0.050 per analysis\n"
                 "- Text completion: $0.020 per request\n\n"
-                "Join our [Discord server](https://discord.gg/evict) to get your donator role and access exclusive channels! This is entierely automated, as soon as payment is completed you will receive your perks. "
+                "Join our [Discord server](https://discord.gg/warm) to get your donator role and access exclusive channels! This is entierely automated, as soon as payment is completed you will receive your perks. "
             ),
             color=discord.Color.gold()
         )
         
-        embed.set_footer(text="Thank you for supporting Evict! ❤️")
+        embed.set_footer(text="Thank you for supporting Warm! ❤️")
         
         return await ctx.send(embed=embed, view=DonateView(ctx))
 
@@ -3971,7 +3971,7 @@ class Utility(Extended, Cog):
             title="Instance Access",
             description=(
                 "**What are instances?**\n"
-                "An instance is your own version of Evict where you can customize "
+                "An instance is your own version of Warm where you can customize "
                 "the username, description, status and everything else. This includes "
                 "access to all 844 commands and features.\n\n"
                 "**What's included:**\n"
@@ -3982,7 +3982,7 @@ class Utility(Extended, Cog):
                 "- Custom commands of your choice\n\n"
                 "**Hosting**\n"
                 "Hosted on dedicated US servers for optimal latency. System access "
-                "limited to Evict administrators and senior staff for security."
+                "limited to Warm administrators and senior staff for security."
             ),
             color=0x2ecc71
         )
@@ -4132,7 +4132,7 @@ class Utility(Extended, Cog):
                             f"`{prefix}activity` - Set bot status/activity\n\n"
                             f"**[Click here to invite your bot]({invite_link})**\n\n"
                             f"Need custom commands? Create a ticket in our "
-                            f"[support server](https://discord.gg/evict)!"
+                            f"[support server](https://discord.gg/warm)!"
                         ),
                         color=0x2ecc71
                     )
@@ -4274,7 +4274,7 @@ class Utility(Extended, Cog):
                                 raise Exception("Failed to download image")
                             data = await resp.read()
                             log.info("[TikTok] Image downloaded successfully")
-                            return File(BytesIO(data), filename=f"EvictTikTok{token_urlsafe(4)}.jpg")
+                            return File(BytesIO(data), filename=f"Warm-TikTok-{token_urlsafe(4)}.jpg")
                         
                     @discord.ui.button(emoji=config.EMOJIS.PAGINATOR.PREVIOUS, style=discord.ButtonStyle.gray)
                     async def previous(self, interaction: Interaction, button: discord.ui.Button):
@@ -4381,7 +4381,7 @@ class Utility(Extended, Cog):
                         return await ctx.send(
                             file=File(
                                 BytesIO(video_data),
-                                filename=f"EvictTikTok{token_urlsafe(4)}.mp4"
+                                filename=f"Warm-TikTok-{token_urlsafe(4)}.mp4"
                             )
                         )
                     except Exception as e:
@@ -4489,7 +4489,7 @@ class Utility(Extended, Cog):
                         return await ctx.send(
                             file=File(
                                 BytesIO(video_data),
-                                filename=f"EvictInstagram{token_urlsafe(4)}.mp4"
+                                filename=f"Warm-Instagram-{token_urlsafe(4)}.mp4"
                             )
                         )
                     except Exception as e:
@@ -4714,7 +4714,7 @@ class Utility(Extended, Cog):
             view.add_item(
                 Button(
                     label="View All Avatars",
-                    url=f"https://evict.bot/avatars/{user.id}",
+                    url=f"https://warm.lat/avatars/{user.id}",
                     style=discord.ButtonStyle.url,
                     emoji=config.EMOJIS.SOCIAL.WEBSITE
                 )
@@ -5115,7 +5115,7 @@ class Utility(Extended, Cog):
     
     @hybrid_command(name="premium", aliases=["tiers", "pricing"])
     async def premium_tiers(self, ctx: Context):
-        """View Evict's premium subscription tiers."""
+        """View warm's premium subscription tiers."""
         
         tiers = [
             {

@@ -660,7 +660,7 @@ class Config(Extended, Cog):
         
         return await script.send(ctx, normal=True)
 
-    @tag.command(name="create", example="welcome Welcome to evict!")
+    @tag.command(name="create", example="welcome Welcome to Warm!")
     @has_permissions(manage_messages=True)
     async def tag_create(self, ctx: Context, name: str, *, template: str) -> Message:
         """
@@ -690,7 +690,7 @@ class Config(Extended, Cog):
 
         return await ctx.approve(f"Created tag `{name}`")
 
-    @tag.command(name="edit", example="welcome Welcome to our amazing evict!")
+    @tag.command(name="edit", example="welcome Welcome to our amazing Warm!")
     @has_permissions(manage_messages=True)
     async def tag_edit(self, ctx: Context, name: str, *, template: str) -> Message:
         """

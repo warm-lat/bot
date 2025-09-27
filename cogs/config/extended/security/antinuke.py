@@ -43,7 +43,7 @@ from processors.antinuke import (
     process_punishment_data
 )
 
-log = getLogger("evict/nuke")
+log = getLogger("warm/nuke")
 # posthog_cloud = Posthog(
 #     "phc_9CO68Be49weXo25XXmg0CY7wwFLl2HMzW5qoXWdH1J8",
 #     host="https://us.i.posthog.com"

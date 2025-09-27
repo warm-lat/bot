@@ -20,7 +20,7 @@ from .user import BasicUser
 
 ENDPOINT = API["graphql"]["UserTweets"]
 
-log = getLogger("evict/twitter")
+log = getLogger("warm/twitter")
 
 
 class Media(BaseModel):

@@ -266,7 +266,7 @@ class ModConfig:
                                             except:
                                                 embed.add_field(
                                                     name="Appeal",
-                                                    value="To appeal, please join discord.gg/evict to get mutual server access with the bot",
+                                                    value="To appeal, please join discord.gg/warm to get mutual server access with the bot",
                                                     inline=False
                                                 )
 
@@ -423,7 +423,7 @@ async def send_non_critical_dm(bot, settings, action, author, victim, reason, du
                             except:
                                 embed.add_field(
                                     name="Appeal",
-                                    value="To appeal, please join discord.gg/evict to get mutual server access with the bot",
+                                    value="To appeal, please join discord.gg/warm to get mutual server access with the bot",
                                     inline=False
                                 )
 

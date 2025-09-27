@@ -14,7 +14,7 @@
             "EMBED": {
                 "DESCRIPTION_LINE_ONE": "Gawa at pinapanatili nila [x](https://discord.com/users/598125772754124823), [adam](https://discord.com/users/930383131863842816), at [harry](https://discordapp.com/users/187747524646404105).",
                 "DESCRIPTION_LINE_TWO": "Paggamit ng `{cached_commands}` commands sa `{total_cogs}` cogs (`{extended_cogs}` kabuoang modules)",
-                "FOOTER": "evict/v{version} • Pinakabagong Commit: {latest_commit}"
+                "FOOTER": "warm/v{version} • Pinakabagong Commit: {latest_commit}"
             }
         },
         "ping": {

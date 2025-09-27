@@ -264,7 +264,7 @@ class Evict(commands.AutoShardedBot):
     user: ClientUser
     reddit: RedditClient
     version: str = "3.0"
-    user_agent: str = f"Evict (DISCORD BOT/{version})"
+    user_agent: str = f"Warm (DISCORD BOT/{version})"
     browser: BrowserHandler
     voice_join_times = {}
     voice_update_task = None
@@ -302,7 +302,7 @@ class Evict(commands.AutoShardedBot):
             max_messages=1500,
             activity=Activity(
                 type=ActivityType.streaming,
-                name="🔗 evict.bot/beta",
+                name="🔗 warm.lat/beta",
                 url=f"{config.CLIENT.TWITCH_URL}",
             ),
         )

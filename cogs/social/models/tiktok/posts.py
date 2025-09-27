@@ -12,7 +12,7 @@ from core.client.browser import BrowserHandler
 
 from .user import BasicUser
 
-log = getLogger("evict/tiktok")
+log = getLogger("warm/tiktok")
 
 
 class Statistics(BaseModel):

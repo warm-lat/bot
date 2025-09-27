@@ -25,7 +25,7 @@ from managers.paginator import Paginator
 
 from .models import GiveawayEntry
 
-log = getLogger("evict/giveaway")
+log = getLogger("warm/giveaway")
 
 # CREATE TABLE IF NOT EXISTS giveaway (
 #   guild_id BIGINT NOT NULL,

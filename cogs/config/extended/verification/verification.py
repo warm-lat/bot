@@ -535,7 +535,7 @@ class Verification(MixinMeta, metaclass=CompositeMetaClass):
                     f"- Rate Limit: {f'{ratelimit} attempts per hour' if ratelimit else 'Disabled'}\n"
                     f"- Anti-alt: {'Enabled' if antialt else 'Disabled'}\n"
                     f"- VPN Prevention: {'Enabled' if prevent_vpn else 'Disabled'}\n\n"
-                    f"Users can now verify at: https://evict.bot/verify/{ctx.guild.id}"
+                    f"Users can now verify at: https://warm.lat/verify/{ctx.guild.id}"
                 ),
                 color=ctx.color
             )

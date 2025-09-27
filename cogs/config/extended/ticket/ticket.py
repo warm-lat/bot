@@ -47,7 +47,7 @@ from tools import CompositeMetaClass, MixinMeta
 
 from managers.paginator import Paginator
 
-log = getLogger("evict/ticket")
+log = getLogger("warm/ticket")
 
 
 class Context(OriginalContext):
@@ -188,7 +188,7 @@ class Ticket(MixinMeta, metaclass=CompositeMetaClass):
         with open(file_path, "w", encoding="utf-8") as f:
             json.dump(transcript_data, f, indent=4, ensure_ascii=False)
 
-        await ctx.send(f"Transcript saved: https://logs.evict.bot/{log_id}")
+        await ctx.send(f"Transcript saved: https://logs.warm.lat/{log_id}")
 
     async def generate_transcript(self, channel: TextChannel):
         transcript = {
@@ -717,7 +717,7 @@ class Ticket(MixinMeta, metaclass=CompositeMetaClass):
             embed.set_author(
                 name=f"{interaction.guild.name}", icon_url=f"{interaction.guild.icon}"
             )
-            embed.set_footer(text="evict.bot", icon_url=interaction.client.user.avatar)
+            embed.set_footer(text="warm.lat", icon_url=interaction.client.user.avatar)
             message = await channel.send(
                 embed=embed, content=f"Welcome {interaction.user.mention}", view=view
             )
@@ -1591,7 +1591,7 @@ class Ticket(MixinMeta, metaclass=CompositeMetaClass):
         )
 
         await ctx.approve(
-            f"Your logs can be found here: https://evict.bot/tickets/{log_id}"
+            f"Your logs can be found here: https://warm.lat/tickets/{log_id}"
         )
         await asyncio.sleep(5)
         await self.bot.db.execute(
@@ -1606,7 +1606,7 @@ class Ticket(MixinMeta, metaclass=CompositeMetaClass):
 
         embed = Embed(
             title="Ticket Closed",
-            description=f"Your logs can be found here: https://evict.bot/tickets/{log_id}\n\n"
+            description=f"Your logs can be found here: https://warm.lat/tickets/{log_id}\n\n"
             f"{config.EMOJIS.CONTEXT.WARN} Ticket logging is currently in beta, please report any bugs you come across.",
             timestamp=datetime.datetime.now(),
         )

@@ -11,7 +11,7 @@ from core.client.context import Context
 from tools.conversion import StrictRole
 from managers.paginator import Paginator
 
-log = getLogger("evict/roles")
+log = getLogger("warm/roles")
 
 
 class ReactionRoles(MixinMeta, metaclass=CompositeMetaClass):

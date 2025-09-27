@@ -62,7 +62,7 @@ from tools.formatter import codeblock, plural, shorten
 from managers.paginator import Paginator
 from tools.parser import Script
 
-log = getLogger("evict/lastfm")
+log = getLogger("warm/lastfm")
 INDEX_CONCURRENCY = MaxConcurrency(1, per=BucketType.user, wait=False)
 WHOKNOWS_COOLDOWN = CooldownMapping(Cooldown(1, 3), BucketType.member)
 
@@ -296,7 +296,7 @@ class Lastfm(Cog):
 
     def __init__(self, bot: Evict):
         self.bot = bot
-        self.description = "Seamless integration between Evict and LastFM."
+        self.description = "Seamless integration between Warm and LastFM."
         self.spotify_client = SpotifyClient(
             SpotifyClientCredentialsFlow(
                 client_id=LAVALINK.SPOTIFY_CLIENT_ID,
@@ -808,7 +808,7 @@ class Lastfm(Cog):
         username: Optional[str] = None,
     ) -> Message:
         """
-        Connect your Last.fm account to evict.
+        Connect your Last.fm account to warm.
         
         You can either:
         - Provide your username directly
@@ -876,7 +876,7 @@ class Lastfm(Cog):
                 view.add_item(
                     discord.ui.Button(
                         label="Connect Last.fm",
-                        url=f"https://evict.bot/login?forLastfm=true&discord_id={ctx.author.id}",
+                        url=f"https://warm.lat/login?forLastfm=true&discord_id={ctx.author.id}",
                         style=discord.ButtonStyle.link
                     )
                 )

@@ -19,7 +19,7 @@ from tools.formatter import shorten
 
 from .base import BaseRecord, Feed
 
-log = getLogger("evict/reddit")
+log = getLogger("warm/reddit")
 
 
 class Record(BaseRecord):

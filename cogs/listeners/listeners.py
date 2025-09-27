@@ -184,7 +184,7 @@ class Listeners(Cog):
 
         embed = Embed(
             timestamp=datetime.datetime.now(),
-            description=f"Evict has {'joined' if event_type == 'joined' else 'left'} a guild."
+            description=f"Warm has {'joined' if event_type == 'joined' else 'left'} a guild."
         )
         embed.set_thumbnail(url=guild.icon)
         embed.set_author(name=guild.name, url=guild.icon)
@@ -234,9 +234,9 @@ class Listeners(Cog):
         Set a custom join message upon bot join.
         """
         embed = Embed(
-            title="Getting Started With Evict",
+            title="Getting Started With Warm",
             description=(
-                "Hey! Thanks for your interest in **evict bot**. "
+                "Hey! Thanks for your interest in **warm bot**. "
                 "The following will provide you with some tips on how to get started with your server!"
             ),
         )
@@ -257,8 +257,8 @@ class Listeners(Cog):
             name="**Documentation and Help 📚**",
             value=(
                 "You can always visit our [documentation](https://docs.evict.bot)"
-                " and view the list of commands that are available [here](https://evict.bot/commands)"
-                " - and if that isn't enough, feel free to join our [Support Server](https://discord.gg/evict) for extra assistance!"
+                " and view the list of commands that are available [here](https://warm.lat/commands)"
+                " - and if that isn't enough, feel free to join our [Support Server](https://discord.gg/warm) for extra assistance!"
             ),
         )
 

@@ -41,7 +41,7 @@
             ]
           }
         ],
-        "FOOTER": "evict/v{version} • Latest Commit: {latest_commit}"
+        "FOOTER": "warm/v{version} • Latest Commit: {latest_commit}"
       }
     },
     "ping": {

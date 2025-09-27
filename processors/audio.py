@@ -1,7 +1,7 @@
 # processors/audio.py
 from logging import getLogger
 
-log = getLogger("evict/processors")
+log = getLogger("warm/processors")
 
 def process_track_data(track_data: dict) -> dict:
     """

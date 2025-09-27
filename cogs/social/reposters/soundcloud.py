@@ -11,7 +11,7 @@ from cogs.social.reposters.base import Information, Reposter
 from main import Evict
 from core.client.context import Context
 
-log = logging.getLogger("evict.reposters.youtube")
+log = logging.getLogger("warm.reposters.youtube")
 
 
 class FileInfo(BaseModel):

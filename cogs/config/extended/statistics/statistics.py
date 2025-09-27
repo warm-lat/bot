@@ -26,7 +26,7 @@ from core.client.context import Context
 from tools.formatter import plural
 from managers.paginator import Paginator
 
-log = getLogger("evict/counter")
+log = getLogger("warm/counter")
 ALLOWED_CHANNEL = Union[
     TextChannel, CategoryChannel, VoiceChannel, StageChannel, ForumChannel
 ]

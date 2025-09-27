@@ -27,7 +27,7 @@ from tools.conversion import PartialAttachment, StrictRole
 from tools.formatter import plural
 from managers.paginator import Paginator
 
-log = getLogger("evict/colors")
+log = getLogger("warm/colors")
 
 
 def build_colors() -> dict[str, str]:

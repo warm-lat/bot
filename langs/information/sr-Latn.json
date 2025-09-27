@@ -14,7 +14,7 @@
             "EMBED": {
                 "DESCRIPTION_LINE_ONE": "Napravljen i odrzavan od strane [x](https://discord.com/users/598125772754124823), [adam](https://discord.com/users/930383131863842816), [harry](https://discordapp.com/users/187747524646404105)",
                 "DESCRIPTION_LINE_TWO": "Utilizovanje `{cached_commands}` komandi u `{total_cogs}` cogova/cogs (`{extended_cogs}` ukupno modula)",
-                "FOOTER": "evict/v{version} • Poslednji commit: {latest_commit}"
+                "FOOTER": "warm/v{version} • Poslednji commit: {latest_commit}"
             }
         },
         "ping": {

@@ -13,7 +13,7 @@ from tools.conversion import StrictRole
 from tools.formatter import plural
 from managers.paginator import Paginator
 
-log = getLogger("evict/roles")
+log = getLogger("warm/roles")
 
 
 class Flags(FlagConverter):

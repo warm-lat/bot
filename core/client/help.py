@@ -47,9 +47,9 @@ class EvictHelp(MinimalHelpCommand):
 
         embed.add_field(
             name="Invite",
-            value="**[invite](https://discord.com/oauth2/authorize?client_id=1203514684326805524)**  • "
-            "**[support](https://discord.gg/evict)**  • "
-            "**[view on web](https://evict.bot)**",
+            value="**[invite](https://discord.com/oauth2/authorize?client_id=1420609343283531776)**  • "
+            "**[support](https://discord.gg/warm)**  • "
+            "**[view on web](https://warm.lat)**",
             inline=False,
         )
 
@@ -224,7 +224,7 @@ class EvictHelp(MinimalHelpCommand):
             )
 
             embed.set_footer(
-                text=f"Aliases: {', '.join(a for a in group.aliases) if len(group.aliases) > 0 else 'none'} • evict.bot",
+                text=f"Aliases: {', '.join(a for a in group.aliases) if len(group.aliases) > 0 else 'none'} • warm.lat",
                 icon_url=self.context.author.display_avatar.url,
             )
 
@@ -351,7 +351,7 @@ class EvictHelp(MinimalHelpCommand):
                 self._add_flag_formatting(param.annotation, embed)  # type: ignore
 
         embed.set_footer(
-            text=f"Aliases: {', '.join(a for a in command.aliases) if len(command.aliases) > 0 else 'none'} • evict.bot",
+            text=f"Aliases: {', '.join(a for a in command.aliases) if len(command.aliases) > 0 else 'none'} • warm.lat",
             icon_url=self.context.author.display_avatar.url,
         )
 

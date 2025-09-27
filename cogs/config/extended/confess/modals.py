@@ -139,7 +139,7 @@ class confessModal(Modal, title="Confess Here"):
 
                 e.set_author(
                     name=f"anonymous confession #{count}",
-                    url="https://discord.gg/evict",
+                    url="https://discord.gg/warm",
                     icon_url=interaction.guild.icon,
                 )
 

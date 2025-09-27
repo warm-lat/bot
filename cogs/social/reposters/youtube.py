@@ -11,7 +11,7 @@ from cogs.social.reposters.base import Reposter, Information
 from main import Evict
 from core.client.context import Context
 
-log = logging.getLogger("evict.reposters.youtube")
+log = logging.getLogger("warm.reposters.youtube")
 
 class YouTubeStats(BaseModel):
     likes: int = 0
@@ -77,7 +77,7 @@ class Youtube(Reposter):
             return await ctx.warn("Failed to process YouTube content")
 
         if data.fileInfo and data.fileInfo.get('outputPath'):
-            filename = data.fileInfo['fileName'] if data.fileInfo.get('fileName') else f"EvictYouTube{token_urlsafe(4)}.mp4"
+            filename = data.fileInfo['fileName'] if data.fileInfo.get('fileName') else f"Warm-YouTube-{token_urlsafe(4)}.mp4"
             return await ctx.send(
                 file=File(
                     data.fileInfo['outputPath'],

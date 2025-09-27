@@ -22,7 +22,7 @@ from logging import getLogger
 from tools.formatter import plural
 from managers.paginator import Paginator
 
-log = getLogger("evict/highlight")
+log = getLogger("warm/highlight")
 
 
 class HighlightRecord(TypedDict):

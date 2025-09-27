@@ -34,7 +34,7 @@ for ph in posthog_instances:
     ph.flush_interval = 0.5
     ph.debug = False
 
-log = logging.getLogger("evict/posthog").setLevel(logging.ERROR)
+log = logging.getLogger("warm/posthog").setLevel(logging.ERROR)
 
 
 class Hog(Cog):

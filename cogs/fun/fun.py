@@ -92,7 +92,7 @@ from .popcat import CommandOnCooldown
 from .views import RPS, TicTacToe
 
 from logging import getLogger
-log = getLogger("evict/fun")
+log = getLogger("warm/fun")
 # EXAMPLES STOP AT LINE 1993
 # - SIN
 
@@ -157,7 +157,7 @@ class DrakeFlags(FlagConverter):
                 title="Truth",
                 description=data["question"],
             )
-            embed.set_footer(text=f"Rating: {data['rating'].upper()} • evict.bot")
+            embed.set_footer(text=f"Rating: {data['rating'].upper()} • warm.lat")
             await interaction.response.send_message(embed=embed, view=TruthDareView(self.bot, self.rating))
 
     @button(label="Dare", style=ButtonStyle.red)
@@ -194,7 +194,7 @@ class DrakeFlags(FlagConverter):
                 title="Dare",
                 description=data["question"],
             )
-            embed.set_footer(text=f"Rating: {data['rating'].upper()} • evict.bot")
+            embed.set_footer(text=f"Rating: {data['rating'].upper()} • warm.lat")
             await interaction.response.send_message(embed=embed, view=TruthDareView(self.bot, self.rating))
 
 class Blacktea(BaseModel):
@@ -301,7 +301,7 @@ class Fun(Cog):
                 if webhook.user == self.bot.user:
                     return webhook
 
-            return await channel.create_webhook(name="evict")
+            return await channel.create_webhook(name="warm")
         except discord.Forbidden:
             return None
         except Exception as e:
@@ -468,7 +468,7 @@ class Fun(Cog):
                 except Exception as e:
                     continue
 
-        profile_link = f"evict.bot/@{user.name}"
+        profile_link = f"warm.lat/@{user.name}"
         bbox = draw.textbbox((0, 0), profile_link, font=link_font)
         link_width = bbox[2] - bbox[0]
         link_x = (width - link_width) // 2
@@ -3535,7 +3535,7 @@ class Fun(Cog):
                 description=data["question"],
                 color=ctx.color
             )
-            embed.set_footer(text=f"Rating: {data['rating'].upper()} • evict.bot")
+            embed.set_footer(text=f"Rating: {data['rating'].upper()} • warm.lat")
             return await ctx.send(embed=embed)
 
     @wyr.command(name="add")
@@ -3640,7 +3640,7 @@ class Fun(Cog):
                         title="Would You Rather...",
                         description=data["question"]
                     )
-                    embed.set_footer(text=f"Rating: {data['rating'].upper()} • evict.bot")
+                    embed.set_footer(text=f"Rating: {data['rating'].upper()} • warm.lat")
                     await channel.send(embed=embed)
             
             if i + 5 < len(channels):
@@ -3668,7 +3668,7 @@ class Fun(Cog):
             await self._save_to_cache("truth", rating, data["question"])
             
             embed = discord.Embed(title="Truth", description=data["question"], color=ctx.color)
-            embed.set_footer(text=f"Rating: {data['rating'].upper()} • evict.bot")
+            embed.set_footer(text=f"Rating: {data['rating'].upper()} • warm.lat")
             return await ctx.send(embed=embed, view=TruthDareView(self.bot, rating))
 
     @command(name="dare")
@@ -3693,7 +3693,7 @@ class Fun(Cog):
             await self._save_to_cache("dare", rating, data["question"])
             
             embed = discord.Embed(title="Dare", description=data["question"], color=ctx.color)
-            embed.set_footer(text=f"Rating: {data['rating'].upper()} • evict.bot")
+            embed.set_footer(text=f"Rating: {data['rating'].upper()} • warm.lat")
             return await ctx.send(embed=embed, view=TruthDareView(self.bot, rating))
 
     async def _save_to_cache(self, question_type: str, rating: str, question: str):
@@ -6703,9 +6703,9 @@ class Fun(Cog):
             description=(
                 "Please add the following records to your domain:\n\n"
                 "**CNAME Record:** (Proxy Status: **OFF**)\n"
-                f"`{domain}` → `cname.evict.bot`\n\n"
+                f"`{domain}` → `cname.warm.lat`\n\n"
                 "**TXT Record for Verification:**\n"
-                f"`_evict-verify.{domain}` → `\"evict-verify={ctx.author.name}\"`\n\n"
+                f"`__warm-verification.{domain}` → `\"warm-verification={ctx.author.name}\"`\n\n"
                 "**Important Notes:**\n"
                 "> - Make sure the CNAME record is **NOT** proxied through Cloudflare\n"
                 "> - DNS changes can take up to 24 hours to propagate\n"
@@ -6737,16 +6737,16 @@ class Fun(Cog):
                 None, 
                 lambda: dns.resolver.resolve(domain, 'CNAME')
             )
-            cname_valid = any(str(record.target).rstrip('.') == 'cname.evict.bot' for record in cname_records)
+            cname_valid = any(str(record.target).rstrip('.') == 'cname.warm.lat' for record in cname_records)
             
             if not cname_valid:
                 return await ctx.warn("CNAME record is not properly configured")
                 
             txt_records = await self.bot.loop.run_in_executor(
                 None, 
-                lambda: dns.resolver.resolve(f'_evict-verify.{domain}', 'TXT')
+                lambda: dns.resolver.resolve(f'__warm-verification.{domain}', 'TXT')
             )
-            txt_valid = any(f"evict-verify={ctx.author.name}" in str(record) for record in txt_records)
+            txt_valid = any(f"warm-verification={ctx.author.name}" in str(record) for record in txt_records)
             
             if not txt_valid:
                 return await ctx.warn("TXT record is not properly configured")

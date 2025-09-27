@@ -10,7 +10,7 @@ from cogs.social.reposters.base import Reposter, Information
 from main import Evict
 from core.client.context import Context
 
-log = logging.getLogger("evict.reposters.instagram")
+log = logging.getLogger("warm.reposters.instagram")
 
 class InstagramMetadata(BaseModel):
     title: str
@@ -74,7 +74,7 @@ class Instagram(Reposter):
                 return await ctx.send(
                     file=File(
                         BytesIO(video_data),
-                        filename=f"Evict{self.name}{token_urlsafe(4)}.mp4",
+                        filename=f"Warm-{self.name}{token_urlsafe(4)}.mp4",
                     ),
                     no_reference=ctx.settings.reposter_delete,
                 )

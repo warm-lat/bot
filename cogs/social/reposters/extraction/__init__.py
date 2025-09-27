@@ -9,7 +9,7 @@ from tools import CACHE_ROOT
 
 from .models import Information
 
-log = getLogger("evict/ydl")
+log = getLogger("warm/ydl")
 log.setLevel("CRITICAL")
 
 

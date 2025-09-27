@@ -342,14 +342,14 @@ class Information(Cog):
             label="Support",
             style=discord.ButtonStyle.gray,
             emoji=config.EMOJIS.SOCIAL.DISCORD,
-            url="https://discord.gg/evict",
+            url="https://discord.gg/warm",
         )
 
         button3 = Button(
             label="Website",
             style=discord.ButtonStyle.gray,
             emoji=config.EMOJIS.SOCIAL.WEBSITE,
-            url="https://evict.bot",
+            url="https://warm.lat",
         )
 
         view = discord.ui.View()
@@ -358,7 +358,7 @@ class Information(Cog):
         view.add_item(button3)
 
         embed.set_footer(
-            text=f"evict/v{self.bot.version} • Latest Commit: {self._cached_commit}"
+            text=f"warm/v{self.bot.version} • Latest Commit: {self._cached_commit}"
         )
         embed.set_thumbnail(url=self.bot.user.display_avatar.url)
 
@@ -380,7 +380,7 @@ class Information(Cog):
         ctx = await Context.from_interaction(interaction)
         await self.about(ctx)
 
-    @command(example="evict", aliases=["ii"])
+    @command(example="warm", aliases=["ii"])
     async def inviteinfo(self, ctx: Context, *, invite: Invite) -> Message:
         """
         View information about an invite.
@@ -420,7 +420,7 @@ class Information(Cog):
 
         return await ctx.send(embed=embed)
 
-    @command(example="evict", aliases=["sbanner"])
+    @command(example="warm", aliases=["sbanner"])
     async def serverbanner(
         self,
         ctx: Context,
@@ -448,7 +448,7 @@ class Information(Cog):
 
         return await ctx.send(embed=embed)
 
-    @command(example="evict", aliases=["sicon"])
+    @command(example="warm", aliases=["sicon"])
     async def servericon(
         self,
         ctx: Context,
@@ -622,7 +622,7 @@ class Information(Cog):
 
         return await ctx.send(embed=embed)
 
-    @command(aliases=["mc"], example="evict")
+    @command(aliases=["mc"], example="warm")
     async def membercount(
         self,
         ctx: Context,
@@ -649,7 +649,7 @@ class Information(Cog):
 
         return await ctx.send(embed=embed)
 
-    @hybrid_command(aliases=["sinfo", "si"], example="evict", with_app_command=True, brief="View server information.", fallback="view")
+    @hybrid_command(aliases=["sinfo", "si"], example="warm", with_app_command=True, brief="View server information.", fallback="view")
     @discord.app_commands.allowed_installs(guilds=True, users=True)
     @discord.app_commands.allowed_contexts(guilds=True, dms=True, private_channels=True)
     @discord.app_commands.default_permissions(use_application_commands=True)
@@ -1877,7 +1877,7 @@ class Information(Cog):
         Check shard status.
         """
         await ctx.neutral(
-            f"Experiencing issues? Check your shard status [here](https://evict.bot/status).\n"
+            f"Experiencing issues? Check your shard status [here](https://warm.lat/status).\n"
             f"Your guild is on shard {ctx.guild.shard_id}"
         )
     

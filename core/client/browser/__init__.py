@@ -23,7 +23,7 @@ if sys.platform == "win32":
     except Exception as e:
         print(f"Warning: Could not set Windows event loop policy: {e}")
     
-log = getLogger("evict/browser")
+log = getLogger("warm/browser")
 jar = MozillaCookieJar()
 jar.load("cookies.txt")
 

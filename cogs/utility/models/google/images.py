@@ -89,7 +89,7 @@ class Google:
         )
 
         if response.status == 429:
-            raise CommandError("Evict has been rate limited.")
+            raise CommandError("Warm has been rate limited.")
 
         response_text = await response.text()
         image_urls = re.findall(
@@ -156,7 +156,7 @@ class Google:
         )
 
         if response.status == 429:
-            raise CommandError("Evict has been rate limited.")
+            raise CommandError("Warm has been rate limited.")
 
         if not isinstance(response, HtmlElement):
             raise CommandError(f"Invalid response for query `{query}`.")

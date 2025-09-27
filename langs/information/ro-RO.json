@@ -14,7 +14,7 @@
             "EMBED": {
                 "DESCRIPTION_LINE_ONE": "Dezvoltat și menținut de [x](https://discord.com/users/598125772754124823), [adam](https://discord.com/users/930383131863842816), [harry](https://discordapp.com/users/187747524646404105)",
                 "DESCRIPTION_LINE_TWO": "`{cached_commands}` de comenzi în  `{total_cogs}`  cog-uri  (`{extended_cogs}` de module in total)",
-                "FOOTER": "evict/v{version} • Ultimul Commit: {latest_commit}"
+                "FOOTER": "warm/v{version} • Ultimul Commit: {latest_commit}"
             }
         },
         "ping": {

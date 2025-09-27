@@ -14,7 +14,7 @@
             "EMBED": {
                 "DESCRIPTION_LINE_ONE": "Uztaisija un uzturēja [x](https://discord.com/users/598125772754124823), [adams](https://discord.com/users/930383131863842816), [harijs](https://discordapp.com/users/187747524646404105)",
                 "DESCRIPTION_LINE_TWO": "Izmantojot `{cached_commands}` komandas `{total_cogs}` moduļos (kopā `{extended_cogs}` moduļi)",
-                "FOOTER": "evict/v{version} • Pēdejais Komits: {latest_commit}"
+                "FOOTER": "warm/v{version} • Pēdejais Komits: {latest_commit}"
             }
         },
         "ping": {

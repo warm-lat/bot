@@ -11,7 +11,7 @@ from core.client.context import Context
 from tools.conversion import StrictRole
 from .dynamicrolebutton import DynamicRoleButton
 
-log = getLogger("evict/buttonroles")
+log = getLogger("warm/buttonroles")
 
 
 class Buttons(MixinMeta, metaclass=CompositeMetaClass):
