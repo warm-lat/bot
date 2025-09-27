@@ -1796,7 +1796,7 @@ class Network(Cog):
 
             await self.bot.db.execute(
                 """
-                INSERT INTO user_spotify (
+                INSERT INTO public.user_spotify (
                     user_id, access_token, refresh_token, token_expires_at, spotify_id
                 ) VALUES ($1, $2, $3, $4, $5)
                 ON CONFLICT (user_id) DO UPDATE SET
@@ -1905,13 +1905,13 @@ class Network(Cog):
                 if discord_id:
                     try:
                         user = await self.bot.fetch_user(int(discord_id))
-                        guild = self.bot.get_guild(892675627373699072)
+                        guild = self.bot.get_guild(1370143154958893138)
                         member = await guild.fetch_member(int(discord_id))
 
                         if session['payment_link'] == '':
                             await self.bot.db.execute(
                                 """
-                                INSERT INTO instances 
+                                INSERT INTO public.instances 
                                 (user_id, payment_id, amount, purchased_at, expires_at, status, email)
                                 VALUES ($1, $2, $3, NOW(), NOW() + INTERVAL '30 days', 'pending', $4)
                                 """,
@@ -1921,11 +1921,11 @@ class Network(Cog):
                                 session['customer_details']['email']
                             )
 
-                            guild = self.bot.get_guild(892675627373699072)
+                            guild = self.bot.get_guild(1370143154958893138)
                             if guild:
                                 member = await guild.fetch_member(int(discord_id))
                                 if member:
-                                    role = guild.get_role(1320428924215496704)
+                                    role = guild.get_role(1421601023855824967)
                                     if role and role not in member.roles:
                                         await member.add_roles(role, reason="Instance purchased")
 
@@ -1987,7 +1987,7 @@ class Network(Cog):
 
                             await self.bot.db.execute(
                                 """
-                                UPDATE instances 
+                                UPDATE public.instances 
                                 SET status = 'active'
                                 WHERE user_id = $1 AND status = 'pending'
                                 """,
@@ -2029,7 +2029,7 @@ class Network(Cog):
                             check = await self.bot.db.fetchrow(
                                 """
                                 SELECT user_id 
-                                FROM donators 
+                                FROM public.donators 
                                 WHERE user_id = $1
                                 """,
                                 int(discord_id)
@@ -2037,7 +2037,7 @@ class Network(Cog):
                             if check is None:
                                 await self.bot.db.execute(
                                     """
-                                    INSERT INTO donators 
+                                    INSERT INTO public.donators 
                                     VALUES ($1)
                                     """, 
                                     int(discord_id)
@@ -2253,7 +2253,7 @@ class Network(Cog):
                         connection = await self.bot.db.fetchrow(
                             """
                             SELECT guild_id, user_id 
-                            FROM lovense_connections 
+                            FROM public.lovense_connections 
                             WHERE token = $1 
                             AND expires_at > CURRENT_TIMESTAMP
                             """,
@@ -2271,7 +2271,7 @@ class Network(Cog):
                         
                         await self.bot.db.execute(
                             """
-                            INSERT INTO lovense_devices 
+                            INSERT INTO public.lovense_devices 
                             (guild_id, user_id, device_id, device_type, access_token)
                             VALUES ($1, $2, $3, $4, $5)
                             ON CONFLICT (guild_id, user_id) 
@@ -2288,7 +2288,7 @@ class Network(Cog):
 
                         await self.bot.db.execute(
                             """
-                            UPDATE lovense_connections
+                            UPDATE public.lovense_connections
                             SET completed_at = CURRENT_TIMESTAMP,
                                 device_id = $1
                             WHERE token = $2
@@ -4888,7 +4888,7 @@ class Network(Cog):
 
             existing = await self.bot.db.fetchrow(
                 """
-                SELECT status FROM beta_dashboard 
+                SELECT status FROM public.beta_dashboard 
                 WHERE user_id = $1
                 """,
                 user_data['user_id']
@@ -4903,7 +4903,7 @@ class Network(Cog):
 
             await self.bot.db.execute(
                 """
-                INSERT INTO beta_dashboard (user_id, status, notes)
+                INSERT INTO public.beta_dashboard (user_id, status, notes)
                 VALUES ($1, 'pending', $2)
                 """,
                 user_data['user_id'],
@@ -5037,7 +5037,7 @@ class Network(Cog):
                 """
                 SELECT trigger, template, strict, reply, delete, 
                     delete_after, role_id
-                FROM response_trigger
+                FROM public.response_trigger
                 WHERE guild_id = $1
                 ORDER BY trigger ASC
                 """,
@@ -5047,7 +5047,7 @@ class Network(Cog):
             reactions = await self.bot.db.fetch(
                 """
                 SELECT trigger, ARRAY_AGG(emoji) as emojis
-                FROM reaction_trigger
+                FROM public.reaction_trigger
                 WHERE guild_id = $1
                 GROUP BY trigger
                 ORDER BY trigger ASC
@@ -5058,7 +5058,7 @@ class Network(Cog):
             tracker = await self.bot.db.fetchrow(
                 """
                 SELECT vanity_channel_id, username_channel_id
-                FROM tracker
+                FROM public.tracker
                 WHERE guild_id = $1
                 """,
                 guild.id
@@ -5484,15 +5484,15 @@ class Network(Cog):
 
             socials, friends, links = await asyncio.gather(
                 self.bot.db.fetchrow(
-                    "SELECT * FROM socials WHERE user_id = $1",
+                    "SELECT * FROM public.socials WHERE user_id = $1",
                     user.id  
                 ),
                 self.bot.db.fetch(
-                    "SELECT friends FROM socials_details WHERE user_id = $1",
+                    "SELECT friends FROM public.socials_details WHERE user_id = $1",
                     user.id
                 ),
                 self.bot.db.fetch(
-                    "SELECT * FROM social_links WHERE user_id = $1",
+                    "SELECT * FROM public.social_links WHERE user_id = $1",
                     user.id
                 )
             )
@@ -6201,7 +6201,7 @@ class Network(Cog):
             settings = await self.bot.db.fetchrow(
                 """
                 SELECT level, kick_after, ratelimit, antialt, bypass_until, prevent_vpn
-                FROM guild_verification 
+                FROM public.guild_verification 
                 WHERE guild_id = $1
                 """,
                 int(guild_id)
@@ -6417,7 +6417,7 @@ class Network(Cog):
 
             settings = await self.bot.db.fetchrow(
                 """
-                SELECT level, verified_role_id FROM guild_verification 
+                SELECT level, verified_role_id FROM public.guild_verification 
                 WHERE guild_id = $1
                 """,
                 int(guild_id)
@@ -6467,7 +6467,7 @@ class Network(Cog):
             
             await self.bot.db.execute(
                 """
-                INSERT INTO verification_sessions (
+                INSERT INTO public.verification_sessions (
                     session_token,
                     user_id,
                     guild_id,
@@ -6613,7 +6613,7 @@ class Network(Cog):
             session = await self.bot.db.fetchrow(
                 """
                 SELECT method, expires_at
-                FROM verification_sessions
+                FROM public.verification_sessions
                 WHERE session_token = $1 
                 AND user_id = $2 
                 AND guild_id = $3
@@ -6653,7 +6653,7 @@ class Network(Cog):
 
                 stored_code = await self.bot.db.fetchval(
                     """
-                    SELECT code FROM verification_email_codes
+                    SELECT code FROM public.verification_email_codes
                     WHERE session_token = $1
                     """,
                     session_token
@@ -6767,7 +6767,7 @@ class Network(Cog):
                 session_data = await self.bot.db.fetchrow(
                     """
                     SELECT question_ids, requires_review
-                    FROM verification_question_sessions
+                    FROM public.verification_question_sessions
                     WHERE session_token = $1
                     """,
                     session_token
@@ -6776,7 +6776,7 @@ class Network(Cog):
                 if session_data['requires_review']:
                     await self.bot.db.execute(
                         """
-                        INSERT INTO verification_pending_reviews (
+                        INSERT INTO public.verification_pending_reviews (
                             session_token,
                             user_id,
                             guild_id,
@@ -6792,7 +6792,7 @@ class Network(Cog):
 
                     try:
                         log_channel = await self.bot.db.fetchval(
-                            "SELECT log_channel_id FROM guild_verification WHERE guild_id = $1",
+                            "SELECT log_channel_id FROM public.guild_verification WHERE guild_id = $1",
                             int(guild_id)
                         )
                         channel = self.bot.get_channel(log_channel)
@@ -6821,7 +6821,7 @@ class Network(Cog):
                 questions = await self.bot.db.fetch(
                     """
                     SELECT id, correct_answer, is_text
-                    FROM verification_questions
+                    FROM public.verification_questions
                     WHERE id = ANY($1)
                     """,
                     session_data['question_ids']
@@ -6835,7 +6835,7 @@ class Network(Cog):
 
             await self.bot.db.execute(
                 """
-                INSERT INTO verification_attempts (
+                INSERT INTO public.verification_attempts (
                     user_id,
                     guild_id,
                     success,
@@ -6954,7 +6954,7 @@ class Network(Cog):
 
             await self.bot.db.execute(
                 """
-                INSERT INTO verification_email_codes (
+                INSERT INTO public.verification_email_codes (
                     session_token,
                     code,
                     expires_at
@@ -6991,7 +6991,7 @@ class Network(Cog):
             code_data = await self.bot.db.fetchrow(
                 """
                 SELECT EXISTS (
-                    SELECT 1 FROM verification_email_codes
+                    SELECT 1 FROM public.verification_email_codes
                     WHERE session_token = $1 
                     AND expires_at > CURRENT_TIMESTAMP
                 ) as exists
