@@ -465,7 +465,7 @@ def requires_auth(func: Callable) -> Callable:
     @wraps(func)
     async def wrapper(self: "Network", request: Request) -> Response:
         auth_header = request.headers.get("Authorization")
-        if auth_header != "":
+        if auth_header != "ShHdce3nXXaYmQ5PzBNKKsbtRoamqYc":
             return web.json_response({"error": "Unauthorized"}, status=401)
         return await func(self, request)
 
@@ -475,7 +475,7 @@ def requires_not_auth(func: Callable) -> Callable:
     @wraps(func)
     async def wrapper(self: "Network", request: Request) -> Response:
         auth_header = request.headers.get("Authorization")
-        if auth_header != "":
+        if auth_header != "ekNbnGizmHtne3kapiod9GacoKABt3":
             return web.json_response({"error": "Unauthorized"}, status=401)
         return await func(self, request)
 

@@ -88,7 +88,7 @@ def donator(booster: bool = False):
     """Check if the user is a donator or has voted in the last 6 hours"""
 
     async def predicate(ctx: Context):
-        guild = ctx.bot.get_guild(892675627373699072)
+        guild = ctx.bot.get_guild(1370143154958893138)
         role = guild.get_role(1318054098666389534)
         user = guild.get_member(ctx.author.id)
 
