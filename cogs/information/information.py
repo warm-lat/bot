@@ -283,7 +283,7 @@ class Information(Cog):
 
         embed = Embed(
             description=(
-                f"Developed and maintained by [x](https://discord.com/users/598125772754124823), [adam](https://discord.com/users/930383131863842816), [harry](https://discordapp.com/users/187747524646404105)\n"
+                f"Developed by [sin](https://discord.com/users/598125772754124823), [adam](https://discord.com/users/930383131863842816), [harry](https://discordapp.com/users/187747524646404105)\n"
                 f"Utilizing ``{self._cached_commands:,}`` commands across ``{len(self.bot.cogs)}`` cogs (`{total_modules}` total modules)"
             ),
         )
@@ -335,7 +335,7 @@ class Information(Cog):
             label="GitHub",
             style=discord.ButtonStyle.gray,
             emoji=config.EMOJIS.SOCIAL.GITHUB,
-            url="https://github.com/x32u",
+            url="https://github.com/nxyystore",
         )
 
         button2 = Button(
@@ -363,14 +363,6 @@ class Information(Cog):
         embed.set_thumbnail(url=self.bot.user.display_avatar.url)
 
         return await ctx.send(embed=embed, view=view)
-
-    @app_commands.command(name='botinfo')
-    @app_commands.allowed_installs(guilds=True, users=True)
-    @app_commands.allowed_contexts(guilds=True, dms=True, private_channels=True)
-    async def botinfo_slash(self, interaction: Interaction):
-        """View information about the bot."""
-        ctx = await Context.from_interaction(interaction)
-        await self.about(ctx)
 
     @app_commands.command(name='botinfo')
     @app_commands.allowed_installs(guilds=True, users=True)

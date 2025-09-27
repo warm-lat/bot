@@ -53,7 +53,6 @@ from yarl import URL
 import cogs.lastfm.interface as lastfm
 import cogs.lastfm.interface as interface
 from cogs.lastfm.interface.spotify.track import SpotifyTrack
-from config import LAVALINK
 from main import Evict
 from tools import capture_time, executor_function
 from core.client.context import Context as _Context
@@ -61,6 +60,7 @@ from tools.conversion import StrictMember, Timeframe
 from tools.formatter import codeblock, plural, shorten
 from managers.paginator import Paginator
 from tools.parser import Script
+import config
 
 log = getLogger("warm/lastfm")
 INDEX_CONCURRENCY = MaxConcurrency(1, per=BucketType.user, wait=False)
@@ -299,8 +299,8 @@ class Lastfm(Cog):
         self.description = "Seamless integration between Warm and LastFM."
         self.spotify_client = SpotifyClient(
             SpotifyClientCredentialsFlow(
-                client_id=LAVALINK.SPOTIFY_CLIENT_ID,
-                client_secret=LAVALINK.SPOTIFY_CLIENT_SECRET,
+                client_id=config.LAVALINK.SPOTIFY_CLIENT_ID,
+                client_secret=config.LAVALINK.SPOTIFY_CLIENT_SECRET,
             ),
         )
 
