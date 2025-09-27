@@ -2679,7 +2679,7 @@ class Network(Cog):
 
             await self.bot.db.execute(
                 """
-                INSERT INTO access_tokens (user_id, token, discord_token, created_at, expires_at)
+                INSERT INTO public.access_tokens (user_id, token, discord_token, created_at, expires_at)
                 VALUES ($1, $2, $3, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP + INTERVAL '14 days')
                 ON CONFLICT (user_id) 
                 DO UPDATE SET 
@@ -2711,7 +2711,7 @@ class Network(Cog):
                 """
                 SELECT EXISTS(
                     SELECT 1 
-                    FROM access_tokens 
+                    FROM public.access_tokens 
                     WHERE token = $1 
                     AND user_id = $2 
                     AND expires_at > CURRENT_TIMESTAMP
@@ -2740,7 +2740,7 @@ class Network(Cog):
             user_data = await self.bot.db.fetchrow(
                 """
                 SELECT user_id, discord_token
-                FROM access_tokens 
+                FROM public.access_tokens 
                 WHERE token = $1 
                 AND expires_at > CURRENT_TIMESTAMP
                 """,
@@ -2803,7 +2803,7 @@ class Network(Cog):
                 if "whitelist" in data:
                     await self.bot.db.execute(
                         """
-                        INSERT INTO whitelist (guild_id)
+                        INSERT INTO public.whitelist (guild_id)
                         VALUES ($1)
                         ON CONFLICT (guild_id) DO NOTHING
                         """,
@@ -2812,7 +2812,7 @@ class Network(Cog):
                     
                     await self.bot.db.execute(
                         """
-                        UPDATE whitelist 
+                        UPDATE public.whitelist 
                         SET status = $2, action = $3 
                         WHERE guild_id = $1
                         """,
@@ -2830,7 +2830,7 @@ class Network(Cog):
                     if vanity_data["enabled"]:
                         await self.bot.db.execute(
                             """
-                            INSERT INTO vanity (guild_id)
+                            INSERT INTO public.vanity (guild_id)
                             VALUES ($1)
                             ON CONFLICT (guild_id) DO NOTHING
                             """,
@@ -2839,7 +2839,7 @@ class Network(Cog):
                         
                         await self.bot.db.execute(
                             """
-                            UPDATE vanity 
+                            UPDATE public.vanity 
                             SET role_id = $2, channel_id = $3, template = $4
                             WHERE guild_id = $1
                             """,
@@ -2865,7 +2865,7 @@ class Network(Cog):
                     if invoke_messages:
                         await self.bot.db.execute(
                             """
-                            INSERT INTO settings (guild_id)
+                            INSERT INTO public.settings (guild_id)
                             VALUES ($1)
                             ON CONFLICT (guild_id) DO NOTHING
                             """,
@@ -2884,7 +2884,7 @@ class Network(Cog):
                             if msg_data["enabled"]:
                                 await self.bot.db.execute(
                                     f"""
-                                    UPDATE settings 
+                                    UPDATE public.settings 
                                     SET invoke_{action} = $2
                                     WHERE guild_id = $1
                                     """,
@@ -2894,7 +2894,7 @@ class Network(Cog):
                             else:
                                 await self.bot.db.execute(
                                     f"""
-                                    UPDATE settings 
+                                    UPDATE public.settings 
                                     SET invoke_{action} = NULL
                                     WHERE guild_id = $1
                                     """,
@@ -2918,19 +2918,19 @@ class Network(Cog):
                         }
                         
                         exists = await self.bot.db.fetchval(
-                            "SELECT EXISTS(SELECT 1 FROM mod WHERE guild_id = $1)",
+                            "SELECT EXISTS(SELECT 1 FROM public.mod WHERE guild_id = $1)",
                             int(guild_id)
                         )
                         
                         if not exists:
                             await self.bot.db.execute(
-                                "INSERT INTO mod (guild_id) VALUES ($1)",
+                                "INSERT INTO public.mod (guild_id) VALUES ($1)",
                                 int(guild_id)
                             )
                         
                         if "enabled" in dm_data:
                             await self.bot.db.execute(
-                                "UPDATE mod SET dm_enabled = $1 WHERE guild_id = $2",
+                                "UPDATE public.mod SET dm_enabled = $1 WHERE guild_id = $2",
                                 bool(dm_data["enabled"]),  
                                 int(guild_id)
                             )
@@ -2944,7 +2944,7 @@ class Network(Cog):
                                 ]:
                                     if message != default_messages.get(action):
                                         await self.bot.db.execute(
-                                            f"UPDATE mod SET {column} = $1 WHERE guild_id = $2",
+                                            f"UPDATE public.mod SET {column} = $1 WHERE guild_id = $2",
                                             str(message) if message else None,
                                             int(guild_id)
                                         )
@@ -2958,7 +2958,7 @@ class Network(Cog):
                                     "dm_antiraid_strip", "dm_role_add", "dm_role_remove"
                                 ]:
                                     await self.bot.db.execute(
-                                        f"UPDATE mod SET {column} = $1 WHERE guild_id = $2",
+                                        f"UPDATE public.mod SET {column} = $1 WHERE guild_id = $2",
                                         bool(enabled),
                                         int(guild_id)
                                     )
@@ -2973,7 +2973,7 @@ class Network(Cog):
                     if conf_data.get("enabled"):
                         await self.bot.db.execute(
                             """
-                            DELETE FROM confess 
+                            DELETE FROM public.confess 
                             WHERE guild_id = $1
                             """,
                             int(guild_id)
@@ -2981,7 +2981,7 @@ class Network(Cog):
                         
                         await self.bot.db.execute(
                             """
-                            INSERT INTO confess (guild_id, channel_id, confession)
+                            INSERT INTO public.confess (guild_id, channel_id, confession)
                             VALUES ($1, $2, 0)
                             """,
                             int(guild_id),
@@ -2991,7 +2991,7 @@ class Network(Cog):
                         if "reactions" in conf_data:
                             await self.bot.db.execute(
                                 """
-                                UPDATE confess 
+                                UPDATE public.confess 
                                 SET upvote = $2, downvote = $3
                                 WHERE guild_id = $1
                                 """,
@@ -3002,13 +3002,13 @@ class Network(Cog):
 
                         if "blacklisted_words" in conf_data:
                             await self.bot.db.execute(
-                                "DELETE FROM confess_blacklist WHERE guild_id = $1",
+                                "DELETE FROM public.confess_blacklist WHERE guild_id = $1",
                                 int(guild_id)
                             )
                             for word in conf_data["blacklisted_words"]:
                                 await self.bot.db.execute(
                                     """
-                                    INSERT INTO confess_blacklist (guild_id, word)
+                                    INSERT INTO public.confess_blacklist (guild_id, word)
                                     VALUES ($1, $2)
                                     """,
                                     int(guild_id), word
@@ -3016,20 +3016,20 @@ class Network(Cog):
 
                         if "muted_users" in conf_data:
                             await self.bot.db.execute(
-                                "DELETE FROM confess_mute WHERE guild_id = $1",
+                                "DELETE FROM public.confess_mute WHERE guild_id = $1",
                                 int(guild_id)
                             )
                             for user_id in conf_data["muted_users"]:
                                 await self.bot.db.execute(
                                     """
-                                    INSERT INTO confess_mute (guild_id, user_id)
+                                    INSERT INTO public.confess_mute (guild_id, user_id)
                                     VALUES ($1, $2)
                                     """,
                                     int(guild_id), int(user_id)
                                 )
                     else:
                         await self.bot.db.execute(
-                            "DELETE FROM confess WHERE guild_id = $1",
+                            "DELETE FROM public.confess WHERE guild_id = $1",
                             int(guild_id)
                         )
             except Exception as e:
@@ -3101,31 +3101,31 @@ class Network(Cog):
     async def fetch_config(self, guild_id: int) -> dict:
         """Helper method to fetch config data"""
         prefix = await self.bot.db.fetchval(
-            "SELECT prefix FROM prefix WHERE guild_id = $1",
+            "SELECT prefix FROM public.prefix WHERE guild_id = $1",
             guild_id
         ) or ";"
 
         mod_data = await self.bot.db.fetchrow(
-            "SELECT * FROM mod WHERE guild_id = $1",
+            "SELECT * FROM public.mod WHERE guild_id = $1",
             guild_id
         )
         
         mod_dict = dict(mod_data) if mod_data else {}
 
         whitelist = await self.bot.db.fetchrow(
-            "SELECT status as enabled, action FROM whitelist WHERE guild_id = $1",
+            "SELECT status as enabled, action FROM public.whitelist WHERE guild_id = $1",
             guild_id
         )
         whitelist_dict = dict(whitelist) if whitelist else {"enabled": False, "action": "kick"}
 
         vanity = await self.bot.db.fetchrow(
-            "SELECT role_id, channel_id, template FROM vanity WHERE guild_id = $1",
+            "SELECT role_id, channel_id, template FROM public.vanity WHERE guild_id = $1",
             guild_id
         )
         vanity_dict = dict(vanity) if vanity else {"role_id": None, "channel_id": None, "template": None}
 
         settings = await self.bot.db.fetchrow(
-            "SELECT invoke_kick, invoke_ban, invoke_unban, invoke_timeout, invoke_untimeout FROM settings WHERE guild_id = $1",
+            "SELECT invoke_kick, invoke_ban, invoke_unban, invoke_timeout, invoke_untimeout FROM public.settings WHERE guild_id = $1",
             guild_id
         )
         settings_dict = dict(settings) if settings else {}
@@ -3189,7 +3189,7 @@ class Network(Cog):
             user_data = await self.bot.db.fetchrow(
                 """
                 SELECT user_id, discord_token
-                FROM access_tokens 
+                FROM public.access_tokens 
                 WHERE token = $1 
                 AND expires_at > CURRENT_TIMESTAMP
                 """,
@@ -3343,7 +3343,7 @@ class Network(Cog):
             user_data = await self.bot.db.fetchrow(
                 """
                 SELECT user_id, discord_token
-                FROM access_tokens 
+                FROM public.access_tokens 
                 WHERE token = $1 
                 AND expires_at > CURRENT_TIMESTAMP
                 """,
@@ -3426,7 +3426,7 @@ class Network(Cog):
             user_data = await self.bot.db.fetchrow(
                 """
                 SELECT user_id, discord_token
-                FROM access_tokens 
+                FROM public.access_tokens 
                 WHERE token = $1 
                 AND expires_at > CURRENT_TIMESTAMP
                 """,
@@ -3594,7 +3594,7 @@ class Network(Cog):
             user_data = await self.bot.db.fetchrow(
                 """
                 SELECT user_id, discord_token
-                FROM access_tokens 
+                FROM public.access_tokens 
                 WHERE token = $1 
                 AND expires_at > CURRENT_TIMESTAMP
                 """,
@@ -3722,7 +3722,7 @@ class Network(Cog):
             user_data = await self.bot.db.fetchrow(
                 """
                 SELECT user_id, discord_token
-                FROM access_tokens 
+                FROM public.access_tokens 
                 WHERE token = $1 
                 AND expires_at > CURRENT_TIMESTAMP
                 """,
@@ -3827,7 +3827,7 @@ class Network(Cog):
             user_data = await self.bot.db.fetchrow(
                 """
                 SELECT user_id, discord_token
-                FROM access_tokens 
+                FROM public.access_tokens 
                 WHERE token = $1 
                 AND expires_at > CURRENT_TIMESTAMP
                 """,
@@ -3984,7 +3984,7 @@ class Network(Cog):
                 user_data = await self.bot.db.fetchrow(
                     """
                     SELECT user_id, discord_token
-                    FROM access_tokens 
+                    FROM public.access_tokens 
                     WHERE token = $1 
                     AND expires_at > CURRENT_TIMESTAMP
                     """,
@@ -4161,7 +4161,7 @@ class Network(Cog):
             user_data = await self.bot.db.fetchrow(
                 """
                 SELECT user_id, discord_token
-                FROM access_tokens 
+                FROM public.access_tokens 
                 WHERE token = $1 
                 AND expires_at > CURRENT_TIMESTAMP
                 """,
@@ -4404,7 +4404,7 @@ class Network(Cog):
             user_data = await self.bot.db.fetchrow(
                 """
                 SELECT user_id, discord_token
-                FROM access_tokens 
+                FROM public.access_tokens 
                 WHERE token = $1 
                 AND expires_at > CURRENT_TIMESTAMP
                 """,
@@ -4486,7 +4486,7 @@ class Network(Cog):
             user_data = await self.bot.db.fetchrow(
                 """
                 SELECT user_id, discord_token
-                FROM access_tokens 
+                FROM public.access_tokens 
                 WHERE token = $1 
                 AND expires_at > CURRENT_TIMESTAMP
                 """,
@@ -4598,7 +4598,7 @@ class Network(Cog):
             user_data = await self.bot.db.fetchrow(
                 """
                 SELECT user_id, discord_token
-                FROM access_tokens 
+                FROM public.access_tokens 
                 WHERE token = $1 
                 AND expires_at > CURRENT_TIMESTAMP
                 """,
@@ -4806,7 +4806,7 @@ class Network(Cog):
             user_data = await self.bot.db.fetchrow(
                 """
                 SELECT user_id
-                FROM access_tokens 
+                FROM public.access_tokens 
                 WHERE token = $1 
                 AND expires_at > CURRENT_TIMESTAMP
                 """,
@@ -4822,7 +4822,7 @@ class Network(Cog):
             beta_access = await self.bot.db.fetchrow(
                 """
                 SELECT user_id
-                FROM beta_dashboard
+                FROM public.beta_dashboard
                 WHERE user_id = $1
                 """,
                 user_data['user_id']
@@ -4851,7 +4851,7 @@ class Network(Cog):
             user_data = await self.bot.db.fetchrow(
                 """
                 SELECT user_id
-                FROM access_tokens 
+                FROM public.access_tokens 
                 WHERE token = $1 
                 AND expires_at > CURRENT_TIMESTAMP
                 """,
@@ -4947,7 +4947,7 @@ class Network(Cog):
             user_data = await self.bot.db.fetchrow(
                 """
                 SELECT user_id, discord_token
-                FROM access_tokens 
+                FROM public.access_tokens 
                 WHERE token = $1 
                 AND expires_at > CURRENT_TIMESTAMP
                 """,
@@ -5218,7 +5218,7 @@ class Network(Cog):
             user_data = await self.bot.db.fetchrow(
                 """
                 SELECT user_id, discord_token
-                FROM access_tokens 
+                FROM public.access_tokens 
                 WHERE token = $1 
                 AND expires_at > CURRENT_TIMESTAMP
                 """,
@@ -5773,7 +5773,7 @@ class Network(Cog):
             reporter_data = await self.bot.db.fetchrow(
                 """
                 SELECT user_id
-                FROM access_tokens 
+                FROM public.access_tokens 
                 WHERE token = $1 
                 AND expires_at > CURRENT_TIMESTAMP
                 """,
@@ -5782,7 +5782,7 @@ class Network(Cog):
 
             existing_report = await self.bot.db.fetchrow(
                 """
-                SELECT id FROM reports
+                SELECT id FROM public.reports
                 WHERE reporter_id = $1 
                 AND username_reported = $2
                 AND reviewed = false
@@ -5867,7 +5867,7 @@ class Network(Cog):
             
             token = auth_header.split(" ")[1]
             user_data = await self.bot.db.fetchrow(
-                "SELECT user_id FROM access_tokens WHERE token = $1 AND expires_at > CURRENT_TIMESTAMP",
+                "SELECT user_id FROM public.access_tokens WHERE token = $1 AND expires_at > CURRENT_TIMESTAMP",
                 token
             )
             
@@ -5960,7 +5960,7 @@ class Network(Cog):
             
             token = auth_header.split(" ")[1]
             user_data = await self.bot.db.fetchrow(
-                "SELECT user_id FROM access_tokens WHERE token = $1 AND expires_at > CURRENT_TIMESTAMP",
+                "SELECT user_id FROM public.access_tokens WHERE token = $1 AND expires_at > CURRENT_TIMESTAMP",
                 token
             )
             
@@ -6181,7 +6181,7 @@ class Network(Cog):
             
             token = auth_header.split(" ")[1]
             user_data = await self.bot.db.fetchrow(
-                "SELECT user_id FROM access_tokens WHERE token = $1 AND expires_at > CURRENT_TIMESTAMP",
+                "SELECT user_id FROM public.access_tokens WHERE token = $1 AND expires_at > CURRENT_TIMESTAMP",
                 token
             )
             
@@ -6277,7 +6277,7 @@ class Network(Cog):
             
             token = auth_header.split(" ")[1]
             user_data = await self.bot.db.fetchrow(
-                "SELECT user_id FROM access_tokens WHERE token = $1 AND expires_at > CURRENT_TIMESTAMP",
+                "SELECT user_id FROM public.access_tokens WHERE token = $1 AND expires_at > CURRENT_TIMESTAMP",
                 token
             )
             
@@ -6405,7 +6405,7 @@ class Network(Cog):
             
             token = auth_header.split(" ")[1]
             user_data = await self.bot.db.fetchrow(
-                "SELECT user_id FROM access_tokens WHERE token = $1 AND expires_at > CURRENT_TIMESTAMP",
+                "SELECT user_id FROM public.access_tokens WHERE token = $1 AND expires_at > CURRENT_TIMESTAMP",
                 token
             )
             
@@ -6591,7 +6591,7 @@ class Network(Cog):
             
             token = auth_header.split(" ")[1]
             user_data = await self.bot.db.fetchrow(
-                "SELECT user_id FROM access_tokens WHERE token = $1 AND expires_at > CURRENT_TIMESTAMP",
+                "SELECT user_id FROM public.access_tokens WHERE token = $1 AND expires_at > CURRENT_TIMESTAMP",
                 token
             )
             
