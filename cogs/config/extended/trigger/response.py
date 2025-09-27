@@ -59,7 +59,7 @@ class Response(MixinMeta, metaclass=CompositeMetaClass):
         reskin = await self.bot.db.fetchrow(
             """
             SELECT username, avatar 
-            FROM reskin
+            FROM public.reskin_user
             WHERE user_id = $1
             """,
             ctx.author.id
