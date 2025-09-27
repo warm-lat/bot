@@ -24,7 +24,7 @@ def create_reskin():
 
         check = await ctx.bot.db.fetchrow(
             """
-            SELECT * FROM reskin
+            SELECT * FROM public.reskin_user
             WHERE user_id = $1
             """, 
             ctx.author.id
@@ -33,7 +33,7 @@ def create_reskin():
         if not check:
             await ctx.bot.db.execute(
                 """
-                INSERT INTO reskin
+                INSERT INTO public.reskin_user
                 VALUES ($1,$2,$3)
                 """,
                 ctx.author.id,

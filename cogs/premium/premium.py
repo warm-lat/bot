@@ -112,7 +112,7 @@ class Premium(Cog):
         """
         record = await self.bot.db.fetchrow(
             """
-            SELECT * FROM reskin 
+            SELECT * FROM public.reskin_user
             WHERE user_id = $1 
             AND toggled = $2
             """,
@@ -124,14 +124,14 @@ class Premium(Cog):
 
             if not await self.bot.db.fetchrow(
                 """
-                SELECT * FROM reskin 
+                SELECT * FROM public.reskin_user 
                 WHERE user_id = $1
                 """, 
                 ctx.author.id
             ):
                 await self.bot.db.execute(
                     """
-                    INSERT INTO reskin (user_id, toggled, username, avatar) 
+                    INSERT INTO public.reskin_user (user_id, toggled, username, avatar) 
                     VALUES ($1, $2, $3, $4)
                     """,
                     ctx.author.id,
@@ -143,7 +143,7 @@ class Premium(Cog):
             else:
                 await self.bot.db.execute(
                     """
-                    UPDATE reskin
+                    UPDATE public.reskin_user
                     SET toggled = $1 
                     WHERE user_id = $2
                     """,
@@ -163,7 +163,7 @@ class Premium(Cog):
         """
         if not await self.bot.db.fetchrow(
             """
-            SELECT * FROM reskin
+            SELECT * FROM public.reskin_user
             WHERE user_id = $1
             """, 
             ctx.author.id
@@ -172,7 +172,7 @@ class Premium(Cog):
 
         await self.bot.db.execute(
             """
-            DELETE FROM reskin
+            DELETE FROM public.reskin_user
             WHERE user_id = $1
             """, 
             ctx.author.id
@@ -189,7 +189,7 @@ class Premium(Cog):
         """
         await self.bot.db.execute(
             """
-            UPDATE reskin SET username = $1 
+            UPDATE public.reskin_user SET username = $1 
             WHERE user_id = $2
             """,
             name,
@@ -271,7 +271,7 @@ class Premium(Cog):
         await ctx.prompt(f"Are you sure you want to remove your reskin?")
         await self.bot.db.execute(
             """
-            DELETE FROM reskin
+            DELETE FROM public.reskin_user
             WHERE user_id = $1
             """, 
             ctx.author.id
