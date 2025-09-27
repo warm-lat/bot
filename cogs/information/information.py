@@ -283,7 +283,7 @@ class Information(Cog):
 
         embed = Embed(
             description=(
-                f"Developed by [sin](https://discord.com/users/598125772754124823), [adam](https://discord.com/users/930383131863842816), [harry](https://discordapp.com/users/187747524646404105)\n"
+                f"Developed by [sin](https://discord.com/users/206832952980668428), Made by [nxyy](https://discord.com/users/1137513168965476352) \n"
                 f"Utilizing ``{self._cached_commands:,}`` commands across ``{len(self.bot.cogs)}`` cogs (`{total_modules}` total modules)"
             ),
         )
@@ -673,7 +673,7 @@ class Information(Cog):
                     target_guild = discord.utils.get(self.bot.guilds, name=guild)
         else:
             target_guild = (
-                self.bot.get_guild(892675627373699072)  
+                self.bot.get_guild(1370143154958893138)  
                 if isinstance(ctx.channel, discord.DMChannel)
                 else ctx.guild
             )
@@ -748,7 +748,7 @@ class Information(Cog):
         embed.description = ""
 
         if isinstance(user, Member):
-            support_guild = self.bot.get_guild(892675627373699072)
+            support_guild = self.bot.get_guild(1370143154958893138)
             if support_guild:
                 if not support_guild.chunked:
                     await support_guild.chunk()

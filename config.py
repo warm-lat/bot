@@ -16,9 +16,36 @@ class EMOJIS:
         APPROVE: str = ""
         DENY: str = ""
         WARN: str = ""
+    
+    class SOCIAL:
+        DISCORD: str = ""
+        WEBSITE: str = ""
+        GITHUB: str = ""
+    
+    class MISC:
+        CONNECTION: str = ""
         
-class POSTHOG:
-    TRACK_SELF: bool = False
+    class POLL:
+        WHITE: str = ""
+        WLR: str = ""
+        WRR: str = ""
+        BLR: str = ""
+        BRR: str = ""
+        SQUARE: str = ""
+        
+    class BADGES:
+        SERVER_OWNER: str = ""
+        
+    class STAFF:
+        DEVELOPER: str = ""
+        OWNER: str = ""
+        SUPPORT: str = ""
+        TRIAL: str = ""
+        MODERATOR: str = ""
+        DONOR: str = ""
+        INSTANCE: str = ""
+        STAFF: str = ""
+        
 
 class AUTHORIZATION:
     OPENAI: str = "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"
@@ -68,6 +95,9 @@ class RATELIMITS:
 class DATABASE:
     DSN: str = "postgresql://evictskid:qq3gpcgksmtj9ckg@warm-db-70f72q:5432/warm"
     REDIS: str = "redis://default:jqcnpzlwlpqll4do@warm-cache-lihrnx:6379"
+
+class POSTHOG:
+    TRACK_SELF: bool = False
 
 class DISCORD:
     TOKEN: str = "MTQyMDYwOTM0MzI4MzUzMTc3Ng.G7Mk1E.nwns-aEzbAQFYK7UXCDpz2L3peMfYhroxYgujU"
