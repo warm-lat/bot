@@ -59,8 +59,8 @@ class AUTHORIZATION:
         CLIENT_SECRET: str = "C2oX-F-4uR6r4q_6RvUq8LRLrqsR8g"
     
 class LASTFM:
-    API_KEY: str = "ee273ebce1d7e10fd0bc1eb36c4ae6e0"
-    API_SECRET: str = "9c4ee4e7558a4f0c0cac7043a4759a81"
+    API_KEY: str = "4b25716d870cfa49dce73170b5d67439"
+    API_SECRET: str = "f3384c0ce4269dd575ac597347747b3c"
 
 class COLORS:
     NEUTRAL: int = 0x2F3136
@@ -84,8 +84,8 @@ class LAVALINK:
     HOST: str = "lavalink.expel.best"
     PORT: int = 8080
     PASSWORD: str = "youwillnotpass"
-    SPOTIFY_CLIENT_ID: str = "your_spotify_client_id"
-    SPOTIFY_CLIENT_SECRET: str = "your_spotify_client_secret"
+    SPOTIFY_CLIENT_ID: str = "4c3c2ba7ad6c4ef4a0c0d793cb979ce8"
+    SPOTIFY_CLIENT_SECRET: str = "12dd934e7bca4536bb9f8d86b049a25e"
     
 class RATELIMITS:
     PER_10S: int = 10
