@@ -4657,7 +4657,7 @@ class Network(Cog):
             if "antiraid" in data and has_manage_guild:
                 await self.bot.db.execute(
                     """
-                    INSERT INTO antiraid (guild_id, locked, joins, mentions, avatar, browser)
+                    INSERT INTO public.antiraid (guild_id, locked, joins, mentions, avatar, browser)
                     VALUES ($1, $2, $3, $4, $5, $6)
                     ON CONFLICT (guild_id) 
                     DO UPDATE SET 
@@ -4684,7 +4684,7 @@ class Network(Cog):
                 if not antinuke_exists:
                     await self.bot.db.execute(
                         """
-                        INSERT INTO antinuke (
+                        INSERT INTO public.antinuke (
                             guild_id, whitelist, trusted_admins, 
                             bot, ban, kick, role, channel, webhook, emoji
                         ) VALUES (
@@ -4747,7 +4747,7 @@ class Network(Cog):
                     async with conn.transaction():
                         await conn.execute(
                             """
-                            UPDATE antinuke SET 
+                            UPDATE public.antinuke SET 
                                 whitelist = $2,
                                 trusted_admins = $3,
                                 bot = $4,
@@ -4910,7 +4910,7 @@ class Network(Cog):
                 f"Email: {data['email']}\nDisplay Name: {data['display_name']}\n\n{data['description']}"
             )
 
-            channel = self.bot.get_channel(1324832222397726803)
+            channel = self.bot.get_channel(1421684432351531039)
             if channel:
                 user = self.bot.get_user(user_data['user_id'])
                 embed = discord.Embed(
