@@ -68,7 +68,11 @@ class COLORS:
     DENY: int = 0xED4245
     WARN: int = 0xFEE75C
 
-    
+class LOGGER:
+    GUILD_JOIN_LOGGER: int = 1421685971308773447
+    GUILD_BLACKLIST_LOGGER: int = 1421685251792441375
+    USER_BLACKLIST_LOGGER: int = 1421686092394135562
+
 class CLIENT:
     PREFIX: str = ","
     INVITE_URL: str = "https://discord.com/api/oauth2/authorize?client_id=1420609343283531776&permissions=8&scope=bot%20applications.commands"
