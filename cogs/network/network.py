@@ -1873,9 +1873,9 @@ class Network(Cog):
         
         return len(self.failed_payment_notifications[user_id]) < 2
 
-    @route("/stripe-webhook", ["POST"])
+    @route("/paylix-webhook", ["POST"])
     @ratelimit(10, 60)
-    async def stripe_webhook(self: "Network", request: Request) -> Response:
+    async def paylix_webhook(self: "Network", request: Request) -> Response:
         try:
             payload = await request.text()
             sig_header = request.headers.get('Stripe-Signature')
@@ -3776,11 +3776,11 @@ class Network(Cog):
 
             has_manage_guild = member.guild_permissions.manage_guild
             antinuke_settings = await self.bot.db.fetchrow(
-                "SELECT * FROM antinuke WHERE guild_id = $1",
+                "SELECT * FROM public.antinuke WHERE guild_id = $1",
                 guild.id
             )
             antiraid_settings = await self.bot.db.fetchrow(
-                "SELECT * FROM antiraid WHERE guild_id = $1",
+                "SELECT * FROM public.antiraid WHERE guild_id = $1",
                 guild.id
             )
 
@@ -3876,7 +3876,7 @@ class Network(Cog):
                 )
 
             mod_config = await self.bot.db.fetchrow(
-                "SELECT * FROM mod WHERE guild_id = $1",
+                "SELECT * FROM public.mod WHERE guild_id = $1",
                 guild.id
             )
 
@@ -4642,7 +4642,7 @@ class Network(Cog):
 
             has_manage_guild = member.guild_permissions.manage_guild
             antinuke_settings = await self.bot.db.fetchrow(
-                "SELECT * FROM antinuke WHERE guild_id = $1",
+                "SELECT * FROM public.antinuke WHERE guild_id = $1",
                 guild.id
             )
 
@@ -5258,7 +5258,7 @@ class Network(Cog):
                                 return web.json_response({"error": "Tag content cannot be empty"}, status=400)
                             await self.bot.db.execute(
                                 """
-                                INSERT INTO tags (guild_id, name, owner_id, template)
+                                INSERT INTO public.tags (guild_id, name, owner_id, template)
                                 VALUES ($1, $2, $3, $4)
                                 """,
                                 int(guild_id), action["name"], member.id, action["content"]
@@ -5268,7 +5268,7 @@ class Network(Cog):
                                 return web.json_response({"error": "Tag content cannot be empty"}, status=400)
                             result = await self.bot.db.execute(
                                 """
-                                UPDATE tags 
+                                UPDATE public.tags 
                                 SET template = $3
                                 WHERE guild_id = $1 AND LOWER(name) = LOWER($2)
                                 """,
@@ -5282,7 +5282,7 @@ class Network(Cog):
                         elif action["type"] == "delete":
                             await self.bot.db.execute(
                                 """
-                                DELETE FROM tags 
+                                DELETE FROM public.tags 
                                 WHERE guild_id = $1 AND LOWER(name) = LOWER($2)
                                 """,
                                 int(guild_id), action["name"]
@@ -5294,7 +5294,7 @@ class Network(Cog):
                             role_id = int(action["settings"].get("role", {}).get("id")) if action["settings"].get("role") else None
                             await self.bot.db.execute(
                                 """
-                                INSERT INTO response_trigger (
+                                INSERT INTO public.response_trigger (
                                     guild_id, trigger, template, strict, reply, 
                                     delete, delete_after, role_id
                                 ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
@@ -5308,7 +5308,7 @@ class Network(Cog):
                             role_id = int(action["settings"].get("role", {}).get("id")) if action["settings"].get("role") else None
                             result = await self.bot.db.execute(
                                 """
-                                UPDATE response_trigger 
+                                UPDATE public.response_trigger 
                                 SET trigger = $3, template = $4, strict = $5, reply = $6,
                                     delete = $7, delete_after = $8, role_id = $9
                                 WHERE guild_id = $1 AND LOWER(trigger) = LOWER($2)
@@ -5331,7 +5331,7 @@ class Network(Cog):
                         elif action["type"] == "delete":
                             result = await self.bot.db.execute(
                                 """
-                                DELETE FROM response_trigger 
+                                DELETE FROM public.response_trigger 
                                 WHERE guild_id = $1 AND LOWER(trigger) = LOWER($2)
                                 """,
                                 int(guild_id), action["trigger"]
@@ -5348,7 +5348,7 @@ class Network(Cog):
                             for emoji in action["emojis"]:
                                 await self.bot.db.execute(
                                     """
-                                    INSERT INTO reaction_trigger (guild_id, trigger, emoji)
+                                    INSERT INTO public.reaction_trigger (guild_id, trigger, emoji)
                                     VALUES ($1, LOWER($2), $3)
                                     """,
                                     int(guild_id), action["trigger"], emoji
@@ -5356,7 +5356,7 @@ class Network(Cog):
                         elif action["type"] == "edit":
                             await self.bot.db.execute(
                                 """
-                                DELETE FROM reaction_trigger 
+                                DELETE FROM public.reaction_trigger 
                                 WHERE guild_id = $1 AND LOWER(trigger) = LOWER($2)
                                 """,
                                 int(guild_id), action["original_trigger"]
@@ -5626,7 +5626,7 @@ class Network(Cog):
             profile_gradient_colors = await self.bot.db.fetch(
                 """
                 SELECT color, position 
-                FROM socials_gradients 
+                FROM public.socials_gradients 
                 WHERE user_id = $1 
                 ORDER BY position
                 """,
@@ -5807,7 +5807,7 @@ class Network(Cog):
 
             report_id = await self.bot.db.fetchval(
                 """
-                INSERT INTO reports (
+                INSERT INTO public.reports (
                     reporter_id,
                     reporter_name,
                     reporter_email,

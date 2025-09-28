@@ -362,14 +362,14 @@ class Fun(Cog):
 
     async def generate_profile_image(self, user: Member | User, force_update: bool = False) -> str:
         cached = await self.bot.db.fetchrow(
-            "SELECT profile_image, last_avatar, last_background FROM socials WHERE user_id = $1",
+            "SELECT profile_image, last_avatar, last_background FROM public.socials WHERE user_id = $1",
             user.id
         )
 
         current_avatar = str(user.display_avatar.url)
         current_badges = await self.get_user_badges(user)
         current_background = await self.bot.db.fetchval(
-            "SELECT background_url FROM socials WHERE user_id = $1",
+            "SELECT background_url FROM public.socials WHERE user_id = $1",
             user.id
         )
 
@@ -501,7 +501,7 @@ class Fun(Cog):
                     )
 
                 await self.bot.db.execute(
-                    "INSERT INTO socials (user_id, profile_image, last_avatar, last_background) VALUES ($1, $2, $3, $4) ON CONFLICT (user_id) DO UPDATE SET profile_image = $2, last_avatar = $3, last_background = $4",
+                    "INSERT INTO public.socials (user_id, profile_image, last_avatar, last_background) VALUES ($1, $2, $3, $4) ON CONFLICT (user_id) DO UPDATE SET profile_image = $2, last_avatar = $3, last_background = $4",
                     user.id, new_url, current_avatar, current_background
                 )
                 
@@ -5614,7 +5614,7 @@ class Fun(Cog):
         socials = await self.bot.db.fetchrow(
             """
             SELECT * 
-            FROM socials
+            FROM public.socials
             WHERE user_id = $1
             """,
             user.id
@@ -5623,7 +5623,7 @@ class Fun(Cog):
         friends = await self.bot.db.fetch(
             """
             SELECT friends 
-            FROM socials_details 
+            FROM public.socials_details 
             WHERE user_id = $1
             """,
             user.id
@@ -5632,7 +5632,7 @@ class Fun(Cog):
         links = await self.bot.db.fetch(
             """
             SELECT * 
-            FROM social_links 
+            FROM public.social_links 
             WHERE user_id = $1
             """,
             user.id
@@ -5644,7 +5644,7 @@ class Fun(Cog):
         )
 
         if isinstance(user, Member):
-            support_guild = self.bot.get_guild(892675627373699072)  
+            support_guild = self.bot.get_guild(1370143154958893138)  
             support_member = support_guild.get_member(user.id) if support_guild else None
             
             badges = []
@@ -5721,7 +5721,7 @@ class Fun(Cog):
         """
         check = await self.bot.db.fetchrow(
             """
-            SELECT * FROM socials 
+            SELECT * FROM public.socials 
             WHERE user_id = $1
             """, 
             ctx.author.id
@@ -5734,7 +5734,7 @@ class Fun(Cog):
             if check:
                 await self.bot.db.execute(
                     """
-                    UPDATE socials SET bio = $1 
+                    UPDATE public.socials SET bio = $1 
                     WHERE user_id = $2
                     """, 
                     bio, 
@@ -5743,7 +5743,7 @@ class Fun(Cog):
             else:
                 await self.bot.db.execute(
                     """
-                    INSERT INTO socials 
+                    INSERT INTO public.socials 
                     (user_id, bio) 
                     VALUES ($1, $2)
                     """, 
@@ -5756,7 +5756,7 @@ class Fun(Cog):
                 await ctx.prompt("Are you sure you want to remove your bio?")
                 await self.bot.db.execute(
                     """
-                    UPDATE socials SET bio = NULL 
+                    UPDATE public.socials SET bio = NULL 
                     WHERE user_id = $1
                     """, 
                     ctx.author.id
@@ -5772,7 +5772,7 @@ class Fun(Cog):
         """
         await self.bot.db.execute(
             """
-            INSERT INTO socials (user_id) 
+            INSERT INTO public.socials (user_id) 
             VALUES ($1)
             ON CONFLICT (user_id) 
             DO NOTHING
@@ -5782,7 +5782,7 @@ class Fun(Cog):
 
         await self.bot.db.execute(
             """
-            INSERT INTO socials (user_id) 
+            INSERT INTO public.socials (user_id) 
             VALUES ($1)
             ON CONFLICT (user_id) 
             DO NOTHING
@@ -5792,7 +5792,7 @@ class Fun(Cog):
 
         check = await self.bot.db.fetchrow(
             """
-            SELECT * FROM socials_details 
+            SELECT * FROM public.socials_details 
             WHERE user_id = $1 
             AND friends = $2
             """,
@@ -5804,7 +5804,7 @@ class Fun(Cog):
             await ctx.prompt(f"Are you sure you want to remove {friends.mention} from your friends list?")
             await self.bot.db.execute(
                 """
-                DELETE FROM socials_details 
+                DELETE FROM public.socials_details 
                 WHERE user_id = $1 
                 AND friends = $2
                 """,
@@ -5813,7 +5813,7 @@ class Fun(Cog):
             )
             await self.bot.db.execute(
                 """
-                DELETE FROM socials_details 
+                DELETE FROM public.socials_details 
                 WHERE user_id = $1 
                 AND friends = $2
                 """,
@@ -5826,7 +5826,7 @@ class Fun(Cog):
 
             await self.bot.db.execute(
                 """
-                INSERT INTO socials_details 
+                INSERT INTO public.socials_details 
                 (user_id, friends) 
                 VALUES ($1, $2)
                 """,
@@ -5835,7 +5835,7 @@ class Fun(Cog):
             )
             await self.bot.db.execute(
                 """
-                INSERT INTO socials_details 
+                INSERT INTO public.socials_details 
                 (user_id, friends) 
                 VALUES ($1, $2)
                 """,
@@ -5920,7 +5920,7 @@ class Fun(Cog):
             await ctx.prompt("Are you sure you want to remove your background?")
             await self.bot.db.execute(
                 """
-                UPDATE socials 
+                UPDATE public.socials 
                 SET background_url = NULL 
                 WHERE user_id = $1
                 """,
@@ -6012,7 +6012,7 @@ class Fun(Cog):
                         cdn_url = f"https://bunny.evict.bot/socials/{filename}"
                         await self.bot.db.execute(
                             """
-                            UPDATE socials 
+                            UPDATE public.socials 
                             SET background_url = $1 
                             WHERE user_id = $2
                             """,
@@ -6031,7 +6031,7 @@ class Fun(Cog):
             await ctx.prompt("Are you sure you want to remove your audio?")
             await self.bot.db.execute(
                 """
-                UPDATE socials 
+                UPDATE public.socials 
                 SET audio_url = NULL, 
                     audio_title = NULL 
                 WHERE user_id = $1
@@ -6149,7 +6149,7 @@ class Fun(Cog):
                     
                     old_audio = await self.bot.db.fetchval(
                         """
-                        SELECT audio_url FROM socials 
+                        SELECT audio_url FROM public.socials 
                         WHERE user_id = $1
                         """, 
                         ctx.author.id
@@ -6193,7 +6193,7 @@ class Fun(Cog):
                         cdn_url = f"https://bunny.evict.bot/socials/{filename}"
                         await self.bot.db.execute(
                             """
-                            UPDATE socials 
+                            UPDATE public.socials 
                             SET audio_url = $1,
                                 audio_title = $2
                             WHERE user_id = $3
@@ -6225,7 +6225,7 @@ class Fun(Cog):
         current = await self.bot.db.fetchval(
             """
             SELECT show_friends 
-            FROM socials 
+            FROM public.socials 
             WHERE user_id = $1
             """,
             ctx.author.id
@@ -6234,7 +6234,7 @@ class Fun(Cog):
         new_value = not current if current is not None else False
         await self.bot.db.execute(
             """
-            UPDATE socials 
+            UPDATE public.socials 
             SET show_friends = $1 
             WHERE user_id = $2
             """,
@@ -6254,7 +6254,7 @@ class Fun(Cog):
         current = await self.bot.db.fetchval(
             """
             SELECT show_activity 
-            FROM socials 
+            FROM public.socials 
             WHERE user_id = $1
             """,
             ctx.author.id
@@ -6263,7 +6263,7 @@ class Fun(Cog):
         new_value = not current if current is not None else False
         await self.bot.db.execute(
             """
-            UPDATE socials 
+            UPDATE public.socials 
             SET show_activity = $1 
             WHERE user_id = $2
             """,
@@ -6279,7 +6279,7 @@ class Fun(Cog):
         linear_colors = await self.bot.db.fetch(
             """
             SELECT name, color 
-            FROM socials_saved_colors 
+            FROM public.socials_saved_colors 
             WHERE user_id = $1 AND type = 'linear'
             """, 
             ctx.author.id
@@ -6288,7 +6288,7 @@ class Fun(Cog):
         gradient_sets = await self.bot.db.fetch(
             """
             SELECT DISTINCT name 
-            FROM socials_saved_gradients 
+            FROM public.socials_saved_gradients 
             WHERE user_id = $1
             """,
             ctx.author.id
@@ -6318,7 +6318,7 @@ class Fun(Cog):
         if type == "linear":
             current = await self.bot.db.fetchval(
                 """
-                SELECT linear_color FROM socials 
+                SELECT linear_color FROM public.socials 
                 WHERE user_id = $1
                 """, 
                 ctx.author.id
@@ -6328,7 +6328,7 @@ class Fun(Cog):
                 
             await self.bot.db.execute(
                 """
-                INSERT INTO socials_saved_colors (user_id, name, color, type)
+                INSERT INTO public.socials_saved_colors (user_id, name, color, type)
                 VALUES ($1, $2, $3, 'linear')
                 ON CONFLICT (user_id, name) 
                 DO UPDATE SET color = $3
@@ -6339,7 +6339,7 @@ class Fun(Cog):
             colors = await self.bot.db.fetch(
                 """
                 SELECT color, position 
-                FROM socials_gradients 
+                FROM public.socials_gradients 
                 WHERE user_id = $1 
                 ORDER BY position
                 """,
@@ -6350,7 +6350,7 @@ class Fun(Cog):
                 
             await self.bot.db.execute(
                 """
-                DELETE FROM socials_saved_gradients 
+                DELETE FROM public.socials_saved_gradients 
                 WHERE user_id = $1 AND name = $2
                 """,
                 ctx.author.id, name
@@ -6359,7 +6359,7 @@ class Fun(Cog):
             for color in colors:
                 await self.bot.db.execute(
                     """
-                    INSERT INTO socials_saved_gradients 
+                    INSERT INTO public.socials_saved_gradients 
                     (user_id, name, color, position)
                     VALUES ($1, $2, $3, $4)
                     """,
@@ -6373,7 +6373,7 @@ class Fun(Cog):
         """Apply a saved color set to a profile element."""
         linear = await self.bot.db.fetchrow(
             """
-            SELECT color FROM socials_saved_colors 
+            SELECT color FROM public.socials_saved_colors 
             WHERE user_id = $1 AND name = $2 AND type = 'linear'
             """,
             ctx.author.id, name
@@ -6381,7 +6381,7 @@ class Fun(Cog):
         
         gradient = await self.bot.db.fetch(
             """
-            SELECT color, position FROM socials_saved_gradients 
+            SELECT color, position FROM public.socials_saved_gradients 
             WHERE user_id = $1 AND name = $2 
             ORDER BY position
             """,
@@ -6393,7 +6393,7 @@ class Fun(Cog):
 
         await self.bot.db.execute(
             """
-            UPDATE socials 
+            UPDATE public.socials 
             SET {}_color_type = $1,
                 {}_linear_color = $2,
                 {}_gradient_name = $3
@@ -6413,7 +6413,7 @@ class Fun(Cog):
         """Remove colors from a profile element, resetting it to default."""
         await self.bot.db.execute(
             """
-            UPDATE socials 
+            UPDATE public.socials 
             SET {}_color_type = 'linear',
                 {}_linear_color = '#ffffff',
                 {}_gradient_name = NULL
@@ -6432,7 +6432,7 @@ class Fun(Cog):
             colors = await self.bot.db.fetch(
                 """
                 SELECT color, position 
-                FROM socials_saved_gradients 
+                FROM public.socials_saved_gradients 
                 WHERE user_id = $1 AND name = $2 
                 ORDER BY position
                 """,
@@ -6452,7 +6452,7 @@ class Fun(Cog):
             sets = await self.bot.db.fetch(
                 """
                 SELECT DISTINCT name 
-                FROM socials_saved_gradients 
+                FROM public.socials_saved_gradients 
                 WHERE user_id = $1
                 """,
                 ctx.author.id
@@ -6474,7 +6474,7 @@ class Fun(Cog):
         exists = await self.bot.db.fetchval(
             """
             SELECT EXISTS(
-                SELECT 1 FROM socials_saved_gradients 
+                SELECT 1 FROM public.socials_saved_gradients 
                 WHERE user_id = $1 AND name = $2
             )
             """,
@@ -6500,7 +6500,7 @@ class Fun(Cog):
             
         count = await self.bot.db.fetchval(
             """
-            SELECT COUNT(*) FROM socials_saved_gradients 
+            SELECT COUNT(*) FROM public.socials_saved_gradients 
             WHERE user_id = $1 AND name = $2
             """,
             ctx.author.id, name
@@ -6511,7 +6511,7 @@ class Fun(Cog):
             
         await self.bot.db.execute(
             """
-            INSERT INTO socials_saved_gradients 
+            INSERT INTO public.socials_saved_gradients 
             (user_id, name, color, position)
             VALUES ($1, $2, $3, $4)
             ON CONFLICT (user_id, name, position) 
@@ -6531,7 +6531,7 @@ class Fun(Cog):
             
         result = await self.bot.db.execute(
             """
-            DELETE FROM socials_saved_gradients 
+            DELETE FROM public.socials_saved_gradients 
             WHERE user_id = $1 AND name = $2 AND position = $3
             """,
             ctx.author.id, name, position
@@ -6549,7 +6549,7 @@ class Fun(Cog):
         
         result = await self.bot.db.execute(
             """
-            DELETE FROM socials_saved_gradients 
+            DELETE FROM public.socials_saved_gradients 
             WHERE user_id = $1 AND name = $2
             """,
             ctx.author.id, name
@@ -6566,7 +6566,7 @@ class Fun(Cog):
         current = await self.bot.db.fetchval(
             """
             SELECT click_enabled 
-            FROM socials 
+            FROM public.socials 
             WHERE user_id = $1
             """,
             ctx.author.id
@@ -6575,7 +6575,7 @@ class Fun(Cog):
         new_value = not current if current is not None else True
         await self.bot.db.execute(
             """
-            UPDATE socials 
+            UPDATE public.socials 
             SET click_enabled = $1 
             WHERE user_id = $2
             """,
@@ -6592,7 +6592,7 @@ class Fun(Cog):
             await ctx.prompt("Are you sure you want to reset your click text?")
             await self.bot.db.execute(
                 """
-                UPDATE socials 
+                UPDATE public.socials 
                 SET click_text = 'Click to enter...' 
                 WHERE user_id = $1
                 """,
@@ -6605,7 +6605,7 @@ class Fun(Cog):
 
         await self.bot.db.execute(
             """
-            UPDATE socials 
+            UPDATE public.socials 
             SET click_text = $1 
             WHERE user_id = $2
             """,
@@ -6625,7 +6625,7 @@ class Fun(Cog):
                 
                 await self.bot.db.execute(
                     """
-                    UPDATE socials 
+                    UPDATE public.socials 
                     SET discord_guild = $1 
                     WHERE user_id = $2
                     """,
@@ -6640,7 +6640,7 @@ class Fun(Cog):
             await ctx.prompt("Are you sure you want to remove your featured guild?")
             await self.bot.db.execute(
                 """
-                UPDATE socials 
+                UPDATE public.socials 
                 SET discord_guild = NULL 
                 WHERE user_id = $1
                 """,
@@ -6663,14 +6663,14 @@ class Fun(Cog):
 
         domains = await self.bot.db.fetchval(
             """
-            SELECT domains FROM socials WHERE user_id = $1
+            SELECT domains FROM public.socials WHERE user_id = $1
             """,
             ctx.author.id
         ) or []
         
         verified_domains = await self.bot.db.fetchval(
             """
-            SELECT verified_domains FROM socials WHERE user_id = $1
+            SELECT verified_domains FROM public.socials WHERE user_id = $1
             """,
             ctx.author.id
         ) or []
@@ -6691,7 +6691,7 @@ class Fun(Cog):
 
         await self.bot.db.execute(
             """
-            UPDATE socials 
+            UPDATE public.socials 
             SET domains = $1::jsonb
             WHERE user_id = $2
             """,
@@ -6721,7 +6721,7 @@ class Fun(Cog):
         
         domains = await self.bot.db.fetchval(
             """
-            SELECT domains FROM socials WHERE user_id = $1
+            SELECT domains FROM public.socials WHERE user_id = $1
             """,
             ctx.author.id
         ) or []
@@ -6754,7 +6754,7 @@ class Fun(Cog):
             new_domains = [d for d in domains if d != domain]
             await self.bot.db.execute(
                 """
-                UPDATE socials 
+                UPDATE public.socials 
                 SET domains = $1::jsonb,
                     verified_domains = verified_domains || $2::jsonb
                 WHERE user_id = $3
@@ -6777,14 +6777,14 @@ class Fun(Cog):
         
         domains = await self.bot.db.fetchval(
             """
-            SELECT domains FROM socials WHERE user_id = $1
+            SELECT domains FROM public.socials WHERE user_id = $1
             """,
             ctx.author.id
         ) or []
         
         verified_domains = await self.bot.db.fetchval(
             """
-            SELECT verified_domains FROM socials WHERE user_id = $1
+            SELECT verified_domains FROM public.socials WHERE user_id = $1
             """,
             ctx.author.id
         ) or []
@@ -6816,7 +6816,7 @@ class Fun(Cog):
         
         verified_domains = await self.bot.db.fetchval(
             """
-            SELECT verified_domains FROM socials WHERE user_id = $1
+            SELECT verified_domains FROM public.socials WHERE user_id = $1
             """,
             ctx.author.id
         ) or []
@@ -6828,7 +6828,7 @@ class Fun(Cog):
         
         await self.bot.db.execute(
             """
-            UPDATE socials 
+            UPDATE public.socials 
             SET verified_domains = verified_domains - $1::text
             WHERE user_id = $2
             """,
