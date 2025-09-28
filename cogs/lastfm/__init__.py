@@ -6,7 +6,7 @@ from aiohttp import ClientSession as OriginalClientSession, ClientTimeout, TCPCo
 from colorama import Fore
 from yarl import URL
 
-from config import AUTHORIZATION
+from config import LASTFM
 
 if TYPE_CHECKING:
     from main import Evict
@@ -24,7 +24,7 @@ class AsyncClient(OriginalClientSession):
 
     async def get(self, *args, **kwargs):
         kwargs["params"] = {
-            "api_key": choice(AUTHORIZATION.LASTFM),
+            "api_key": LASTFM.API_KEY,
             "autocorrect": 1,
             "format": "json",
             **kwargs.get("params", {}),
@@ -36,7 +36,7 @@ class AsyncClient(OriginalClientSession):
         response = await super().get(*args, **kwargs)
         if response.status == 429:
             log.warning("Last.fm API rate limit exceeded, changing API key...")
-            kwargs["api_key"] = choice(AUTHORIZATION.LASTFM)
+            kwargs["api_key"] = LASTFM.API_KEY
             return await self.get(*args, **kwargs)
 
         return response
