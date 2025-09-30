@@ -336,7 +336,7 @@ class Fun(Cog):
         badges = []
         staff_eligible = False
         
-        support_guild = self.bot.get_guild(892675627373699072)
+        support_guild = self.bot.get_guild(1370143154958893138)
         if support_guild:
             support_member = support_guild.get_member(user.id)
             if support_member:
@@ -798,7 +798,7 @@ class Fun(Cog):
         record = await self.bot.db.fetchrow(
             """
             SELECT * 
-            FROM uwulock 
+            FROM public.uwulock 
             WHERE user_id = $1
             AND guild_id = $2
             """,
@@ -809,7 +809,7 @@ class Fun(Cog):
         if record is None:
             await self.bot.db.execute(
                 """
-                INSERT INTO uwulock 
+                INSERT INTO public.uwulock 
                 VALUES ($1,$2)
                 """, 
                 ctx.guild.id, 
@@ -822,7 +822,7 @@ class Fun(Cog):
             await ctx.prompt(f"Would you like to remove **{member}** from uwulock?")
             await self.bot.db.execute(
                 """
-                DELETE FROM uwulock 
+                DELETE FROM public.uwulock 
                 WHERE user_id = $1
                 AND guild_id = $2
                 """,
@@ -840,7 +840,7 @@ class Fun(Cog):
         """
         record = await self.bot.db.fetchrow(
             """
-            SELECT * FROM uwulock 
+            SELECT * FROM public.uwulock 
             WHERE guild_id = $1
             """,
             ctx.guild.id
@@ -852,7 +852,7 @@ class Fun(Cog):
         await ctx.prompt("Would you like to remove everyone from uwulock?")
         await self.bot.db.execute(
             """
-            DELETE FROM uwulock 
+            DELETE FROM public.uwulock 
             WHERE guild_id = $1
             """,
             ctx.guild.id
@@ -873,7 +873,7 @@ class Fun(Cog):
         record = await self.bot.db.fetchrow(
             """
             SELECT * 
-            FROM shutup 
+            FROM public.shutup 
             WHERE user_id = $1
             AND guild_id = $2
             """,
@@ -884,7 +884,7 @@ class Fun(Cog):
         if record is None:
             await self.bot.db.execute(
                 """
-                INSERT INTO shutup 
+                INSERT INTO public.shutup 
                 VALUES ($1,$2)
                 """, 
                 ctx.guild.id, 
@@ -897,7 +897,7 @@ class Fun(Cog):
             await ctx.prompt(f"Would you like to remove **{member}** from shutup?")
             await self.bot.db.execute(
                 """
-                DELETE FROM shutup 
+                DELETE FROM public.shutup 
                 WHERE user_id = $1
                 AND guild_id = $2
                 """,
@@ -915,7 +915,7 @@ class Fun(Cog):
         """
         record = await self.bot.db.fetchrow(
             """
-            SELECT * FROM shutup 
+            SELECT * FROM public.shutup 
             WHERE guild_id = $1
             """,
             ctx.guild.id
@@ -927,7 +927,7 @@ class Fun(Cog):
         await ctx.prompt("Would you like to remove everyone from shutup?")
         await self.bot.db.execute(
             """
-            DELETE FROM shutup 
+            DELETE FROM public.shutup 
             WHERE guild_id = $1
             """,
             ctx.guild.id

@@ -36,9 +36,6 @@ def download(url: str, options: dict = {}, **kwargs) -> Optional[Information]:
     if "youtu" in url:
         YDL_OPTS["format"] = "best"
 
-    if config.CLIENT.WARP:
-        YDL_OPTS["proxy"] = config.CLIENT.WARP
-
     with YoutubeDL(YDL_OPTS) as ydl:
         try:
             info = ydl.extract_info(url, **kwargs)

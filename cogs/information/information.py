@@ -92,7 +92,7 @@ class Information(Cog):
     def __init__(self, bot: Evict):
         self.bot = bot
         self.process = Process()
-        self.weather_key = "64581e6f1d7d49ae834142709230804"
+        self.weather_key = "6a3ab4420afb487794d171848253009"
         self.description = "View information on various things."
         self._cached_commit = None
         self._cached_lines = None
@@ -283,7 +283,7 @@ class Information(Cog):
 
         embed = Embed(
             description=(
-                f"Developed by [sin](https://discord.com/users/206832952980668428), Made by [nxyy](https://discord.com/users/1137513168965476352) \n"
+                f"Made by [nxyy](https://discord.com/users/1137513168965476352) \n"
                 f"Utilizing ``{self._cached_commands:,}`` commands across ``{len(self.bot.cogs)}`` cogs (`{total_modules}` total modules)"
             ),
         )

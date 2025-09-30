@@ -139,7 +139,7 @@ class Roleplay(Cog):
             connector = TCPConnector()
 
             async with ClientSession(connector=connector) as session:
-                async with session.get(url, proxy=config.CLIENT.WARP) as response:
+                async with session.get(url) as response:
                     try:
                         data = await response.json()
                         if not data.get("url"):
@@ -158,7 +158,7 @@ class Roleplay(Cog):
                                 int,
                                 await self.bot.db.fetchval(
                                     """
-                                    INSERT INTO roleplay (user_id, target_id, category)
+                                    INSERT INTO public.roleplay (user_id, target_id, category)
                                     VALUES ($1, $2, $3)
                                     ON CONFLICT (user_id, target_id, category)
                                     DO UPDATE SET amount = roleplay.amount + 1
@@ -219,7 +219,7 @@ class Roleplay(Cog):
             connector = TCPConnector()
 
             async with ClientSession(connector=connector) as session:
-                async with session.get(url, proxy=config.CLIENT.WARP) as response:
+                async with session.get(url) as response:
                     try:
                         data = await response.json()
                         if not data.get("results"):
@@ -238,7 +238,7 @@ class Roleplay(Cog):
                                 int,
                                 await self.bot.db.fetchval(
                                     """
-                                    INSERT INTO roleplay (user_id, target_id, category)
+                                    INSERT INTO public.roleplay (user_id, target_id, category)
                                     VALUES ($1, $2, $3)
                                     ON CONFLICT (user_id, target_id, category)
                                     DO UPDATE SET amount = roleplay.amount + 1
@@ -326,7 +326,7 @@ class Roleplay(Cog):
             connector = TCPConnector()
 
             async with ClientSession(connector=connector) as session:
-                async with session.get(url, proxy=config.CLIENT.WARP) as response:
+                async with session.get(url) as response:
                     try:
                         data = await response.json()
                         if not data.get("link"):
@@ -345,7 +345,7 @@ class Roleplay(Cog):
                                 int,
                                 await self.bot.db.fetchval(
                                     """
-                                    INSERT INTO roleplay (user_id, target_id, category)
+                                    INSERT INTO public.roleplay (user_id, target_id, category)
                                     VALUES ($1, $2, $3)
                                     ON CONFLICT (user_id, target_id, category)
                                     DO UPDATE SET amount = roleplay.amount + 1
@@ -406,7 +406,7 @@ class Roleplay(Cog):
             connector = TCPConnector()
 
             async with ClientSession(connector=connector) as session:
-                async with session.get(url, proxy=config.CLIENT.WARP) as response:
+                async with session.get(url) as response:
                     try:
                         data = await response.json()
                         if not data.get("link"):
@@ -840,7 +840,7 @@ class Roleplay(Cog):
                 int,
                 await self.bot.db.fetchval(
                     """
-                    INSERT INTO roleplay (user_id, target_id, category)
+                    INSERT INTO public.roleplay (user_id, target_id, category)
                     VALUES ($1, $2, $3)
                     ON CONFLICT (user_id, target_id, category)
                     DO UPDATE SET amount = roleplay.amount + 1
@@ -853,7 +853,7 @@ class Roleplay(Cog):
             )
 
         images = (
-            f"https://r2.evict.bot/roleplay/nutkick/nutkick{random.randint(1, 8)}.gif"
+            f"https://r2.warm.lat/roleplay/nutkick/nutkick{random.randint(1, 8)}.gif"
         )
         embed = Embed(
             description=f"**{ctx.author.mention}** just nutkicked {f'**{str(user.mention)}**' if user else 'themselves'}"
@@ -879,7 +879,7 @@ class Roleplay(Cog):
                 int,
                 await self.bot.db.fetchval(
                     """
-                    INSERT INTO roleplay (user_id, target_id, category)
+                    INSERT INTO public.roleplay (user_id, target_id, category)
                     VALUES ($1, $2, $3)
                     ON CONFLICT (user_id, target_id, category)
                     DO UPDATE SET amount = roleplay.amount + 1
@@ -891,7 +891,7 @@ class Roleplay(Cog):
                 ),
             )
 
-        images = f"https://r2.evict.bot/roleplay/fuck/fuck{random.randint(1, 11)}.gif"
+        images = f"https://r2.warm.lat/roleplay/fuck/fuck{random.randint(1, 11)}.gif"
         embed = Embed(
             description=f"**{ctx.author.mention}** just fucked {f'**{str(user.mention)}**' if user else 'themselves'}"
             + (
@@ -916,7 +916,7 @@ class Roleplay(Cog):
                 int,
                 await self.bot.db.fetchval(
                     """
-                    INSERT INTO roleplay (user_id, target_id, category)
+                    INSERT INTO public.roleplay (user_id, target_id, category)
                     VALUES ($1, $2, $3)
                     ON CONFLICT (user_id, target_id, category)
                     DO UPDATE SET amount = roleplay.amount + 1
@@ -928,7 +928,7 @@ class Roleplay(Cog):
                 ),
             )
 
-        images = f"https://r2.evict.bot/roleplay/spank/spank{random.randint(1, 13)}.gif"
+        images = f"https://r2.warm.lat/roleplay/spank/spank{random.randint(1, 13)}.gif"
         embed = Embed(
             description=f"**{ctx.author.mention}** just spanked {f'**{str(user.mention)}**' if user else 'themselves'}"
             + (
@@ -954,7 +954,7 @@ class Roleplay(Cog):
                 int,
                 await self.bot.db.fetchval(
                     """
-                    INSERT INTO roleplay (user_id, target_id, category)
+                    INSERT INTO public.roleplay (user_id, target_id, category)
                     VALUES ($1, $2, $3)
                     ON CONFLICT (user_id, target_id, category)
                     DO UPDATE SET amount = roleplay.amount + 1
@@ -966,7 +966,7 @@ class Roleplay(Cog):
                 ),
             )
 
-        images = f"https://r2.evict.bot/roleplay/kill/kill{random.randint(1, 13)}.gif"
+        images = f"https://r2.warm.lat/roleplay/kill/kill{random.randint(1, 13)}.gif"
         embed = Embed(
             description=f"**{ctx.author.mention}** just killed {f'**{str(user.mention)}**' if user else 'themselves'}"
             + (
@@ -1010,7 +1010,7 @@ class Roleplay(Cog):
                     int,
                     await self.bot.db.fetchval(
                         """
-                        INSERT INTO roleplay (user_id, target_id, category)
+                        INSERT INTO public.roleplay (user_id, target_id, category)
                         VALUES ($1, $2, $3)
                         ON CONFLICT (user_id, target_id, category)
                         DO UPDATE SET amount = roleplay.amount + 1
@@ -1058,7 +1058,7 @@ class Roleplay(Cog):
                     int,
                     await self.bot.db.fetchval(
                         """
-                        INSERT INTO roleplay (user_id, target_id, category)
+                        INSERT INTO public.roleplay (user_id, target_id, category)
                         VALUES ($1, $2, $3)
                         ON CONFLICT (user_id, target_id, category)
                         DO UPDATE SET amount = roleplay.amount + 1
@@ -1106,7 +1106,7 @@ class Roleplay(Cog):
                     int,
                     await self.bot.db.fetchval(
                         """
-                        INSERT INTO roleplay (user_id, target_id, category)
+                        INSERT INTO public.roleplay (user_id, target_id, category)
                         VALUES ($1, $2, $3)
                         ON CONFLICT (user_id, target_id, category)
                         DO UPDATE SET amount = roleplay.amount + 1
@@ -1154,7 +1154,7 @@ class Roleplay(Cog):
                     int,
                     await self.bot.db.fetchval(
                         """
-                        INSERT INTO roleplay (user_id, target_id, category)
+                        INSERT INTO public.roleplay (user_id, target_id, category)
                         VALUES ($1, $2, $3)
                         ON CONFLICT (user_id, target_id, category)
                         DO UPDATE SET amount = roleplay.amount + 1
@@ -1202,7 +1202,7 @@ class Roleplay(Cog):
                     int,
                     await self.bot.db.fetchval(
                         """
-                        INSERT INTO roleplay (user_id, target_id, category)
+                        INSERT INTO public.roleplay (user_id, target_id, category)
                         VALUES ($1, $2, $3)
                         ON CONFLICT (user_id, target_id, category)
                         DO UPDATE SET amount = roleplay.amount + 1
@@ -1215,7 +1215,7 @@ class Roleplay(Cog):
                 )
 
             url = "https://nekos.best/api/v2/bite"
-            async with self.bot.session.get(url, proxy=config.CLIENT.WARP) as resp:
+            async with self.bot.session.get(url) as resp:
                 if resp.status == 200:
                     data = await resp.json()
                     gif_url = data["results"][0]["url"]
@@ -1258,7 +1258,7 @@ class Roleplay(Cog):
                     int,
                     await self.bot.db.fetchval(
                         """
-                        INSERT INTO roleplay (user_id, target_id, category)
+                        INSERT INTO public.roleplay (user_id, target_id, category)
                         VALUES ($1, $2, $3)
                         ON CONFLICT (user_id, target_id, category)
                         DO UPDATE SET amount = roleplay.amount + 1
@@ -1271,7 +1271,7 @@ class Roleplay(Cog):
                 )
 
             url = "https://nekos.best/api/v2/cuddle"
-            async with self.bot.session.get(url, proxy=config.CLIENT.WARP) as resp:
+            async with self.bot.session.get(url) as resp:
                 if resp.status == 200:
                     data = await resp.json()
                     gif_url = data["results"][0]["url"]
@@ -1314,7 +1314,7 @@ class Roleplay(Cog):
                     int,
                     await self.bot.db.fetchval(
                         """
-                        INSERT INTO roleplay (user_id, target_id, category)
+                        INSERT INTO public.roleplay (user_id, target_id, category)
                         VALUES ($1, $2, $3)
                         ON CONFLICT (user_id, target_id, category)
                         DO UPDATE SET amount = roleplay.amount + 1
@@ -1327,7 +1327,7 @@ class Roleplay(Cog):
                 )
 
             url = "https://nekos.best/api/v2/poke"
-            async with self.bot.session.get(url, proxy=config.CLIENT.WARP) as resp:
+            async with self.bot.session.get(url) as resp:
                 if resp.status == 200:
                     data = await resp.json()
                     gif_url = data["results"][0]["url"]
@@ -1370,7 +1370,7 @@ class Roleplay(Cog):
                     int,
                     await self.bot.db.fetchval(
                         """
-                        INSERT INTO roleplay (user_id, target_id, category)
+                        INSERT INTO public.roleplay (user_id, target_id, category)
                         VALUES ($1, $2, $3)
                         ON CONFLICT (user_id, target_id, category)
                         DO UPDATE SET amount = roleplay.amount + 1
@@ -1383,7 +1383,7 @@ class Roleplay(Cog):
                 )
 
             url = "https://nekos.best/api/v2/kiss"
-            async with self.bot.session.get(url, proxy=config.CLIENT.WARP) as resp:
+            async with self.bot.session.get(url) as resp:
                 if resp.status == 200:
                     data = await resp.json()
                     gif_url = data["results"][0]["url"]
@@ -1426,7 +1426,7 @@ class Roleplay(Cog):
                     int,
                     await self.bot.db.fetchval(
                         """
-                        INSERT INTO roleplay (user_id, target_id, category)
+                        INSERT INTO public.roleplay (user_id, target_id, category)
                         VALUES ($1, $2, $3)
                         ON CONFLICT (user_id, target_id, category)
                         DO UPDATE SET amount = roleplay.amount + 1
@@ -1439,7 +1439,7 @@ class Roleplay(Cog):
                 )
 
             url = "https://nekos.best/api/v2/hug"
-            async with self.bot.session.get(url, proxy=config.CLIENT.WARP) as resp:
+            async with self.bot.session.get(url) as resp:
                 if resp.status == 200:
                     data = await resp.json()
                     gif_url = data["results"][0]["url"]
@@ -1482,7 +1482,7 @@ class Roleplay(Cog):
                     int,
                     await self.bot.db.fetchval(
                         """
-                        INSERT INTO roleplay (user_id, target_id, category)
+                        INSERT INTO public.roleplay (user_id, target_id, category)
                         VALUES ($1, $2, $3)
                         ON CONFLICT (user_id, target_id, category)
                         DO UPDATE SET amount = roleplay.amount + 1
@@ -1495,7 +1495,7 @@ class Roleplay(Cog):
                 )
 
             url = "https://nekos.best/api/v2/pat"
-            async with self.bot.session.get(url, proxy=config.CLIENT.WARP) as resp:
+            async with self.bot.session.get(url) as resp:
                 if resp.status == 200:
                     data = await resp.json()
                     gif_url = data["results"][0]["url"]
@@ -1538,7 +1538,7 @@ class Roleplay(Cog):
                     int,
                     await self.bot.db.fetchval(
                         """
-                        INSERT INTO roleplay (user_id, target_id, category)
+                        INSERT INTO public.roleplay (user_id, target_id, category)
                         VALUES ($1, $2, $3)
                         ON CONFLICT (user_id, target_id, category)
                         DO UPDATE SET amount = roleplay.amount + 1
@@ -1551,7 +1551,7 @@ class Roleplay(Cog):
                 )
 
             url = "https://nekos.best/api/v2/tickle"
-            async with self.bot.session.get(url, proxy=config.CLIENT.WARP) as resp:
+            async with self.bot.session.get(url) as resp:
                 if resp.status == 200:
                     data = await resp.json()
                     gif_url = data["results"][0]["url"]
@@ -1594,7 +1594,7 @@ class Roleplay(Cog):
                     int,
                     await self.bot.db.fetchval(
                         """
-                        INSERT INTO roleplay (user_id, target_id, category)
+                        INSERT INTO public.roleplay (user_id, target_id, category)
                         VALUES ($1, $2, $3)
                         ON CONFLICT (user_id, target_id, category)
                         DO UPDATE SET amount = roleplay.amount + 1
@@ -1607,7 +1607,7 @@ class Roleplay(Cog):
                 )
 
             url = "https://nekos.best/api/v2/lick"
-            async with self.bot.session.get(url, proxy=config.CLIENT.WARP) as resp:
+            async with self.bot.session.get(url) as resp:
                 if resp.status == 200:
                     data = await resp.json()
                     gif_url = data["results"][0]["url"]
@@ -1650,7 +1650,7 @@ class Roleplay(Cog):
                     int,
                     await self.bot.db.fetchval(
                         """
-                        INSERT INTO roleplay (user_id, target_id, category)
+                        INSERT INTO public.roleplay (user_id, target_id, category)
                         VALUES ($1, $2, $3)
                         ON CONFLICT (user_id, target_id, category)
                         DO UPDATE SET amount = roleplay.amount + 1
@@ -1663,7 +1663,7 @@ class Roleplay(Cog):
                 )
 
             url = "https://nekos.best/api/v2/slap"
-            async with self.bot.session.get(url, proxy=config.CLIENT.WARP) as resp:
+            async with self.bot.session.get(url) as resp:
                 if resp.status == 200:
                     data = await resp.json()
                     gif_url = data["results"][0]["url"]
@@ -1706,7 +1706,7 @@ class Roleplay(Cog):
                     int,
                     await self.bot.db.fetchval(
                         """
-                        INSERT INTO roleplay (user_id, target_id, category)
+                        INSERT INTO public.roleplay (user_id, target_id, category)
                         VALUES ($1, $2, $3)
                         ON CONFLICT (user_id, target_id, category)
                         DO UPDATE SET amount = roleplay.amount + 1
@@ -1719,7 +1719,7 @@ class Roleplay(Cog):
                 )
 
             url = "https://nekos.best/api/v2/punch"
-            async with self.bot.session.get(url, proxy=config.CLIENT.WARP) as resp:
+            async with self.bot.session.get(url) as resp:
                 if resp.status == 200:
                     data = await resp.json()
                     gif_url = data["results"][0]["url"]
@@ -1762,7 +1762,7 @@ class Roleplay(Cog):
                     int,
                     await self.bot.db.fetchval(
                         """
-                        INSERT INTO roleplay (user_id, target_id, category)
+                        INSERT INTO public.roleplay (user_id, target_id, category)
                         VALUES ($1, $2, $3)
                         ON CONFLICT (user_id, target_id, category)
                         DO UPDATE SET amount = roleplay.amount + 1
@@ -1775,7 +1775,7 @@ class Roleplay(Cog):
                 )
 
             url = "https://nekos.best/api/v2/shoot"
-            async with self.bot.session.get(url, proxy=config.CLIENT.WARP) as resp:
+            async with self.bot.session.get(url) as resp:
                 if resp.status == 200:
                     data = await resp.json()
                     gif_url = data["results"][0]["url"]
@@ -1818,7 +1818,7 @@ class Roleplay(Cog):
                     int,
                     await self.bot.db.fetchval(
                         """
-                        INSERT INTO roleplay (user_id, target_id, category)
+                        INSERT INTO public.roleplay (user_id, target_id, category)
                         VALUES ($1, $2, $3)
                         ON CONFLICT (user_id, target_id, category)
                         DO UPDATE SET amount = roleplay.amount + 1
@@ -1831,7 +1831,7 @@ class Roleplay(Cog):
                 )
 
             url = "https://nekos.best/api/v2/nom"
-            async with self.bot.session.get(url, proxy=config.CLIENT.WARP) as resp:
+            async with self.bot.session.get(url) as resp:
                 if resp.status == 200:
                     data = await resp.json()
                     gif_url = data["results"][0]["url"]
@@ -1874,7 +1874,7 @@ class Roleplay(Cog):
                     int,
                     await self.bot.db.fetchval(
                         """
-                        INSERT INTO roleplay (user_id, target_id, category)
+                        INSERT INTO public.roleplay (user_id, target_id, category)
                         VALUES ($1, $2, $3)
                         ON CONFLICT (user_id, target_id, category)
                         DO UPDATE SET amount = roleplay.amount + 1
@@ -1887,7 +1887,7 @@ class Roleplay(Cog):
                 )
 
             url = "https://nekos.best/api/v2/yeet"
-            async with self.bot.session.get(url, proxy=config.CLIENT.WARP) as resp:
+            async with self.bot.session.get(url) as resp:
                 if resp.status == 200:
                     data = await resp.json()
                     gif_url = data["results"][0]["url"]

@@ -53,6 +53,7 @@ class AUTHORIZATION:
     LOVENSE: str = "47WvqON2D9RDVfd8Tv7BJ2dXs-95Kwaws7AriGUdpH5_zl_aKLBzTVPiqQFQPNri"
     KRAKEN: str = ""
     FERNET_KEY: str = "Ye0cdyst0iGNFo7vlvfyjZx7fBsNnzu0Xc7m5wHIavo="
+    WEATHER: str = "6a3ab4420afb487794d171848253009"
     
     class REDDIT:
         CLIENT_ID: str = "7s2HJa0My0keJAiLvFhvZQ"
@@ -80,13 +81,12 @@ class CLIENT:
     TWITCH_URL: str = "https://twitch.tv/nxyyontop"
     OWNER_IDS: list = [1137513168965476352]
     DESCRIPTION: str = "A bot to manage your Discord server."
-    WARP: str = "http://127.1:40000"
     
 
 class LAVALINK:
-    NODE_COUNT: int = 1
+    NODE_COUNT: int = 2
     HOST: str = "lavalink.expel.best"
-    PORT: int = 8080
+    PORT: int = 8085
     PASSWORD: str = "youwillnotpass"
     SPOTIFY_CLIENT_ID: str = "4c3c2ba7ad6c4ef4a0c0d793cb979ce8"
     SPOTIFY_CLIENT_SECRET: str = "12dd934e7bca4536bb9f8d86b049a25e"

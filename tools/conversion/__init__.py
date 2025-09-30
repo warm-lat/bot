@@ -155,7 +155,7 @@ class PartialAttachment:
     @staticmethod
     async def read(url: URL | str) -> tuple[bytes, str]:
         async with ClientSession() as client:
-            async with client.get(url, proxy=config.CLIENT.WARP) as resp:
+            async with client.get(url) as resp:
                 if resp.content_length and resp.content_length > 50 * 1024 * 1024:
                     raise CommandError("Attachment exceeds the decompression limit!")
 

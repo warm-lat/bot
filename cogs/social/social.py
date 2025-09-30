@@ -880,7 +880,7 @@ class Social(Alerts, Cog):
 
             async with ClientSession(connector=connector) as session:
                 url = f"https://api.fulcrum.lol/twitter?username={user}"
-                async with session.get(url, proxy=config.CLIENT.WARP) as response:
+                async with session.get(url) as response:
                     if response.status != 200:
                         return await ctx.warn(
                             f"The user ``{user}`` is an **invalid** username or the API is down!"
@@ -919,7 +919,7 @@ class Social(Alerts, Cog):
 
             async with ClientSession(connector=connector) as session:
                 url = f"https://api.fulcrum.lol/instagram?username={user}"
-                async with session.get(url, proxy=config.CLIENT.WARP) as response:
+                async with session.get(url) as response:
                     if response.status != 200:
                         return await ctx.warn(
                             f"The user ``{user}`` is an **invalid** username or the API is down!"
@@ -974,7 +974,7 @@ class Social(Alerts, Cog):
 
             async with ClientSession(connector=connector) as session:
                 url = f"https://api.fulcrum.lol/instagram/story?username={user}"
-                async with session.get(url, proxy=config.CLIENT.WARP) as response:
+                async with session.get(url) as response:
                     if response.status != 200:
                         return await ctx.warn(
                             f"The user ``{user}`` is an **invalid** username or the API is down!"

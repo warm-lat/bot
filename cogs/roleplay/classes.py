@@ -97,7 +97,7 @@ class RoleplayContext:
             #     )
 
             gif_url = f"https://nekos.best/api/v2/{category}"
-            async with self.bot.session.get(gif_url, proxy=config.CLIENT.WARP) as resp:
+            async with self.bot.session.get(gif_url) as resp:
                     if resp.status == 200:
                         data = await resp.json()
                         gif_url = data["results"][0]["url"]
@@ -164,7 +164,7 @@ class RoleplayContext:
                 connector = TCPConnector()
 
                 async with ClientSession(connector=connector) as session:
-                    async with session.get(url, proxy=config.CLIENT.WARP) as response:
+                    async with session.get(url) as response:
                         data = await response.json()
                         if not data.get("results"):
                             return await ctx.warn("Something went wrong, please try again later!")
