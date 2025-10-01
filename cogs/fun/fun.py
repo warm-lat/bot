@@ -17,7 +17,7 @@ import decimal
 from uwuipy import uwuipy
 from io import BytesIO
 from random import choice, randint
-from typing import Any, Dict, List, Optional, cast, Literal
+from typing import Any, Dict, List, Optional, cast, Literal, TypedDict
 from PIL import Image, ImageDraw, ImageFont
 from io import BytesIO
 from datetime import datetime, timezone
@@ -95,6 +95,29 @@ from logging import getLogger
 log = getLogger("warm/fun")
 # EXAMPLES STOP AT LINE 1993
 # - SIN
+
+class ValidationRecord(TypedDict, total=False):
+    txt_name: Optional[str]
+    txt_value: Optional[str]
+
+class SSL(TypedDict, total=False):
+    status: str
+    method: str
+    validation_records: Optional[List[ValidationRecord]]
+
+class OwnershipVerification(TypedDict):
+    type: str
+    name: str
+    value: str
+
+class CustomHostname(TypedDict, total=False):
+    id: str
+    hostname: str
+    ssl: SSL
+    status: str
+    verification_errors: Optional[List[str]]
+    ownership_verification: Optional[OwnershipVerification]
+    created_at: str
 
 class MemeFlags(FlagConverter):
     top: str = flag(
@@ -6723,7 +6746,7 @@ class Fun(Cog):
                     err_msg = body.get("errors")
                     return await ctx.warn(f"Cloudflare API error: {err_msg}")
                 
-                result = body.get("result", {})
+                result: CustomHostname = body.get("result", {})
                 ssl = result.get("ssl", {})
                 
                 validation_records = ssl.get("validation_records", [])
