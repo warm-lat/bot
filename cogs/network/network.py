@@ -5364,7 +5364,7 @@ class Network(Cog):
                             for emoji in action["emojis"]:
                                 await self.bot.db.execute(
                                     """
-                                    INSERT INTO reaction_trigger (guild_id, trigger, emoji)
+                                    INSERT INTO public.reaction_trigger (guild_id, trigger, emoji)
                                     VALUES ($1, LOWER($2), $3)
                                     """,
                                     int(guild_id), action["trigger"], emoji
@@ -5372,7 +5372,7 @@ class Network(Cog):
                         elif action["type"] == "delete":
                             await self.bot.db.execute(
                                 """
-                                DELETE FROM reaction_trigger 
+                                DELETE FROM public.reaction_trigger 
                                 WHERE guild_id = $1 AND LOWER(trigger) = LOWER($2)
                                 """,
                                 int(guild_id), action["trigger"]
@@ -5405,7 +5405,7 @@ class Network(Cog):
                         channel_id = int(data["trackers"]["vanity"]["channel"]["id"]) if data["trackers"]["vanity"] else None
                         await self.bot.db.execute(
                             """
-                            INSERT INTO tracker (guild_id, vanity_channel_id)
+                            INSERT INTO public.tracker (guild_id, vanity_channel_id)
                             VALUES ($1, $2)
                             ON CONFLICT (guild_id)
                             DO UPDATE SET vanity_channel_id = EXCLUDED.vanity_channel_id
@@ -5417,7 +5417,7 @@ class Network(Cog):
                         channel_id = int(data["trackers"]["usernames"]["channel"]["id"]) if data["trackers"]["usernames"] else None
                         await self.bot.db.execute(
                             """
-                            INSERT INTO tracker (guild_id, username_channel_id)
+                            INSERT INTO public.tracker (guild_id, username_channel_id)
                             VALUES ($1, $2)
                             ON CONFLICT (guild_id)
                             DO UPDATE SET username_channel_id = EXCLUDED.username_channel_id
@@ -5461,7 +5461,7 @@ class Network(Cog):
                     pass
             
             if not user:
-                support_guild = self.bot.get_guild(892675627373699072)
+                support_guild = self.bot.get_guild(1349176135874908181)
                 if support_guild:
                     members = [m for m in support_guild.members if m.name.lower() == target.lower()]
                     if members:
@@ -5558,23 +5558,23 @@ class Network(Cog):
             staff_eligible = False
             presence_data = None
 
-            support_guild = self.bot.get_guild(892675627373699072)
+            support_guild = self.bot.get_guild(1349176135874908181)
             if support_guild:
                 support_member = support_guild.get_member(user.id)
                 if support_member:
                     role_badges = {
-                        1265473601755414528: ["developer", "owner"],
-                        1264110559989862406: ["support"],
+                        1367503266145112125: ["developer", "owner"],
+                        1368665247782797335: ["support"],
                         1323255508609663098: ["trial"],
                         1325007612797784144: ["mod"],
                         1318054098666389534: ["donor1"],
-                        1320428924215496704: ["donor4"]
+                        1422671459565699216: ["donor4"]
                     }
 
                     for role_id, badge_types in role_badges.items():
                         if any(role.id == role_id for role in support_member.roles):
                             badges.extend(badge_types)
-                            if role_id not in [1318054098666389534, 1320428924215496704]:
+                            if role_id not in [1318054098666389534, 1422671459565699216]:
                                 staff_eligible = True
 
                     if staff_eligible:
@@ -5650,7 +5650,7 @@ class Network(Cog):
                             gradient_colors = await self.bot.db.fetch(
                                 """
                                 SELECT color, position 
-                                FROM socials_saved_gradients 
+                                FROM public.socials_saved_gradients 
                                 WHERE user_id = $1 AND name = $2 
                                 ORDER BY position
                                 """,
@@ -5828,7 +5828,7 @@ class Network(Cog):
                 data['description']
             )
 
-            channel = self.bot.get_channel(1325762712332009473) 
+            channel = self.bot.get_channel(1422696290130858004) 
             if channel:
                 embed = discord.Embed(
                     title="New User Report",
@@ -6071,7 +6071,7 @@ class Network(Cog):
             user_id = data["user"]
             await self.bot.db.execute(
                 """
-                INSERT INTO user_votes (user_id, last_vote_time)
+                INSERT INTO public.user_votes (user_id, last_vote_time)
                 VALUES ($1, NOW())
                 ON CONFLICT (user_id)
                 DO UPDATE SET last_vote_time = NOW()
@@ -6304,7 +6304,7 @@ class Network(Cog):
             settings = await self.bot.db.fetchrow(
                 """
                 SELECT level, kick_after, ratelimit, antialt, bypass_until
-                FROM guild_verification 
+                FROM public.guild_verification 
                 WHERE guild_id = $1
                 """,
                 int(guild_id)
@@ -6317,7 +6317,7 @@ class Network(Cog):
                 })
 
             bypass_roles = await self.bot.db.fetch(
-                "SELECT role_id FROM verification_bypass_roles WHERE guild_id = $1",
+                "SELECT role_id FROM public.verification_bypass_roles WHERE guild_id = $1",
                 int(guild_id)
             )
             
@@ -6343,7 +6343,7 @@ class Network(Cog):
             if settings["ratelimit"]:
                 recent_attempts = await self.bot.db.fetchval(
                     """
-                    SELECT COUNT(*) FROM verification_attempts 
+                    SELECT COUNT(*) FROM public.verification_attempts 
                     WHERE user_id = $1 AND guild_id = $2 
                     AND attempt_time > NOW() - INTERVAL '1 hour'
                     """,
@@ -6487,7 +6487,7 @@ class Network(Cog):
                 code = ''.join(random.choices(string.digits, k=6))
                 await self.bot.db.execute(
                     """
-                    INSERT INTO verification_email_codes (
+                    INSERT INTO public.verification_email_codes (
                         session_token,
                         code,
                         expires_at
@@ -6522,7 +6522,7 @@ class Network(Cog):
                 questions = await self.bot.db.fetch(
                     """
                     SELECT id, question, options, is_text
-                    FROM verification_questions
+                    FROM public.verification_questions
                     WHERE guild_id = $1
                     ORDER BY RANDOM()
                     """,
@@ -6539,7 +6539,7 @@ class Network(Cog):
                 
                 await self.bot.db.execute(
                     """
-                    INSERT INTO verification_question_sessions (
+                    INSERT INTO public.verification_question_sessions (
                         session_token,
                         question_ids,
                         requires_review,
@@ -6880,7 +6880,7 @@ class Network(Cog):
 
             try:
                 role_id = await self.bot.db.fetchval(
-                    "SELECT verified_role_id FROM guild_verification WHERE guild_id = $1",
+                    "SELECT verified_role_id FROM public.guild_verification WHERE guild_id = $1",
                     int(guild_id)
                 )
 

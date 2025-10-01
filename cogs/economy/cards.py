@@ -101,7 +101,7 @@ class Yugioh(Cog):
         channels = await self.bot.db.fetch(
             """
             SELECT channel_id 
-            FROM card_drop_channels
+            FROM public.card_drop_channels
             """
         )
         
@@ -243,7 +243,7 @@ class Yugioh(Cog):
         cards = await self.bot.db.fetch(
             """
             SELECT card_id, quantity 
-            FROM user_cards 
+            FROM public.user_cards 
             WHERE user_id = $1 
             ORDER BY card_id
             """,
@@ -333,7 +333,7 @@ class Yugioh(Cog):
                 SUM(CASE WHEN rarity = 'Rare' THEN quantity ELSE 0 END) as rare_cards,
                 SUM(CASE WHEN rarity = 'Super Rare' THEN quantity ELSE 0 END) as super_rare_cards,
                 SUM(CASE WHEN rarity = 'Ultra Rare' THEN quantity ELSE 0 END) as ultra_rare_cards
-            FROM user_cards 
+            FROM public.user_cards 
             WHERE user_id = $1""",
             member.id
         )
@@ -383,7 +383,7 @@ class Yugioh(Cog):
         
         sender_card = await self.bot.db.fetchrow(
             """
-            SELECT * FROM user_cards 
+            SELECT * FROM public.user_cards 
             WHERE user_id = $1 
             AND card_id = $2
             """,
@@ -399,7 +399,7 @@ class Yugioh(Cog):
         if sender_card['quantity'] <= 2:
             await self.bot.db.execute(
                 """
-                DELETE FROM user_cards 
+                DELETE FROM public.user_cards 
                 WHERE user_id = $1 
                 AND card_id = $2
                 """,
@@ -409,7 +409,7 @@ class Yugioh(Cog):
         else:
             await self.bot.db.execute(
                 """
-                UPDATE user_cards 
+                UPDATE public.user_cards 
                 SET quantity = quantity - 1 
                 WHERE user_id = $1 AND card_id = $2
                 """,
@@ -419,10 +419,10 @@ class Yugioh(Cog):
                 
             await self.bot.db.execute(
                 """
-                INSERT INTO user_cards (user_id, card_id, rarity, quantity)
+                INSERT INTO public.user_cards (user_id, card_id, rarity, quantity)
                 VALUES ($1, $2, $3, 1)
                 ON CONFLICT (user_id, card_id) 
-                DO UPDATE SET quantity = user_cards.quantity + 1
+                DO UPDATE SET quantity = public.user_cards.quantity + 1
                 """,
                 member.id, 
                 card_id, 
@@ -448,7 +448,7 @@ class Yugioh(Cog):
 
         card_data = await self.bot.db.fetchrow(
             """
-            SELECT * FROM user_cards 
+            SELECT * FROM public.user_cards 
             WHERE user_id = $1 
             AND card_name = $2
             """,
@@ -471,7 +471,7 @@ class Yugioh(Cog):
         if card_data['quantity'] == amount:
             await self.bot.db.execute(
                 """
-                DELETE FROM user_cards 
+                DELETE FROM public.user_cards 
                 WHERE user_id = $1 
                 AND card_name = $2
                 """,
@@ -482,7 +482,7 @@ class Yugioh(Cog):
         else:
             await self.bot.db.execute(
                 """
-                UPDATE user_cards 
+                UPDATE public.user_cards 
                 SET quantity = quantity - $1 
                 WHERE user_id = $2 
                 AND card_name = $3
@@ -494,7 +494,7 @@ class Yugioh(Cog):
                 
             await self.bot.db.execute(
                 """
-                UPDATE economy 
+                UPDATE public.economy 
                 SET wallet = wallet + $1 
                 WHERE user_id = $2
                 """,
@@ -522,7 +522,7 @@ class Yugioh(Cog):
                 user_id,
                 COUNT(*) as unique_cards,
                 SUM(quantity) as total_cards
-            FROM user_cards
+            FROM public.user_cards
             GROUP BY user_id
             GROUP BY {order_by} DESC
             LIMIT 10
@@ -559,7 +559,7 @@ class Yugioh(Cog):
         
         await self.bot.db.execute(
             """
-            INSERT INTO card_drop_channels (channel_id, guild_id, added_by)
+            INSERT INTO public.card_drop_channels (channel_id, guild_id, added_by)
             VALUES ($1, $2, $3)
             ON CONFLICT (channel_id) DO NOTHING
             """,
@@ -577,7 +577,7 @@ class Yugioh(Cog):
         """
         embed = Embed(
             title="🎴 Available Card Packs",
-            description="Use `;cards packs open <pack_name>` to open a pack!",
+            description="Use `,cards packs open <pack_name>` to open a pack!",
             color=discord.Color.blue()
         )
         
@@ -608,7 +608,7 @@ class Yugioh(Cog):
         balance = await self.bot.db.fetchval(
             """
             SELECT wallet 
-            FROM economy 
+            FROM public.economy 
             WHERE user_id = $1
             """,
             ctx.author.id
@@ -642,7 +642,7 @@ class Yugioh(Cog):
             
         await self.bot.db.execute(
                     """
-                    UPDATE economy 
+                    UPDATE public.economy 
                     SET wallet = wallet - $1 
                     WHERE user_id = $2
                     """,
@@ -652,7 +652,7 @@ class Yugioh(Cog):
                 
         await self.bot.db.execute(
                     """
-                    INSERT INTO user_transactions (user_id, type, amount, created_at)
+                    INSERT INTO public.user_transactions (user_id, type, amount, created_at)
                     VALUES ($1, $2, $3, CURRENT_TIMESTAMP)
                     """,
                     ctx.author.id, 
@@ -662,7 +662,7 @@ class Yugioh(Cog):
         for card, rarity in cards:
             await self.bot.db.execute(
                     """
-                    INSERT INTO user_cards (user_id, card_id, quantity)
+                    INSERT INTO public.user_cards (user_id, card_id, quantity)
                     VALUES ($1, $2, 1)
                     ON CONFLICT (user_id, card_id) 
                     DO UPDATE SET quantity = user_cards.quantity + 1

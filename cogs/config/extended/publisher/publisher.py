@@ -29,7 +29,7 @@ class Publisher(MixinMeta, metaclass=CompositeMetaClass):
         watched = await self.bot.db.fetch(
             """
             SELECT *
-            FROM publisher
+            FROM public.publisher
             WHERE channel_id = $1
             """,
             message.channel.id,
@@ -48,7 +48,7 @@ class Publisher(MixinMeta, metaclass=CompositeMetaClass):
             )
             await self.bot.db.execute(
                 """
-                DELETE FROM publisher
+                DELETE FROM public.publisher
                 WHERE channel_id = $1
                 """,
                 message.channel.id,
@@ -90,7 +90,7 @@ class Publisher(MixinMeta, metaclass=CompositeMetaClass):
         try:
             await self.bot.db.execute(
                 """
-                INSERT INTO publisher (
+                INSERT INTO public.publisher (
                     guild_id,
                     channel_id
                 )
@@ -124,7 +124,7 @@ class Publisher(MixinMeta, metaclass=CompositeMetaClass):
 
         result = await self.bot.db.execute(
             """
-            DELETE FROM publisher
+            DELETE FROM public.publisher
             WHERE guild_id = $1
             AND channel_id = $2
             """,
@@ -152,7 +152,7 @@ class Publisher(MixinMeta, metaclass=CompositeMetaClass):
 
         result = await self.bot.db.execute(
             """
-            DELETE FROM publisher
+            DELETE FROM public.publisher
             WHERE guild_id = $1
             """,
             ctx.guild.id,
@@ -177,7 +177,7 @@ class Publisher(MixinMeta, metaclass=CompositeMetaClass):
             for record in await self.bot.db.fetch(
                 """
                 SELECT channel_id
-                FROM publisher
+                FROM public.publisher
                 WHERE guild_id = $1
                 """,
                 ctx.guild.id,

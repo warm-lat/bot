@@ -57,7 +57,7 @@ class Listeners(Cog):
         try:
             await self.bot.db.execute(
                 """
-                INSERT INTO avatar_history 
+                INSERT INTO public.avatar_history 
                 (user_id, avatar_url, timestamp)
                 VALUES ($1, $2, NOW())
                 ON CONFLICT (user_id, avatar_url) DO NOTHING
@@ -81,7 +81,7 @@ class Listeners(Cog):
         enabled = await self.bot.db.fetchval(
             """
             SELECT enabled 
-            FROM avatar_history_settings 
+            FROM public.avatar_history_settings 
             WHERE user_id = $1
             """,
             before.id
@@ -96,7 +96,7 @@ class Listeners(Cog):
             stored_avatar = await self.bot.db.fetchrow(
                 """
                 SELECT avatar_hash, avatar_url 
-                FROM avatar_current 
+                FROM public.avatar_current 
                 WHERE user_id = $1
                 """,
                 before.id
@@ -120,7 +120,7 @@ class Listeners(Cog):
                     
                     await self.bot.db.execute(
                         """
-                        INSERT INTO avatar_current (user_id, avatar_hash, avatar_url)
+                        INSERT INTO public.avatar_current (user_id, avatar_hash, avatar_url)
                         VALUES ($1, $2, $3)
                         ON CONFLICT (user_id) DO UPDATE 
                         SET avatar_hash = $2, avatar_url = $3, last_updated = NOW()
@@ -256,9 +256,9 @@ class Listeners(Cog):
         embed.add_field(
             name="**Documentation and Help 📚**",
             value=(
-                "You can always visit our [documentation](https://docs.evict.bot)"
+                "You can always visit our [documentation](https://docs.warm.lat)"
                 " and view the list of commands that are available [here](https://warm.lat/commands)"
-                " - and if that isn't enough, feel free to join our [Support Server](https://discord.gg/warm) for extra assistance!"
+                " - and if that isn't enough, feel free to join our [Support Server](https://discord.gg/apply) for extra assistance!"
             ),
         )
 
@@ -279,7 +279,7 @@ class Listeners(Cog):
                 """
                 SELECT EXISTS(
                     SELECT 1
-                    FROM guildblacklist
+                    FROM public.guildblacklist
                     WHERE guild_id = $1
                 )
                 """,
@@ -293,7 +293,7 @@ class Listeners(Cog):
                 """
                 SELECT EXISTS(
                     SELECT 1
-                    FROM blacklist
+                    FROM public.blacklist
                     WHERE user_id = $1
                 )
                 """,
@@ -317,7 +317,7 @@ class Listeners(Cog):
             check = await self.bot.db.fetchrow(
                 """
                 SELECT role_id 
-                FROM mod 
+                FROM public.mod 
                 WHERE guild_id = $1
                 """,
                 channel.guild.id
@@ -361,7 +361,7 @@ class Listeners(Cog):
         if is_jailed is None:
             check = await self.bot.db.fetchrow(
                 """
-                SELECT * FROM jail 
+                SELECT * FROM public.jail 
                 WHERE guild_id = $1 
                 AND user_id = $2
                 """,
@@ -378,7 +378,7 @@ class Listeners(Cog):
             chec = await self.bot.db.fetchrow(
                 """
                 SELECT role_id 
-                FROM mod 
+                FROM public.mod 
                 WHERE guild_id = $1
                 """,
                 member.guild.id

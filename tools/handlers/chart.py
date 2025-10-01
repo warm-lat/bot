@@ -54,7 +54,7 @@ class EconomyCharts:
                  FROM transactions 
                  WHERE user_id = e.user_id 
                  AND timestamp >= NOW() - INTERVAL '1 hour') as hourly_earnings
-            FROM economy e
+            FROM public.economy e
             WHERE e.user_id = $1
         """, member_id)
 
@@ -86,7 +86,7 @@ class EconomyCharts:
             SELECT 
                 date_trunc('{interval}', timestamp) as time_period,
                 SUM(CASE WHEN action = 'Add' THEN amount ELSE -amount END) as earnings
-            FROM transactions 
+            FROM public.transactions 
             WHERE user_id = $1 
                 AND timestamp >= NOW() - INTERVAL '{interval_str}'
             GROUP BY time_period 

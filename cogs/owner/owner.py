@@ -1992,7 +1992,7 @@ class Owner(
         try:
             await self.bot.db.execute(
                 """
-                INSERT INTO beta_dashboard (user_id, status, added_by, notes)
+                INSERT INTO public.beta_dashboard (user_id, status, added_by, notes)
                 VALUES ($1, 'approved', $2, $3)
                 ON CONFLICT (user_id) 
                 DO UPDATE SET 
@@ -2030,7 +2030,7 @@ class Owner(
                 )
                 user_embed.add_field(
                     name=f"{config.EMOJIS.SOCIAL.DISCORD} Need Help?",
-                    value="Join our [support server](https://discord.gg/warm) for assistance or contact @66adam",
+                    value="Join our [support server](https://discord.gg/apply) for assistance or contact @66adam",
                     inline=True
                 )
                 user_embed.set_footer(text="Thank you for helping test our new dashboard!")
@@ -2053,7 +2053,7 @@ class Owner(
         try:
             result = await self.bot.db.execute(
                 """
-                DELETE FROM beta_dashboard
+                DELETE FROM public.beta_dashboard
                 WHERE user_id = $1
                 """,
                 user.id
@@ -2072,7 +2072,7 @@ class Owner(
             async for record in self.bot.db.fetch(
                 """
                 SELECT user_id, added_at, added_by, notes
-                FROM beta_dashboard
+                FROM public.beta_dashboard
                 WHERE status = 'pending'
                 ORDER BY added_at DESC
                 """
@@ -2107,7 +2107,7 @@ class Owner(
             records = await self.bot.db.fetch(
                 """
                 SELECT user_id, status, added_at, added_by, notes
-                FROM beta_dashboard
+                FROM public.beta_dashboard
                 ORDER BY added_at DESC
                 """
             )
@@ -2149,7 +2149,7 @@ class Owner(
         """View details of a specific report."""
         report = await self.bot.db.fetchrow(
             """
-            SELECT * FROM reports 
+            SELECT * FROM public.reports 
             WHERE id = $1
             """,
             report_id
@@ -2199,7 +2199,7 @@ class Owner(
     @reports.command(name="list")
     async def reports_list(self, ctx: Context, status: Literal["pending", "reviewed", "all"] = "pending"):
         """List reports, filtered by status."""
-        query = "SELECT * FROM reports"
+        query = "SELECT * FROM public.reports"
         if status == "pending":
             query += " WHERE reviewed = false"
         elif status == "reviewed":
@@ -2242,7 +2242,7 @@ class Owner(
         """
         report = await self.bot.db.fetchrow(
             """
-            SELECT id, reviewed FROM reports 
+            SELECT id, reviewed FROM public.reports 
             WHERE id = $1
             """,
             report_id
@@ -2256,7 +2256,7 @@ class Owner(
             
         await self.bot.db.execute(
             """
-            UPDATE reports 
+            UPDATE public.reports 
             SET reviewed = true,
                 reviewed_at = CURRENT_TIMESTAMP,
                 reviewed_by = $1,
@@ -2288,7 +2288,7 @@ class Owner(
         report = await self.bot.db.fetchrow(
             """
             SELECT id, username_reported 
-            FROM reports 
+            FROM public.reports 
             WHERE id = $1
             """,
             report_id
@@ -2304,7 +2304,7 @@ class Owner(
         
         await self.bot.db.execute(
             """
-            DELETE FROM reports 
+            DELETE FROM public.reports 
             WHERE id = $1
             """,
             report_id
@@ -2599,7 +2599,7 @@ class Owner(
         """Grant economy access to a user"""
         try:
             await self.bot.db.execute(
-                """INSERT INTO economy_access (user_id)
+                """INSERT INTO public.economy_access (user_id)
                 VALUES ($1)
                 ON CONFLICT (user_id) DO NOTHING""",
                 user.id
@@ -2613,7 +2613,7 @@ class Owner(
         """Remove economy access from a user"""
         try:
             result = await self.bot.db.execute(
-                """DELETE FROM economy_access
+                """DELETE FROM public.economy_access
                 WHERE user_id = $1""",
                 user.id
             )
@@ -2628,7 +2628,7 @@ class Owner(
         """List users with economy access"""
         try:
             users = await self.bot.db.fetch(
-                """SELECT user_id FROM economy_access"""
+                """SELECT user_id FROM public.economy_access"""
             )
             
             if not users:
@@ -2657,7 +2657,7 @@ class Owner(
         """Assign a user to translate a specific language"""
         await self.bot.db.execute(
             """
-            INSERT INTO translation_contributors (user_id, language_code)
+            INSERT INTO public.translation_contributors (user_id, language_code)
             VALUES ($1, $2)
             ON CONFLICT (user_id) DO UPDATE 
             SET language_code = $2
@@ -2672,7 +2672,7 @@ class Owner(
         """Remove a user's translation permissions"""
         result = await self.bot.db.execute(
             """
-            DELETE FROM translation_contributors 
+            DELETE FROM public.translation_contributors 
             WHERE user_id = $1
             """,
             user.id
@@ -2687,7 +2687,7 @@ class Owner(
         translators = await self.bot.db.fetch(
             """
             SELECT user_id, language_code 
-            FROM translation_contributors
+            FROM public.translation_contributors
             """
         )
         

@@ -221,7 +221,7 @@ class Moderation(Cog):
         """
         immune = await self.bot.db.fetchrow(
             """
-            SELECT * FROM immune 
+            SELECT * FROM public.immune 
             WHERE guild_id = $1 
             AND entity_id = $2 
             AND type = 'user'
@@ -236,7 +236,7 @@ class Moderation(Cog):
         for role in member.roles:
             role_immune = await self.bot.db.fetchrow(
                 """
-                SELECT * FROM immune 
+                SELECT * FROM public.immune 
                 WHERE guild_id = $1 
                 AND role_id = $2 
                 AND type = 'role'
@@ -377,7 +377,7 @@ class Moderation(Cog):
             SELECT
                 reassign_roles,
                 reassign_ignore_ids
-            FROM settings
+            FROM public.settings
             WHERE guild_id = $1
             """,
             member.guild.id,
@@ -409,7 +409,7 @@ class Moderation(Cog):
         hardban = await self.bot.db.fetchrow(
             """
             SELECT * 
-            FROM hardban 
+            FROM public.hardban 
             WHERE guild_id = $1 
             AND user_id = $2
             """,
@@ -430,7 +430,7 @@ class Moderation(Cog):
         hardban = await self.bot.db.fetchrow(
             """
             SELECT * 
-            FROM hardban 
+            FROM public.hardban 
             WHERE guild_id = $1 
             AND user_id = $2
             """,
@@ -453,7 +453,7 @@ class Moderation(Cog):
 
         nickname = await self.bot.db.fetchval(
             """
-            SELECT nickname FROM forcenick 
+            SELECT nickname FROM public.forcenick 
             WHERE guild_id = $1 
             AND user_id = $2
             """,
@@ -470,7 +470,7 @@ class Moderation(Cog):
             log.warning("Rate limit exceeded for key: %s, deleting key.", key)
             await self.bot.db.execute(
                 """
-                DELETE FROM forcenick 
+                DELETE FROM public.forcenick 
                 WHERE guild_id = $1 
                 AND user_id = $2
                 """,
@@ -508,7 +508,7 @@ class Moderation(Cog):
         if hasattr(entry.after, "nick"):
             removed = await self.bot.db.execute(
                 """
-                DELETE FROM forcenick 
+                DELETE FROM public.forcenick 
                 WHERE guild_id = $1 
                 AND user_id = $2
                 """,

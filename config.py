@@ -16,6 +16,9 @@ class EMOJIS:
         APPROVE: str = ""
         DENY: str = ""
         WARN: str = ""
+        LEFT: str = ""
+        RIGHT: str = ""
+        FILTER: str = ""
     
     class SOCIAL:
         DISCORD: str = ""
@@ -46,14 +49,30 @@ class EMOJIS:
         INSTANCE: str = ""
         STAFF: str = ""
         
+    class SPOTIFY:
+        ICON: str = ""
+        LEFT: str = ""
+        RIGHT: str = ""
+        BLACK: str = ""
+        WHITE: str = ""
+        BLACK_RIGHT: str = ""
+        EXPLCIT: str = ""
+        LISTENING: str = ""
+        SHUFFLE: str = ""
+        REPEAT: str = ""
+        DEVICE: str = ""
+        FAVORITE: str = ""
+        REMOVE: str = ""
+        
 
 class AUTHORIZATION:
     OPENAI: str = "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"
     JEYY_API: str = "74PJCE1J60PJ4CHN70P38C1K6OP3G.CLR6IORKEDLMIP0.C8m29OywqHgCNiZoOMDlqg"
     LOVENSE: str = "47WvqON2D9RDVfd8Tv7BJ2dXs-95Kwaws7AriGUdpH5_zl_aKLBzTVPiqQFQPNri"
-    KRAKEN: str = ""
+    KRAKEN: str = "MWEzMmE1YjJlNDQ0YjFjMRfCh9dBng0CbbxTTVG-KsbYhsMtiWD6lucki4tbq3L2"
     FERNET_KEY: str = "Ye0cdyst0iGNFo7vlvfyjZx7fBsNnzu0Xc7m5wHIavo="
     WEATHER: str = "6a3ab4420afb487794d171848253009"
+    WOLFRAM: str = ""
     
     class REDDIT:
         CLIENT_ID: str = "7s2HJa0My0keJAiLvFhvZQ"
@@ -68,6 +87,7 @@ class COLORS:
     APPROVE: int = 0x57F287
     DENY: int = 0xED4245
     WARN: int = 0xFEE75C
+    SPOTIFY: int = 0x1ED760
 
 class LOGGER:
     GUILD_JOIN_LOGGER: int = 1421685971308773447

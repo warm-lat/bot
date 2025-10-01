@@ -161,7 +161,7 @@ class CryptoView(discord.ui.View):
         self.add_item(
             discord.ui.Button(
                 label="Card Payment",
-                url="https://donate.stripe.com/cN26ra4tXgrg3T2cMR", 
+                url="https://donate.stripe.com/", 
                 style=discord.ButtonStyle.url,
                 emoji=config.EMOJIS.SOCIAL.WEBSITE
             )
@@ -184,7 +184,7 @@ class CryptoButton(discord.ui.Button):
                 f"{config.EMOJIS.MISC.XRP} **XRP (XRP): **`rw2ciyaNshpHe7bCHo4bRWq6pqqynnWKQg`\n"
                 f"{config.EMOJIS.MISC.LITECOIN}**LTC (Litecoin): **`ltc1qfl5pg0ds68p9fm8h4tez8qm87xdhl64n3xrttv`\n"
                 "\nWe also accept donations via the tip.cc Discord bot, please use `$tip @_mism. <amount> <currency>`. Currency **must be** one of the listed above.\n"
-                "\nAfter sending, please open a ticket in our [Discord server](https://discord.gg/warm) with your transaction hash. Payment via Crypto is not automated."
+                "\nAfter sending, please open a ticket in our [Discord server](https://discord.gg/apply) with your transaction hash. Payment via Crypto is not automated."
             ),
             color=discord.Color.gold()
         )
@@ -336,7 +336,7 @@ class Utility(Extended, Cog):
                 media_type = record['type']
                 category = record['category']
 
-                base_url = f"https://cdn.evict.bot/random/{media_type}s"
+                base_url = f"https://cdn.warm.lat/random/{media_type}s"
                 if category != "random":
                     base_url = f"{base_url}/{category}"
 
@@ -366,7 +366,7 @@ class Utility(Extended, Cog):
                         
                         filename_without_ext = data['filename'].split('.')[0]
                         embed.set_footer(
-                            text=f"{data['category']} • id: {filename_without_ext} • /avreport • discord.gg/warm"
+                            text=f"{data['category']} • id: {filename_without_ext} • /avreport • discord.gg/apply"
                         )
                         
                         await channel.send(embed=embed, file=file)
@@ -417,7 +417,7 @@ class Utility(Extended, Cog):
         record = await self.bot.db.fetchrow(
             """
             SELECT channel_id, embeds
-            FROM quoter
+            FROM public.quoter
             WHERE guild_id = $1
             AND emoji = $2
             """,
@@ -507,7 +507,7 @@ class Utility(Extended, Cog):
                 channel_id = await self.bot.db.fetchval(
                     """
                     SELECT vanity_channel_id 
-                    FROM tracker 
+                    FROM public.tracker 
                     WHERE guild_id = $1
                     """,
                     guild.id,
@@ -562,7 +562,7 @@ class Utility(Extended, Cog):
                 channel_id = await self.bot.db.fetchval(
                     """
                     SELECT username_channel_id 
-                    FROM tracker 
+                    FROM public.tracker 
                     WHERE guild_id = $1
                     """,
                     guild.id,
@@ -614,7 +614,7 @@ class Utility(Extended, Cog):
             Optional[datetime],
             await self.bot.db.fetchval(
                 """
-                DELETE FROM afk
+                DELETE FROM public.afk
                 WHERE user_id = $1
                 RETURNING left_at
                 """,
@@ -637,7 +637,7 @@ class Utility(Extended, Cog):
             if record := await self.bot.db.fetchrow(
                 """
                 SELECT status, left_at
-                FROM afk
+                FROM public.afk
                 WHERE user_id = $1
                 """,
                 user.id,
@@ -659,7 +659,7 @@ class Utility(Extended, Cog):
         """
         await self.bot.db.execute(
                 """
-                INSERT INTO afk (user_id, status)
+                INSERT INTO public.afk (user_id, status)
                 VALUES ($1, $2)
                 ON CONFLICT (user_id) 
                 DO UPDATE SET status = EXCLUDED.status
@@ -907,7 +907,7 @@ class Utility(Extended, Cog):
         is_donor = await self.bot.db.fetchval(
             """
             SELECT EXISTS(
-                SELECT 1 FROM donators 
+                SELECT 1 FROM public.donators 
                 WHERE user_id = $1
             )
             """,
@@ -1200,7 +1200,7 @@ class Utility(Extended, Cog):
             await self.bot.db.fetchval(
                 """
                 SELECT birthday
-                FROM birthdays
+                FROM public.birthdays
                 WHERE user_id = $1
                 """,
                 member.id,
@@ -1263,7 +1263,7 @@ class Utility(Extended, Cog):
 
         await self.bot.db.execute(
             """
-            INSERT INTO birthdays (user_id, birthday)
+            INSERT INTO public.birthdays (user_id, birthday)
             VALUES ($1, $2)
             ON CONFLICT (user_id) DO UPDATE
             SET birthday = EXCLUDED.birthday
@@ -1302,7 +1302,7 @@ class Utility(Extended, Cog):
             await self.bot.db.fetchval(
                 """
                 SELECT timezone
-                FROM timezones
+                FROM public.timezones
                 WHERE user_id = $1
                 """,
                 target.id,
@@ -1345,7 +1345,7 @@ class Utility(Extended, Cog):
         """
         await self.bot.db.execute(
             """
-            INSERT INTO timezones (user_id, timezone)
+            INSERT INTO public.timezones (user_id, timezone)
             VALUES ($1, $2)
             ON CONFLICT (user_id) DO UPDATE
             SET timezone = EXCLUDED.timezone
@@ -1417,7 +1417,7 @@ class Utility(Extended, Cog):
 
         channel_id = await self.bot.db.fetchval(
             """SELECT channel_id 
-            FROM quoter WHERE 
+            FROM public.quoter WHERE 
             guild_id = $1""",
             ctx.guild.id,
         )
@@ -1481,7 +1481,7 @@ class Utility(Extended, Cog):
 
         await self.bot.db.execute(
             """
-            INSERT INTO quoter (guild_id, channel_id)
+            INSERT INTO public.quoter (guild_id, channel_id)
             VALUES ($1, $2)
             ON CONFLICT (guild_id)
             DO UPDATE SET channel_id = EXCLUDED.channel_id
@@ -1508,7 +1508,7 @@ class Utility(Extended, Cog):
 
         await self.bot.db.execute(
             """
-            INSERT INTO quoter (guild_id, emoji)
+            INSERT INTO public.quoter (guild_id, emoji)
             VALUES ($1, $2)
             ON CONFLICT (guild_id)
             DO UPDATE SET emoji = EXCLUDED.emoji
@@ -1529,7 +1529,7 @@ class Utility(Extended, Cog):
             bool,
             await self.bot.db.fetchval(
                 """
-                INSERT INTO quoter (guild_id)
+                INSERT INTO public.quoter (guild_id)
                 VALUES ($1)
                 ON CONFLICT (guild_id)
                 DO UPDATE SET embeds = NOT quoter.embeds
@@ -1988,7 +1988,7 @@ class Utility(Extended, Cog):
 
         await self.bot.db.execute(
             """
-            INSERT INTO tracker (guild_id, vanity_channel_id)
+            INSERT INTO public.tracker (guild_id, vanity_channel_id)
             VALUES ($1, $2)
             ON CONFLICT (guild_id)
             DO UPDATE SET vanity_channel_id = EXCLUDED.vanity_channel_id
@@ -2007,7 +2007,7 @@ class Utility(Extended, Cog):
         channel_id = await self.bot.db.fetchval(
             """
             SELECT vanity_channel_id 
-            FROM tracker 
+            FROM public.tracker 
             WHERE guild_id = $1
             """,
             ctx.guild.id,
@@ -2019,7 +2019,7 @@ class Utility(Extended, Cog):
 
         await self.bot.db.execute(
             """
-            UPDATE tracker
+            UPDATE public.tracker
             SET vanity_channel_id = NULL 
             WHERE guild_id = $1
             """,
@@ -2045,7 +2045,7 @@ class Utility(Extended, Cog):
 
         await self.bot.db.execute(
             """
-            INSERT INTO tracker (guild_id, username_channel_id)
+            INSERT INTO public.tracker (guild_id, username_channel_id)
             VALUES ($1, $2)
             ON CONFLICT (guild_id)
             DO UPDATE SET username_channel_id = EXCLUDED.username_channel_id
@@ -2064,7 +2064,7 @@ class Utility(Extended, Cog):
         channel_id = await self.bot.db.fetchval(
             """
             SELECT username_channel_id 
-            FROM tracker 
+            FROM public.tracker 
             WHERE guild_id = $1
             """,
             ctx.guild.id,
@@ -2076,7 +2076,7 @@ class Utility(Extended, Cog):
 
         await self.bot.db.execute(
             """
-            UPDATE tracker
+            UPDATE public.tracker
             SET username_channel_id = NULL 
             WHERE guild_id = $1
             """,
@@ -2201,7 +2201,7 @@ class Utility(Extended, Cog):
     @hybrid_command()
     async def avreport(self, ctx: Context, image_id: str, category: str):
         """Report an inappropriate image."""
-        report_channel = self.bot.get_channel(1309178072657821808)
+        report_channel = self.bot.get_channel(1422688372895383652)
         if not report_channel:
             return await ctx.warn("Report channel not found.")
 
@@ -3122,7 +3122,7 @@ class Utility(Extended, Cog):
             view.add_item(
                 discord.ui.Button(
                     label="Become a Donor",
-                    url="https://donate.stripe.com/cN26ra4tXgrg3T2cMR",
+                    url="https://donate.stripe.com/",
                     style=discord.ButtonStyle.url
                 )
             )
@@ -3300,7 +3300,7 @@ class Utility(Extended, Cog):
         is_donor = await self.bot.db.fetchval(
             """
             SELECT EXISTS(
-                SELECT 1 FROM donators 
+                SELECT 1 FROM public.donators 
                 WHERE user_id = $1
             )
             """,
@@ -3315,7 +3315,7 @@ class Utility(Extended, Cog):
             credits = await self.bot.db.fetchval(
                 """
                 SELECT credits
-                FROM dalle_credits
+                FROM public.dalle_credits
                 WHERE user_id = $1
                 """,
                 ctx.author.id
@@ -3324,7 +3324,7 @@ class Utility(Extended, Cog):
             if credits is None:
                 await self.bot.db.execute(
                     """
-                    INSERT INTO dalle_credits (user_id, credits, last_reset)
+                    INSERT INTO public.dalle_credits (user_id, credits, last_reset)
                     VALUES ($1, $2, NOW())
                     """,
                     ctx.author.id,
@@ -3335,7 +3335,7 @@ class Utility(Extended, Cog):
             last_reset = await self.bot.db.fetchval(
                 """
                 SELECT last_reset
-                FROM dalle_credits
+                FROM public.dalle_credits
                 WHERE user_id = $1
                 """,
                 ctx.author.id
@@ -3344,7 +3344,7 @@ class Utility(Extended, Cog):
             if (datetime.now() - last_reset).days >= 14:
                 await self.bot.db.execute(
                     """
-                    UPDATE dalle_credits
+                    UPDATE public.dalle_credits
                     SET credits = $1, last_reset = NOW()
                     WHERE user_id = $2
                     """,
@@ -3374,7 +3374,7 @@ class Utility(Extended, Cog):
                 view.add_item(
                     discord.ui.Button(
                         label="Become a Donor",
-                        url="https://donate.stripe.com/cN26ra4tXgrg3T2cMR",
+                        url="https://donate.stripe.com/",
                         style=discord.ButtonStyle.url
                     )
                 )
@@ -3445,7 +3445,7 @@ class Utility(Extended, Cog):
                     new_credits = credits - base_cost
                     await self.bot.db.execute(
                         """
-                        UPDATE dalle_credits
+                        UPDATE public.dalle_credits
                         SET credits = $1
                         WHERE user_id = $2
                         """,
@@ -3490,7 +3490,7 @@ class Utility(Extended, Cog):
         is_donor = await self.bot.db.fetchval(
             """
             SELECT EXISTS(
-                SELECT 1 FROM donators 
+                SELECT 1 FROM public.donators 
                 WHERE user_id = $1
             )
             """,
@@ -3501,7 +3501,7 @@ class Utility(Extended, Cog):
             credits = await self.bot.db.fetchval(
                 """
                 SELECT credits
-                FROM dalle_credits
+                FROM public.dalle_credits
                 WHERE user_id = $1
                 """,
                 ctx.author.id
@@ -3510,36 +3510,36 @@ class Utility(Extended, Cog):
             if credits is None:
                 await self.bot.db.execute(
                     """
-                    INSERT INTO dalle_credits (user_id, credits, last_reset)
+                    INSERT INTO public.dalle_credits (user_id, credits, last_reset)
                     VALUES ($1, $2, NOW())
                     """,
                     ctx.author.id,
-                    15.00 
+                    10.00 
                 )
-                credits = 15.00
+                credits = 10.00
 
             last_reset = await self.bot.db.fetchval(
                 """
                 SELECT last_reset
-                FROM dalle_credits
+                FROM public.dalle_credits
                 WHERE user_id = $1
                 """,
                 ctx.author.id
             )
 
-            if (datetime.now() - last_reset).days >= 14:
+            if (datetime.now() - last_reset).days >= 30:
                 await self.bot.db.execute(
                     """
-                    UPDATE dalle_credits
+                    UPDATE public.dalle_credits
                     SET credits = $1, last_reset = NOW()
                     WHERE user_id = $2
                     """,
-                    15.00,
+                    10.00,
                     ctx.author.id
                 )
-                credits = 15.00
+                credits = 10.00
 
-            days_until_reset = 14 - (datetime.now() - last_reset).days
+            days_until_reset = 30- (datetime.now() - last_reset).days
             embed = Embed(
                 title="DALL-E Credits",
                 description=f"You have ${credits:.3f} credits remaining.\n"
@@ -3548,7 +3548,7 @@ class Utility(Extended, Cog):
                 "- Standard quality: $0.040 per image\n"
                 "- HD quality: $0.080 per image\n"
                 "- Portrait/Landscape: Double the cost\n"
-                "- Premium users get $15 worth of credits every 2 weeks"
+                "- Premium users get $10 worth of credits every month"
             )
             embed.set_footer(text="Contact support to request increased limits")
 
@@ -3575,7 +3575,7 @@ class Utility(Extended, Cog):
                 view.add_item(
                     discord.ui.Button(
                         label="Become a Donor",
-                        url="https://donate.stripe.com/cN26ra4tXgrg3T2cMR",
+                        url="https://donate.stripe.com/",
                         style=discord.ButtonStyle.url
                     )
                 )
@@ -3591,7 +3591,7 @@ class Utility(Extended, Cog):
         is_donor = await self.bot.db.fetchval(
             """
             SELECT EXISTS(
-                SELECT 1 FROM donators 
+                SELECT 1 FROM public.donators 
                 WHERE user_id = $1
             )
             """,
@@ -3602,7 +3602,7 @@ class Utility(Extended, Cog):
             credits = await self.bot.db.fetchval(
                 """
                 SELECT credits
-                FROM dalle_credits
+                FROM public.dalle_credits
                 WHERE user_id = $1
                 """,
                 ctx.author.id
@@ -3611,18 +3611,18 @@ class Utility(Extended, Cog):
             if credits is None:
                 await self.bot.db.execute(
                     """
-                    INSERT INTO dalle_credits (user_id, credits, last_reset)
+                    INSERT INTO public.dalle_credits (user_id, credits, last_reset)
                     VALUES ($1, $2, NOW())
                     """,
                     ctx.author.id,
-                    15.00
+                    10.00
                 )
-                credits = 15.00
+                credits = 10.00
 
             last_reset = await self.bot.db.fetchval(
                 """
                 SELECT last_reset
-                FROM dalle_credits
+                FROM public.dalle_credits
                 WHERE user_id = $1
                 """,
                 ctx.author.id
@@ -3641,7 +3641,7 @@ class Utility(Extended, Cog):
                     "- Non-square sizes cost 2x more"
                 )
             )
-            embed.set_footer(text="Premium User • Credits reset every 2 weeks")
+            embed.set_footer(text="Premium User • Credits reset every month")
             return await ctx.send(embed=embed)
         else:
             key = f"imagine:{ctx.author.id}"
@@ -3655,7 +3655,7 @@ class Utility(Extended, Cog):
                 view.add_item(
                     discord.ui.Button(
                         label="Become a Donor",
-                        url="https://donate.stripe.com/cN26ra4tXgrg3T2cMR",
+                        url="https://donate.stripe.com/",
                         style=discord.ButtonStyle.url
                     )
                 )
@@ -3666,7 +3666,7 @@ class Utility(Extended, Cog):
                     f"**Remaining Uses:** {remaining}/2\n"
                     f"**Time until reset:** {int(ttl) if ttl > 0 else 0} seconds\n\n"
                     "**Premium Benefits:**\n"
-                    "- $15 worth of credits every 2 weeks\n"
+                    "- $10 worth of credits every month\n"
                     "- Higher quality options\n"
                     "- More size options"
                 )
@@ -3712,7 +3712,7 @@ class Utility(Extended, Cog):
         is_donor = await self.bot.db.fetchval(
             """
             SELECT EXISTS(
-                SELECT 1 FROM donators 
+                SELECT 1 FROM public.donators 
                 WHERE user_id = $1
             )
             """,
@@ -3725,7 +3725,7 @@ class Utility(Extended, Cog):
             credits = await self.bot.db.fetchval(
                 """
                 SELECT credits
-                FROM dalle_credits
+                FROM public.dalle_credits
                 WHERE user_id = $1
                 """,
                 ctx.author.id
@@ -3743,13 +3743,13 @@ class Utility(Extended, Cog):
             if uses and int(uses) >= 2:
                 embed = Embed(
                     color=config.COLORS.WARN,
-                    description=f"> {config.EMOJIS.CONTEXT.WARN} {ctx.author.mention}: Rate limit exceeded! Try again in 24h.\n\nDonors get $15 worth of credits every 2 weeks!"
+                    description=f"> {config.EMOJIS.CONTEXT.WARN} {ctx.author.mention}: Rate limit exceeded! Try again in 24h.\n\nDonors get $10 worth of credits every month!"
                 )
                 view = discord.ui.View()
                 view.add_item(
                     discord.ui.Button(
                         label="Become a Donor",
-                        url="https://donate.stripe.com/cN26ra4tXgrg3T2cMR",
+                        url="https://donate.stripe.com/",
                         style=discord.ButtonStyle.url
                     )
                 )
@@ -3800,7 +3800,7 @@ class Utility(Extended, Cog):
                 if is_donor:
                     await self.bot.db.execute(
                         """
-                        UPDATE dalle_credits
+                        UPDATE public.dalle_credits
                         SET credits = credits - $1
                         WHERE user_id = $2
                         """,
@@ -3835,7 +3835,7 @@ class Utility(Extended, Cog):
         is_donor = await self.bot.db.fetchval(
             """
             SELECT EXISTS(
-                SELECT 1 FROM donators 
+                SELECT 1 FROM public.donators 
                 WHERE user_id = $1
             )
             """,
@@ -3848,7 +3848,7 @@ class Utility(Extended, Cog):
             credits = await self.bot.db.fetchval(
                 """
                 SELECT credits
-                FROM dalle_credits
+                FROM public.dalle_credits
                 WHERE user_id = $1
                 """,
                 ctx.author.id
@@ -3866,13 +3866,13 @@ class Utility(Extended, Cog):
             if uses and int(uses) >= 3:
                 embed = Embed(
                     color=config.COLORS.WARN,
-                    description=f"> {config.EMOJIS.CONTEXT.WARN} {ctx.author.mention}: Rate limit exceeded! Try again in 24h.\n\nDonors get $15 worth of credits every 2 weeks!"
+                    description=f"> {config.EMOJIS.CONTEXT.WARN} {ctx.author.mention}: Rate limit exceeded! Try again in 24h.\n\nDonors get $10 worth of credits every month!"
                 )
                 view = discord.ui.View()
                 view.add_item(
                     discord.ui.Button(
                         label="Become a Donor",
-                        url="https://donate.stripe.com/cN26ra4tXgrg3T2cMR",
+                        url="https://donate.stripe.com/",
                         style=discord.ButtonStyle.url
                     )
                 )
@@ -3908,7 +3908,7 @@ class Utility(Extended, Cog):
                 if is_donor:
                     await self.bot.db.execute(
                         """
-                        UPDATE dalle_credits
+                        UPDATE public.dalle_credits
                         SET credits = credits - $1
                         WHERE user_id = $2
                         """,
@@ -3942,7 +3942,7 @@ class Utility(Extended, Cog):
             description=(
                 "Support Warm's development and get access to exclusive features!\n\n"
                 "**Monthly Perks:**\n"
-                "- $15 worth of DALL-E & OpenAI credits every 2 weeks & More image size options\n" 
+                "- $10 worth of DALL-E & OpenAI credits every month & More image size options\n" 
                 "- Higher quality image generation options\n"
                 "- Access to reskin features, less ratelimits & increased income \n"
                 "- Priority support in our Discord server\n"
@@ -3954,7 +3954,7 @@ class Utility(Extended, Cog):
                 "- Non-square sizes cost 2x more\n"
                 "- GPT-4 Vision: $0.050 per analysis\n"
                 "- Text completion: $0.020 per request\n\n"
-                "Join our [Discord server](https://discord.gg/warm) to get your donator role and access exclusive channels! This is entierely automated, as soon as payment is completed you will receive your perks. "
+                "Join our [Discord server](https://discord.gg/apply) to get your donator role and access exclusive channels! This is entierely automated, as soon as payment is completed you will receive your perks. "
             ),
             color=discord.Color.gold()
         )
@@ -4024,7 +4024,7 @@ class Utility(Extended, Cog):
 
         instance = await self.bot.db.fetchrow(
             """
-            SELECT * FROM instances 
+            SELECT * FROM public.instances 
             WHERE user_id = $1 AND status = 'active'
             ORDER BY purchased_at DESC
             LIMIT 1
@@ -4111,7 +4111,7 @@ class Utility(Extended, Cog):
                     
                     await self.bot.db.execute(
                         """
-                        UPDATE instances 
+                        UPDATE public.instances 
                         SET status = 'deployed'
                         WHERE id = $1
                         """,
@@ -4153,7 +4153,7 @@ class Utility(Extended, Cog):
         
         instances = await self.bot.db.fetch(
             """
-            SELECT * FROM instances 
+            SELECT * FROM public.instances 
             WHERE user_id = $1
             ORDER BY purchased_at DESC
             """,
@@ -4551,7 +4551,7 @@ class Utility(Extended, Cog):
         try:
             await self.bot.db.execute(
                 """
-                INSERT INTO user_links (user_id, type, url)
+                INSERT INTO public.user_links (user_id, type, url)
                 VALUES ($1, $2, $3)
                 ON CONFLICT (user_id, type) 
                 DO UPDATE SET url = $3
@@ -4586,7 +4586,7 @@ class Utility(Extended, Cog):
         try:
             result = await self.bot.db.execute(
                 """
-                DELETE FROM user_links
+                DELETE FROM public.user_links
                 WHERE user_id = $1 AND type = $2
                 """,
                 ctx.author.id,
@@ -4617,7 +4617,7 @@ class Utility(Extended, Cog):
         links = await self.bot.db.fetch(
             """
             SELECT type, url 
-            FROM user_links 
+            FROM public.user_links 
             WHERE user_id = $1
             """,
             user.id
@@ -4644,7 +4644,7 @@ class Utility(Extended, Cog):
         avatars = await self.bot.db.fetch(
             """
             SELECT avatar_url, timestamp
-            FROM avatar_history
+            FROM public.avatar_history
             WHERE user_id = $1 AND deleted_at IS NULL
             ORDER BY timestamp DESC
             LIMIT 16
@@ -4743,7 +4743,7 @@ class Utility(Extended, Cog):
         async with ctx.typing():
             await self.bot.db.execute(
                 """
-                INSERT INTO avatar_history_settings (user_id, enabled) 
+                INSERT INTO public.avatar_history_settings (user_id, enabled) 
                 VALUES ($1, TRUE)
                 ON CONFLICT (user_id) DO UPDATE SET enabled = TRUE
                 """,
@@ -4765,7 +4765,7 @@ class Utility(Extended, Cog):
                     
                     await self.bot.db.execute(
                         """
-                        INSERT INTO avatar_current (user_id, avatar_hash, avatar_url)
+                        INSERT INTO public.avatar_current (user_id, avatar_hash, avatar_url)
                         VALUES ($1, $2, $3)
                         ON CONFLICT (user_id) DO UPDATE 
                         SET avatar_hash = $2, avatar_url = $3, last_updated = NOW()
@@ -4784,7 +4784,7 @@ class Utility(Extended, Cog):
         """Disable avatar history tracking for yourself"""
         await self.bot.db.execute(
             """
-            INSERT INTO avatar_history_settings (user_id, enabled) 
+            INSERT INTO public.avatar_history_settings (user_id, enabled) 
             VALUES ($1, FALSE)
             ON CONFLICT (user_id) DO UPDATE SET enabled = FALSE
             """,
@@ -4814,7 +4814,7 @@ class Utility(Extended, Cog):
                     return await ctx.warn("Failed to delete avatar history")
 
             deleted = await self.bot.db.execute(
-                "DELETE FROM avatar_history WHERE user_id = $1",
+                "DELETE FROM public.avatar_history WHERE user_id = $1",
                 ctx.author.id
             )
             
@@ -4900,14 +4900,14 @@ class Utility(Extended, Cog):
         last_vote = await self.bot.db.fetchval(
             """
             SELECT last_vote_time 
-            FROM user_votes 
+            FROM public.user_votes 
             WHERE user_id = $1
             """, 
             ctx.author.id
         )
         
         donator = await self.bot.db.fetchrow(
-            "SELECT * FROM donators WHERE user_id = $1",
+            "SELECT * FROM public.donators WHERE user_id = $1",
             ctx.author.id
         )
 
@@ -5011,7 +5011,7 @@ class Utility(Extended, Cog):
         - 1d12h = 1 day 12 hours
         """
         current_reminders = await self.bot.db.fetchval(
-            "SELECT COUNT(*) FROM reminders WHERE user_id = $1",
+            "SELECT COUNT(*) FROM public.reminders WHERE user_id = $1",
             ctx.author.id
         )
         if current_reminders >= 3:
@@ -5030,7 +5030,7 @@ class Utility(Extended, Cog):
         
         await self.bot.db.execute(
             """
-            INSERT INTO reminders (user_id, reminder, remind_at, invoked_at, message_url)
+            INSERT INTO public.reminders (user_id, reminder, remind_at, invoked_at, message_url)
             VALUES ($1, $2, $3, $4, $5)
             """,
             ctx.author.id,
@@ -5046,7 +5046,7 @@ class Utility(Extended, Cog):
     async def reminder_list(self, ctx: Context):
         """List your active reminders"""
         reminders = await self.bot.db.fetch(
-            "SELECT * FROM reminders WHERE user_id = $1 ORDER BY remind_at",
+            "SELECT * FROM public.reminders WHERE user_id = $1 ORDER BY remind_at",
             ctx.author.id
         )
 
@@ -5071,7 +5071,7 @@ class Utility(Extended, Cog):
     async def reminder_remove(self, ctx: Context, index: int):
         """Remove a reminder by its number (use reminder list to see numbers)"""
         reminders = await self.bot.db.fetch(
-            "SELECT * FROM reminders WHERE user_id = $1 ORDER BY remind_at",
+            "SELECT * FROM public.reminders WHERE user_id = $1 ORDER BY remind_at",
             ctx.author.id
         )
 
@@ -5083,7 +5083,7 @@ class Utility(Extended, Cog):
 
         reminder = reminders[index - 1]
         await self.bot.db.execute(
-            "DELETE FROM reminders WHERE user_id = $1 AND remind_at = $2 AND reminder = $3",
+            "DELETE FROM public.reminders WHERE user_id = $1 AND remind_at = $2 AND reminder = $3",
             ctx.author.id,
             reminder['remind_at'],
             reminder['reminder']
@@ -5095,7 +5095,7 @@ class Utility(Extended, Cog):
     async def reminder_clear(self, ctx: Context):
         """Remove all your active reminders"""
         count = await self.bot.db.fetchval(
-            "SELECT COUNT(*) FROM reminders WHERE user_id = $1",
+            "SELECT COUNT(*) FROM public.reminders WHERE user_id = $1",
             ctx.author.id
         )
 

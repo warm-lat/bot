@@ -26,7 +26,7 @@ from main import Evict
 #             ctx.author.id
 #         )
 #         if not is_allowed:
-#             await ctx.warn("You don't have access to economy commands yet, please read https://discord.com/channels/892675627373699072/1315003375296839741/1331888247860887582 in [the support server](https://discord.gg/warm)!")
+#             await ctx.warn("You don't have access to economy commands yet, please read https://discord.com/channels/892675627373699072/1315003375296839741/1331888247860887582 in [the support server](https://discord.gg/apply)!")
 #             return False
 #         return True
 #     return commands.check(predicate)
@@ -117,7 +117,7 @@ class Economy(commands.Cog):
         """
         await self.bot.db.execute(
             """
-            INSERT INTO user_transactions 
+            INSERT INTO public.user_transactions 
             (user_id, type, amount, created_at)
             VALUES ($1, $2, $3, CURRENT_TIMESTAMP)
             """,
@@ -136,7 +136,7 @@ class Economy(commands.Cog):
             """
             SELECT EXISTS(
                 SELECT 1 
-                FROM economy 
+                FROM public.economy 
                 WHERE user_id = $1
             )
             """,
@@ -151,7 +151,7 @@ class Economy(commands.Cog):
 
         await self.bot.db.execute(
             """
-            INSERT INTO economy (user_id, wallet, bank_capacity) 
+            INSERT INTO public.economy (user_id, wallet, bank_capacity) 
             VALUES ($1, $2, $3)
             """,
             ctx.author.id, 
@@ -168,9 +168,9 @@ class Economy(commands.Cog):
                 f":euro: - `{starter_coins:,}` coins in your wallet\n"
                 f":bank: - `{starter_bank_capacity:,}` bank capacity\n\n"
                 "**Quick Start Guide:**\n"
-                f"{config.EMOJIS.ECONOMY.WELCOME}- Use `;daily` for daily rewards\n"
-                f"{config.EMOJIS.ECONOMY.WELCOME} - Use `;work` to earn more coins\n"
-                f"{config.EMOJIS.ECONOMY.WELCOME} - Use `;bank deposit` to protect your coins\n"
+                f"{config.EMOJIS.ECONOMY.WELCOME}- Use `,daily` for daily rewards\n"
+                f"{config.EMOJIS.ECONOMY.WELCOME} - Use `,work` to earn more coins\n"
+                f"{config.EMOJIS.ECONOMY.WELCOME} - Use `,bank deposit` to protect your coins\n"
             ),
         ).set_author(name=ctx.author.display_name, icon_url=ctx.author.display_avatar.url)
         
@@ -206,7 +206,7 @@ class Economy(commands.Cog):
         bank_capacity = await self.bot.db.fetchval(
             """
             SELECT bank_capacity 
-            FROM economy 
+            FROM public.economy 
             WHERE user_id = $1
             """,
             ctx.author.id
@@ -215,7 +215,7 @@ class Economy(commands.Cog):
         last_claim = await self.bot.db.fetchval(
             """
             SELECT last_interest 
-            FROM economy 
+            FROM public.economy 
             WHERE user_id = $1
             """,
             ctx.author.id
@@ -254,7 +254,7 @@ class Economy(commands.Cog):
         bank_capacity = await self.bot.db.fetchval(
             """
             SELECT bank_capacity 
-            FROM economy 
+            FROM public.economy 
             WHERE user_id = $1
             """,
             ctx.author.id

@@ -216,7 +216,7 @@ class Spotify(MixinMeta, metaclass=CompositeMetaClass):
         
         await self.bot.db.execute(
             """
-            DELETE FROM user_spotify
+            DELETE FROM public.user_spotify
             WHERE user_id = $1
             """,
             ctx.author.id
@@ -631,14 +631,14 @@ class Spotify(MixinMeta, metaclass=CompositeMetaClass):
                 access_token,
                 refresh_token,
                 token_expires_at AT TIME ZONE 'UTC' as token_expires_at
-            FROM user_spotify 
+            FROM public.user_spotify 
             WHERE user_id = $1
             """,
             ctx.author.id
         )
         
         if not linked:
-            await ctx.warn("Your Spotify account is not linked. Use `;spotify link` to connect.")
+            await ctx.warn("Your Spotify account is not linked. Use `,spotify link` to connect.")
             return None
 
         expires_at = linked['token_expires_at'].replace(tzinfo=timezone.utc)
@@ -656,8 +656,8 @@ class Spotify(MixinMeta, metaclass=CompositeMetaClass):
                     data={
                         "grant_type": "refresh_token",
                         "refresh_token": linked['refresh_token'],
-                        "client_id": "35160aca03654d799ac2bd1dd023dd9b",
-                        "client_secret": "a37fede97e154c4d89b2420cbe18dda6"
+                        "client_id": config.LAVALINK.SPOTIFY_CLIENT_ID,
+                        "client_secret": config.LAVALINK.SPOTIFY_CLIENT_SECRET,
                     },
                     headers={"Content-Type": "application/x-www-form-urlencoded"}
                 ) as resp:
@@ -674,7 +674,7 @@ class Spotify(MixinMeta, metaclass=CompositeMetaClass):
                     
                     await self.bot.db.execute(
                         """
-                        UPDATE user_spotify 
+                        UPDATE public.user_spotify 
                         SET 
                             access_token = $1,
                             token_expires_at = NOW() + interval '1 second' * $2

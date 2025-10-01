@@ -47,7 +47,7 @@ class Config(Extended, Cog):
         guild = await self.bot.db.fetch(
             """
             SELECT DISTINCT prefix 
-            FROM prefix 
+            FROM public.prefix 
             WHERE guild_id = $1
             """,
             ctx.guild.id
@@ -70,7 +70,7 @@ class Config(Extended, Cog):
         
         check = await self.bot.db.fetchrow(
             """
-            SELECT * FROM prefix 
+            SELECT * FROM public.prefix 
             WHERE guild_id = $1
             """,
             ctx.guild.id
@@ -79,7 +79,7 @@ class Config(Extended, Cog):
         if check:
             await self.bot.db.execute(
                 """
-                UPDATE prefix SET prefix = $1 
+                UPDATE public.prefix SET prefix = $1 
                 WHERE guild_id = $2
                 """,
                 prefix,
@@ -88,7 +88,7 @@ class Config(Extended, Cog):
         else:
             await self.bot.db.execute(
                 """
-                INSERT INTO prefix (guild_id, prefix) 
+                INSERT INTO public.prefix (guild_id, prefix) 
                 VALUES ($1, $2)
                 """,
                 ctx.guild.id,
@@ -112,7 +112,7 @@ class Config(Extended, Cog):
             check = await self.bot.db.fetchrow(
                 """
                 SELECT * FROM 
-                selfprefix 
+                public.selfprefix 
                 WHERE user_id = $1
                 """,
                 ctx.author.id
@@ -121,7 +121,7 @@ class Config(Extended, Cog):
                 await ctx.prompt("Are you sure you want to remove your selfprefix?")
                 await self.bot.db.execute(
                     """
-                    DELETE FROM selfprefix 
+                    DELETE FROM public.selfprefix 
                     WHERE user_id = $1
                     """,
                     ctx.author.id
@@ -135,7 +135,7 @@ class Config(Extended, Cog):
             result = await self.bot.db.fetchrow(
                 """
                 SELECT * FROM 
-                selfprefix WHERE 
+                public.selfprefix WHERE 
                 user_id = $1
                 """,
                 ctx.author.id
@@ -144,7 +144,7 @@ class Config(Extended, Cog):
             if result is not None:
                 await self.bot.db.execute(
                     """
-                    UPDATE selfprefix 
+                    UPDATE public.selfprefix 
                     SET prefix = $1 
                     WHERE user_id = $2
                     """,
@@ -156,7 +156,7 @@ class Config(Extended, Cog):
                 await self.bot.db.execute(
                     """
                     INSERT INTO 
-                    selfprefix 
+                    public.selfprefix 
                     VALUES ($1, $2)
                     """, 
                     ctx.author.id, 
@@ -821,7 +821,7 @@ class Config(Extended, Cog):
         records = await self.bot.db.fetch(
             """
             SELECT name, uses 
-            FROM tags 
+            FROM public.tags 
             WHERE guild_id = $1 
             ORDER BY uses DESC
             """,
@@ -854,7 +854,7 @@ class Config(Extended, Cog):
         record = await self.bot.db.fetchrow(
             """
             SELECT owner_id 
-            FROM tags 
+            FROM public.tags 
             WHERE guild_id = $1 
             AND LOWER(name) = LOWER($2)
             """,
@@ -871,7 +871,7 @@ class Config(Extended, Cog):
         try:
             await self.bot.db.execute(
                 """
-                INSERT INTO tag_aliases (guild_id, alias, original)
+                INSERT INTO public.tag_aliases (guild_id, alias, original)
                 VALUES ($1, $2, $3)
                 """,
                 ctx.guild.id, 
@@ -892,7 +892,7 @@ class Config(Extended, Cog):
         record = await self.bot.db.fetch(
             """
             SELECT name, uses 
-            FROM tags 
+            FROM public.tags 
             WHERE guild_id = $1 
             AND LOWER(name) LIKE LOWER($2)
             ORDER BY uses DESC
@@ -923,7 +923,7 @@ class Config(Extended, Cog):
         record = await self.bot.db.fetchrow(
             """
             SELECT template 
-            FROM tags 
+            FROM public.tags 
             WHERE guild_id = $1 
             AND LOWER(name) = LOWER($2)
             """,
@@ -945,7 +945,7 @@ class Config(Extended, Cog):
         record = await self.bot.db.fetchrow(
             """
             SELECT owner_id 
-            FROM tags 
+            FROM public.tags 
             WHERE guild_id = $1 
             AND LOWER(name) = LOWER($2)
             """,
@@ -964,7 +964,7 @@ class Config(Extended, Cog):
 
         await self.bot.db.execute(
             """
-            UPDATE tags 
+            UPDATE public.tags 
             SET owner_id = $3 
             WHERE guild_id = $1 
             AND LOWER(name) = LOWER($2)
@@ -993,7 +993,7 @@ class Config(Extended, Cog):
         record = await self.bot.db.fetchrow(
             """
             SELECT owner_id, restricted_user, restricted_role
-            FROM tags 
+            FROM public.tags 
             WHERE guild_id = $1 
             AND LOWER(name) = LOWER($2)
             """,
@@ -1013,7 +1013,7 @@ class Config(Extended, Cog):
         if record['restricted_role']:
             await self.bot.db.execute(
                 """
-                UPDATE tags 
+                UPDATE public.tags 
                 SET restricted_role = NULL 
                 WHERE guild_id = $1 
                 AND LOWER(name) = LOWER($2)
@@ -1028,7 +1028,7 @@ class Config(Extended, Cog):
         if role:
             await self.bot.db.execute(
                 """
-                UPDATE tags 
+                UPDATE public.tags 
                 SET restricted_role = $3 
                 WHERE guild_id = $1 
                 AND LOWER(name) = LOWER($2)
@@ -1049,7 +1049,7 @@ class Config(Extended, Cog):
         record = await self.bot.db.fetchrow(
             """
             SELECT owner_id, restricted_user, restricted_role
-            FROM tags 
+            FROM public.tags 
             WHERE guild_id = $1 
             AND LOWER(name) = LOWER($2)
             """,
@@ -1068,7 +1068,7 @@ class Config(Extended, Cog):
         if record['restricted_user']:
             await self.bot.db.execute(
                 """
-                UPDATE tags 
+                UPDATE public.tags 
                 SET restricted_user = NULL 
                 WHERE guild_id = $1 
                 AND LOWER(name) = LOWER($2)
@@ -1082,7 +1082,7 @@ class Config(Extended, Cog):
         if user:
             await self.bot.db.execute(
                 """
-                UPDATE tags 
+                UPDATE public.tags 
                 SET restricted_user = $3 
                 WHERE guild_id = $1 
                 AND LOWER(name) = LOWER($2)

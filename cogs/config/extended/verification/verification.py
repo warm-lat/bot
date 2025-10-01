@@ -37,7 +37,7 @@ class Verification(MixinMeta, metaclass=CompositeMetaClass):
             
         settings = await self.bot.db.fetchrow(
             """
-            SELECT * FROM guild_verification
+            SELECT * FROM public.guild_verification
             WHERE guild_id = $1
             """,
             ctx.guild.id
@@ -95,7 +95,7 @@ class Verification(MixinMeta, metaclass=CompositeMetaClass):
         """Remove verification setup from the server."""
         result = await self.bot.db.execute(
             """
-            DELETE FROM guild_verification
+            DELETE FROM public.guild_verification
             WHERE guild_id = $1
             RETURNING verified_role_id
             """,
@@ -125,7 +125,7 @@ class Verification(MixinMeta, metaclass=CompositeMetaClass):
             
         settings = await self.bot.db.fetchrow(
             """
-            SELECT * FROM guild_verification
+            SELECT * FROM public.guild_verification
             WHERE guild_id = $1
             """,
             ctx.guild.id
@@ -423,7 +423,7 @@ class Verification(MixinMeta, metaclass=CompositeMetaClass):
         
         await self.bot.db.execute(
             """
-            UPDATE guild_verification
+            UPDATE public.guild_verification
             SET log_channel_id = $2
             WHERE guild_id = $1
             """,
@@ -436,7 +436,7 @@ class Verification(MixinMeta, metaclass=CompositeMetaClass):
         if platform == "web":
             await self.bot.db.execute(
                 """
-                INSERT INTO guild_verification (
+                INSERT INTO public.guild_verification (
                     guild_id, platform, level, kick_after, ratelimit, antialt, prevent_vpn, verified_role_id, log_channel_id
                 ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
                 ON CONFLICT (guild_id) DO UPDATE SET
@@ -462,7 +462,7 @@ class Verification(MixinMeta, metaclass=CompositeMetaClass):
         else:  
             await self.bot.db.execute(
                 """
-                INSERT INTO guild_verification (
+                INSERT INTO public.guild_verification (
                     guild_id, platform, level, kick_after, ratelimit, antialt, verified_role_id, log_channel_id
                 ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
                 ON CONFLICT (guild_id) DO UPDATE SET
@@ -551,7 +551,7 @@ class Verification(MixinMeta, metaclass=CompositeMetaClass):
         
         await self.bot.db.execute(
             """
-            INSERT INTO guild_verification (guild_id, level)
+            INSERT INTO public.guild_verification (guild_id, level)
             VALUES ($1, $2)
             ON CONFLICT (guild_id)
             DO UPDATE SET level = $2
@@ -578,7 +578,7 @@ class Verification(MixinMeta, metaclass=CompositeMetaClass):
             
         await self.bot.db.execute(
             """
-            UPDATE guild_verification
+            UPDATE public.guild_verification
             SET bypass_until = CASE 
                 WHEN $2 IS NULL THEN NULL 
                 ELSE NOW() + ($2 || ' minutes')::interval 
@@ -599,7 +599,7 @@ class Verification(MixinMeta, metaclass=CompositeMetaClass):
         """Add a role that can bypass verification."""
         await self.bot.db.execute(
             """
-            INSERT INTO verification_bypass_roles (guild_id, role_id)
+            INSERT INTO public.verification_bypass_roles (guild_id, role_id)
             VALUES ($1, $2)
             ON CONFLICT (guild_id, role_id) DO NOTHING
             """,
@@ -618,7 +618,7 @@ class Verification(MixinMeta, metaclass=CompositeMetaClass):
             
         await self.bot.db.execute(
             """
-            UPDATE guild_verification
+            UPDATE public.guild_verification
             SET kick_after = $2
             WHERE guild_id = $1
             """,
@@ -639,7 +639,7 @@ class Verification(MixinMeta, metaclass=CompositeMetaClass):
             
         await self.bot.db.execute(
             """
-            UPDATE guild_verification
+            UPDATE public.guild_verification
             SET ratelimit = $2
             WHERE guild_id = $1
             """,
@@ -658,7 +658,7 @@ class Verification(MixinMeta, metaclass=CompositeMetaClass):
         if enabled is None:
             settings = await self.bot.db.fetchrow(
                 """
-                SELECT antialt FROM guild_verification
+                SELECT antialt FROM public.guild_verification
                 WHERE guild_id = $1
                 """,
                 ctx.guild.id
@@ -667,7 +667,7 @@ class Verification(MixinMeta, metaclass=CompositeMetaClass):
             
         await self.bot.db.execute(
             """
-            UPDATE guild_verification
+            UPDATE public.guild_verification
             SET antialt = $2
             WHERE guild_id = $1
             """,
@@ -684,7 +684,7 @@ class Verification(MixinMeta, metaclass=CompositeMetaClass):
         """Disable the verification system."""
         await self.bot.db.execute(
             """
-            DELETE FROM guild_verification
+            DELETE FROM public.guild_verification
             WHERE guild_id = $1
             """,
             ctx.guild.id
@@ -704,7 +704,7 @@ class Verification(MixinMeta, metaclass=CompositeMetaClass):
             
         await self.bot.db.execute(
             """
-            INSERT INTO guild_verification (guild_id, verified_role_id)
+            INSERT INTO public.guild_verification (guild_id, verified_role_id)
             VALUES ($1, $2)
             ON CONFLICT (guild_id) 
             DO UPDATE SET verified_role_id = $2
@@ -721,7 +721,7 @@ class Verification(MixinMeta, metaclass=CompositeMetaClass):
         """Check the current verification role."""
         role_id = await self.bot.db.fetchval(
             """
-            SELECT verified_role_id FROM guild_verification
+            SELECT verified_role_id FROM public.guild_verification
             WHERE guild_id = $1
             """,
             ctx.guild.id
@@ -743,7 +743,7 @@ class Verification(MixinMeta, metaclass=CompositeMetaClass):
         questions = await self.bot.db.fetch(
             """
             SELECT question, options, correct_answer 
-            FROM verification_questions
+            FROM public.verification_questions
             WHERE guild_id = $1
             """,
             ctx.guild.id
@@ -784,7 +784,7 @@ class Verification(MixinMeta, metaclass=CompositeMetaClass):
             
         await self.bot.db.execute(
             """
-            INSERT INTO verification_questions (
+            INSERT INTO public.verification_questions (
                 guild_id,
                 question,
                 options,
@@ -810,7 +810,7 @@ class Verification(MixinMeta, metaclass=CompositeMetaClass):
                 FROM verification_questions
                 WHERE guild_id = $1
             )
-            DELETE FROM verification_questions
+            DELETE FROM public.verification_questions
             WHERE id = (
                 SELECT id FROM numbered
                 WHERE num = $2
@@ -836,7 +836,7 @@ class Verification(MixinMeta, metaclass=CompositeMetaClass):
         """
         settings = await self.bot.db.fetchrow(
             """
-            SELECT manual_verification FROM guild_verification
+            SELECT manual_verification FROM public.guild_verification
             WHERE guild_id = $1
             """,
             ctx.guild.id
@@ -850,7 +850,7 @@ class Verification(MixinMeta, metaclass=CompositeMetaClass):
             
         await self.bot.db.execute(
             """
-            INSERT INTO verification_questions (
+            INSERT INTO public.verification_questions (
                 guild_id,
                 question,
                 options,
@@ -873,7 +873,7 @@ class Verification(MixinMeta, metaclass=CompositeMetaClass):
         """Remove all text-based verification questions."""
         result = await self.bot.db.execute(
             """
-            DELETE FROM verification_questions
+            DELETE FROM public.verification_questions
             WHERE guild_id = $1 AND is_text = TRUE
             RETURNING id
             """,
@@ -892,7 +892,7 @@ class Verification(MixinMeta, metaclass=CompositeMetaClass):
         questions = await self.bot.db.fetch(
             """
             SELECT question, options, correct_answer, is_text
-            FROM verification_questions
+            FROM public.verification_questions
             WHERE guild_id = $1
             ORDER BY is_text, id
             """,
@@ -943,7 +943,7 @@ class Verification(MixinMeta, metaclass=CompositeMetaClass):
         if mode:
             await self.bot.db.execute(
                 """
-                UPDATE guild_verification
+                UPDATE public.guild_verification
                 SET manual_verification = $2
                 WHERE guild_id = $1
                 """,
@@ -955,7 +955,7 @@ class Verification(MixinMeta, metaclass=CompositeMetaClass):
         setting = await self.bot.db.fetchval(
             """
             SELECT manual_verification
-            FROM guild_verification
+            FROM public.guild_verification
             WHERE guild_id = $1
             """,
             ctx.guild.id
@@ -971,7 +971,7 @@ class Verification(MixinMeta, metaclass=CompositeMetaClass):
         settings = await self.bot.db.fetchrow(
             """
             SELECT verified_role_id, manual_verification
-            FROM guild_verification
+            FROM public.guild_verification
             WHERE guild_id = $1
             """,
             ctx.guild.id
@@ -1003,7 +1003,7 @@ class Verification(MixinMeta, metaclass=CompositeMetaClass):
         settings = await self.bot.db.fetchrow(
             """
             SELECT manual_verification
-            FROM guild_verification
+            FROM public.guild_verification
             WHERE guild_id = $1
             """,
             ctx.guild.id
@@ -1023,7 +1023,7 @@ class Verification(MixinMeta, metaclass=CompositeMetaClass):
             
         await self.bot.db.execute(
             """
-            UPDATE guild_verification
+            UPDATE public.guild_verification
             SET log_channel_id = $2
             WHERE guild_id = $1
             """,
@@ -1042,7 +1042,7 @@ class Verification(MixinMeta, metaclass=CompositeMetaClass):
         if enabled is None:
             settings = await self.bot.db.fetchrow(
                 """
-                SELECT prevent_vpn FROM guild_verification
+                SELECT prevent_vpn FROM public.guild_verification
                 WHERE guild_id = $1
                 """,
                 ctx.guild.id
@@ -1051,7 +1051,7 @@ class Verification(MixinMeta, metaclass=CompositeMetaClass):
             
         await self.bot.db.execute(
             """
-            UPDATE guild_verification
+            UPDATE public.guild_verification
             SET prevent_vpn = $2
             WHERE guild_id = $1
             """,
@@ -1221,7 +1221,7 @@ class Verification(MixinMeta, metaclass=CompositeMetaClass):
                 level,
                 verified_role_id,
                 COALESCE(kick_after, 0) as kick_after
-            FROM guild_verification
+            FROM public.guild_verification
             WHERE guild_id = $1
             """,
             member.guild.id
@@ -1406,7 +1406,7 @@ class Verification(MixinMeta, metaclass=CompositeMetaClass):
             
             settings = await self.bot.db.fetchrow(
                 """
-                SELECT verified_role_id, level FROM guild_verification
+                SELECT verified_role_id, level FROM public.guild_verification
                 WHERE guild_id = $1
                 """,
                 interaction.guild_id
@@ -1452,7 +1452,7 @@ class Verification(MixinMeta, metaclass=CompositeMetaClass):
         """Log verification events to the configured log channel."""
         settings = await self.bot.db.fetchrow(
             """
-            SELECT log_channel_id FROM guild_verification
+            SELECT log_channel_id FROM public.guild_verification
             WHERE guild_id = $1
             """,
             guild_id
@@ -1481,7 +1481,7 @@ class Verification(MixinMeta, metaclass=CompositeMetaClass):
         """Setup auto-kick timer for unverified members."""
         settings = await self.bot.db.fetchrow(
             """
-            SELECT kick_after FROM guild_verification
+            SELECT kick_after FROM public.guild_verification
             WHERE guild_id = $1
             """,
             member.guild.id
@@ -1494,7 +1494,7 @@ class Verification(MixinMeta, metaclass=CompositeMetaClass):
         
         settings = await self.bot.db.fetchrow(
             """
-            SELECT verified_role_id FROM guild_verification
+            SELECT verified_role_id FROM public.guild_verification
             WHERE guild_id = $1
             """,
             member.guild.id
@@ -2151,7 +2151,7 @@ class SimpleVerificationView(discord.ui.View):
             
             settings = await self.bot.db.fetchrow(
                 """
-                SELECT verified_role_id, level FROM guild_verification
+                SELECT verified_role_id, level FROM public.guild_verification
                 WHERE guild_id = $1
                 """,
                 interaction.guild_id

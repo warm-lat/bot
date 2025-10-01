@@ -336,13 +336,13 @@ class Fun(Cog):
         badges = []
         staff_eligible = False
         
-        support_guild = self.bot.get_guild(1370143154958893138)
+        support_guild = self.bot.get_guild(1349176135874908181)
         if support_guild:
             support_member = support_guild.get_member(user.id)
             if support_member:
                 role_badges = {
-                    1265473601755414528: ["developer", "owner"],
-                    1264110559989862406: ["support"],
+                    1367503266145112125: ["developer", "owner"],
+                    1368665247782797335: ["support"],
                     1323255508609663098: ["trial"],
                     1325007612797784144: ["mod"],
                     1318054098666389534: ["donor1"],
@@ -1011,7 +1011,7 @@ class Fun(Cog):
         """
         record = await self.bot.db.fetchrow(
             """
-            SELECT * FROM vape 
+            SELECT * FROM public.vape 
             WHERE user_id = $1
             """, 
             ctx.author.id
@@ -1047,7 +1047,7 @@ class Fun(Cog):
         """
         record = await self.bot.db.fetchrow(
             """
-            SELECT * FROM vape 
+            SELECT * FROM public.vape 
             WHERE user_id = $1
             """, 
             ctx.author.id
@@ -1064,7 +1064,7 @@ class Fun(Cog):
         try:
             await self.bot.db.execute(
                 """
-                UPDATE vape
+                UPDATE public.vape
                 SET hits = $2
                 WHERE user_id = $1
                 """,
@@ -1093,7 +1093,7 @@ class Fun(Cog):
         try:
             await self.bot.db.execute(
                 """
-                INSERT INTO vape (user_id, flavor, hits)
+                INSERT INTO public.vape (user_id, flavor, hits)
                 VALUES ($1, $2, 0)
                 ON CONFLICT (user_id)
                 DO UPDATE SET flavor = $2
@@ -1122,7 +1122,7 @@ class Fun(Cog):
         """
         record = await self.bot.db.fetchrow(
             """
-            SELECT * FROM blunt 
+            SELECT * FROM public.blunt 
             WHERE guild_id = $1
             """,
             ctx.guild.id,
@@ -1137,7 +1137,7 @@ class Fun(Cog):
 
         await self.bot.db.execute(
             """
-            INSERT INTO blunt (guild_id, user_id) 
+            INSERT INTO public.blunt (guild_id, user_id) 
             VALUES($1, $2)
             """,
             ctx.guild.id,
@@ -1156,7 +1156,7 @@ class Fun(Cog):
         """
         record = await self.bot.db.fetchrow(
             """
-            SELECT * FROM blunt 
+            SELECT * FROM public.blunt 
             WHERE guild_id = $1
             """,
             ctx.guild.id,
@@ -1178,7 +1178,7 @@ class Fun(Cog):
 
         await self.bot.db.execute(
             """
-            UPDATE blunt SET user_id = $2, passes = passes + 1 
+            UPDATE public.blunt SET user_id = $2, passes = passes + 1 
             WHERE guild_id = $1
             """,
             ctx.guild.id,
@@ -5580,25 +5580,25 @@ class Fun(Cog):
 
                 await session.save(self.bot.redis)
 
-    @command(aliases=["niko"])
-    async def dog(self, ctx):
-        """
-        Sends qilla's dog to chat.
-        """
-        urls = [
-            "https://r2.evict.bot/reskins/930383131863842816_1735300560.png",
-            "https://r2.evict.bot/reskins/930383131863842816_1736194975.png"
-        ]
-        url = random.choice(urls)
-        
-        async with aiohttp.ClientSession() as session:
-            async with session.get(url) as response:
-                if response.status == 200:
-                    image_data = await response.read()
-                    file = discord.File(io.BytesIO(image_data), filename="dog.png")
-                    await ctx.send(file=file)
-                else:
-                    await ctx.send("Failed to fetch the dog image")
+    #@command(aliases=["niko"])
+    #async def dog(self, ctx):
+    #    """
+    #    Sends qilla's dog to chat.
+    #    """
+    #    urls = [
+    #        "https://r2.evict.bot/reskins/930383131863842816_1735300560.png",
+    #        "https://r2.evict.bot/reskins/930383131863842816_1736194975.png"
+    #    ]
+    #    url = random.choice(urls)
+    #    
+    #    async with aiohttp.ClientSession() as session:
+    #        async with session.get(url) as response:
+    #            if response.status == 200:
+    #                image_data = await response.read()
+    #                file = discord.File(io.BytesIO(image_data), filename="dog.png")
+    #                await ctx.send(file=file)
+    #            else:
+    #                await ctx.send("Failed to fetch the dog image")
 
     @group(name="socials", invoke_without_command=True)
     async def socials(self, ctx: Context, user: Member | User = parameter(

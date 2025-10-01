@@ -51,7 +51,7 @@ class Vanity(MixinMeta, metaclass=CompositeMetaClass):
 
         record = await self.bot.db.fetchrow(
             """
-            SELECT * FROM vanity
+            SELECT * FROM public.vanity
             WHERE guild_id = $1
             """,
             guild.id,
@@ -113,7 +113,7 @@ class Vanity(MixinMeta, metaclass=CompositeMetaClass):
                     except HTTPException as e:
                         return await self.bot.db.execute(
                             """
-                            UPDATE vanity
+                            UPDATE public.vanity
                             SET template = NULL
                             WHERE guild_id = $1
                             """,
@@ -154,7 +154,7 @@ class Vanity(MixinMeta, metaclass=CompositeMetaClass):
 
         await self.bot.db.execute(
             """
-            INSERT INTO vanity (guild_id, role_id)
+            INSERT INTO public.vanity (guild_id, role_id)
             VALUES ($1, $2)
             ON CONFLICT (guild_id)
             DO UPDATE SET role_id = EXCLUDED.role_id
@@ -188,7 +188,7 @@ class Vanity(MixinMeta, metaclass=CompositeMetaClass):
 
         await self.bot.db.execute(
             """
-            INSERT INTO vanity (guild_id, channel_id)
+            INSERT INTO public.vanity (guild_id, channel_id)
             VALUES ($1, $2)
             ON CONFLICT (guild_id)
             DO UPDATE SET channel_id = EXCLUDED.channel_id
@@ -216,7 +216,7 @@ class Vanity(MixinMeta, metaclass=CompositeMetaClass):
 
         await self.bot.db.execute(
             """
-            UPDATE vanity
+            UPDATE public.vanity
             SET channel_id = NULL
             WHERE guild_id = $1
             """,
@@ -251,7 +251,7 @@ class Vanity(MixinMeta, metaclass=CompositeMetaClass):
 
 
         existing = await self.bot.db.fetchrow(
-            "SELECT * FROM vanity WHERE guild_id = $1",
+            "SELECT * FROM public.vanity WHERE guild_id = $1",
             ctx.guild.id
         )
 
@@ -259,7 +259,7 @@ class Vanity(MixinMeta, metaclass=CompositeMetaClass):
             print("No existing record, inserting new one")
             await self.bot.db.execute(
                 """
-                INSERT INTO vanity (guild_id, template)
+                INSERT INTO public.vanity (guild_id, template)
                 VALUES ($1, $2)
                 """,
                 ctx.guild.id,
@@ -269,7 +269,7 @@ class Vanity(MixinMeta, metaclass=CompositeMetaClass):
             print("Updating existing record")
             await self.bot.db.execute(
                 """
-                UPDATE vanity 
+                UPDATE public.vanity 
                 SET template = $1
                 WHERE guild_id = $2
                 """,
@@ -278,7 +278,7 @@ class Vanity(MixinMeta, metaclass=CompositeMetaClass):
             )
 
         updated = await self.bot.db.fetchrow(
-            "SELECT template FROM vanity WHERE guild_id = $1",
+            "SELECT template FROM public.vanity WHERE guild_id = $1",
             ctx.guild.id
         )
 
@@ -305,7 +305,7 @@ class Vanity(MixinMeta, metaclass=CompositeMetaClass):
 
         await self.bot.db.execute(
             """
-            DELETE FROM vanity
+            DELETE FROM public.vanity
             WHERE guild_id = $1
             """,
             ctx.guild.id,

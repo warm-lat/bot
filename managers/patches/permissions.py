@@ -20,7 +20,7 @@ class ValidPermission(Converter):
 
         if not argument in valid_permissions:
             raise BadArgument(
-                "This is **not** a valid permission. Please run `;fakepermissions permissions` to check all available permissions!"
+                "This is **not** a valid permission. Please run `,fakepermissions permissions` to check all available permissions!"
             )
 
         return argument
@@ -48,7 +48,7 @@ def has_permissions(**permissions):
 
             roles = ", ".join(list(map(lambda r: str(r.id), ctx.author.roles)))
             results = await ctx.bot.db.fetch(
-                f"SELECT permission FROM fake_permissions WHERE guild_id = $1 AND role_id IN ({roles})",
+                f"SELECT permission FROM public.fake_permissions WHERE guild_id = $1 AND role_id IN ({roles})",
                 ctx.guild.id,
             )
 
@@ -88,7 +88,7 @@ def donator(booster: bool = False):
     """Check if the user is a donator or has voted in the last 6 hours"""
 
     async def predicate(ctx: Context):
-        guild = ctx.bot.get_guild(1370143154958893138)
+        guild = ctx.bot.get_guild(1349176135874908181)
         role = guild.get_role(1318054098666389534)
         user = guild.get_member(ctx.author.id)
 
@@ -98,13 +98,13 @@ def donator(booster: bool = False):
 
             if not user or not user.premium_since:
                 raise CommandError(
-                    f"You must **boost** the Warm [**Discord Server**](https://discord.gg/warm) to use `{ctx.command.qualified_name}`"
+                    f"You must **boost** the Warm [**Discord Server**](https://discord.gg/apply) to use `{ctx.command.qualified_name}`"
                 )
 
             return True
 
         donator_check = await ctx.bot.db.fetchrow(
-            "SELECT * FROM donators WHERE user_id = $1", ctx.author.id
+            "SELECT * FROM public.donators WHERE user_id = $1", ctx.author.id
         )
         
         if donator_check:
@@ -113,7 +113,7 @@ def donator(booster: bool = False):
         last_vote = await ctx.bot.db.fetchval(
             """
             SELECT last_vote_time 
-            FROM user_votes 
+            FROM public.user_votes 
             WHERE user_id = $1
             """, 
             ctx.author.id
@@ -123,7 +123,7 @@ def donator(booster: bool = False):
             return True
 
         raise CommandError(
-            f"You must be a **donator** to use `{ctx.command.qualified_name}`, run `;donate` - [**Discord Server**](https://discord.gg/warm)\n"
+            f"You must be a **donator** to use `{ctx.command.qualified_name}`, run `,donate` - [**Discord Server**](https://discord.gg/apply)\n"
             "Alternatively, you can vote for Warm on [Top.gg](https://top.gg/bot/1420609343283531776) (lasts 6 hours)"
         )
 

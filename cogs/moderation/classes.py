@@ -54,7 +54,7 @@ class Mod:
                     return False
 
             check = await ctx.bot.db.fetchrow(
-                "SELECT * FROM mod WHERE guild_id = $1", ctx.guild.id
+                "SELECT * FROM public.mod WHERE guild_id = $1", ctx.guild.id
             )
 
             if not check:
@@ -80,7 +80,7 @@ class ModConfig:
     ):
         try:  
             settings = await bot.db.fetchrow(
-                "SELECT * FROM mod WHERE guild_id = $1",
+                "SELECT * FROM public.mod WHERE guild_id = $1",
                 author.guild.id
             )
             
@@ -100,12 +100,12 @@ class ModConfig:
                 return
 
             res = await bot.db.fetchrow(
-                "SELECT count FROM cases WHERE guild_id = $1", author.guild.id
+                "SELECT count FROM public.cases WHERE guild_id = $1", author.guild.id
             )
             
             if not res:
                 await bot.db.execute(
-                    "INSERT INTO cases (guild_id, count) VALUES ($1, $2)",
+                    "INSERT INTO public.cases (guild_id, count) VALUES ($1, $2)",
                     author.guild.id, 0
                 )
                 case = 1
@@ -113,7 +113,7 @@ class ModConfig:
                 case = int(res["count"]) + 1
 
             await bot.db.execute(
-                "UPDATE cases SET count = $1 WHERE guild_id = $2", case, author.guild.id
+                "UPDATE public.cases SET count = $1 WHERE guild_id = $2", case, author.guild.id
             )
 
             duration_value = (
@@ -236,7 +236,7 @@ class ModConfig:
                                 )
 
                             appeal_config = await bot.db.fetchrow(
-                                "SELECT * FROM appeal_config WHERE guild_id = $1",
+                                "SELECT * FROM public.appeal_config WHERE guild_id = $1",
                                 author.guild.id
                             )
 
@@ -266,7 +266,7 @@ class ModConfig:
                                             except:
                                                 embed.add_field(
                                                     name="Appeal",
-                                                    value="To appeal, please join discord.gg/warm to get mutual server access with the bot",
+                                                    value="To appeal, please join discord.gg/apply to get mutual server access with the bot",
                                                     inline=False
                                                 )
 
@@ -393,7 +393,7 @@ async def send_non_critical_dm(bot, settings, action, author, victim, reason, du
                 embed.add_field(name="Reason", value=reason, inline=True)
 
             appeal_config = await bot.db.fetchrow(
-                "SELECT * FROM appeal_config WHERE guild_id = $1",
+                "SELECT * FROM public.appeal_config WHERE guild_id = $1",
                 author.guild.id
             )
 
@@ -423,7 +423,7 @@ async def send_non_critical_dm(bot, settings, action, author, victim, reason, du
                             except:
                                 embed.add_field(
                                     name="Appeal",
-                                    value="To appeal, please join discord.gg/warm to get mutual server access with the bot",
+                                    value="To appeal, please join discord.gg/apply to get mutual server access with the bot",
                                     inline=False
                                 )
 
@@ -445,7 +445,7 @@ class ClearMod(discord.ui.View):
             return await interaction.warn("You are not the author of this embed")
 
         check = await interaction.client.db.fetchrow(
-            "SELECT * FROM mod WHERE guild_id = $1", interaction.guild.id
+            "SELECT * FROM public.mod WHERE guild_id = $1", interaction.guild.id
         )
 
         channelid = check["channel_id"]
@@ -475,7 +475,7 @@ class ClearMod(discord.ui.View):
             pass
 
         await interaction.client.db.execute(
-            "DELETE FROM mod WHERE guild_id = $1", interaction.guild.id
+            "DELETE FROM public.mod WHERE guild_id = $1", interaction.guild.id
         )
 
         self.status = True
@@ -535,7 +535,7 @@ class AppealButton(Button):
 
             try:
                 appeal_config = await interaction.client.db.fetchrow(
-                    "SELECT * FROM appeal_config WHERE guild_id = $1",
+                    "SELECT * FROM public.appeal_config WHERE guild_id = $1",
                     self.guild_id
                 )
                 
