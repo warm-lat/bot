@@ -6682,38 +6682,92 @@ class Fun(Cog):
 
         if domain in domains:
             return await ctx.warn("This domain is already in setup process!")
-        
         if domain in verified_domains:
             return await ctx.warn("This domain is already verified!")
-            
         if len(verified_domains) >= 2:
             return await ctx.warn("You can only have 2 verified domains at once!")
-
-        await self.bot.db.execute(
-            """
-            UPDATE public.socials 
-            SET domains = $1::jsonb
-            WHERE user_id = $2
-            """,
-            json.dumps([domain]),
-            ctx.author.id
-        )
-
-        embed = Embed(
-            description=(
-                "Please add the following records to your domain:\n\n"
-                "**CNAME Record:** (Proxy Status: **OFF**)\n"
-                f"`{domain}` → `cname.warm.lat`\n\n"
-                "**TXT Record for Verification:**\n"
-                f"`__warm-verification.{domain}` → `\"warm-verification={ctx.author.name}\"`\n\n"
-                "**Important Notes:**\n"
-                "> - Make sure the CNAME record is **NOT** proxied through Cloudflare\n"
-                "> - DNS changes can take up to 24 hours to propagate\n"
-                "> - Once records are added, use `domain verify` to verify ownership"
-            )
-        )
         
-        await ctx.send(embed=embed)
+        try:
+            CF_TOKEN = config.CLOUDFLARE.SAAS.TOKEN
+            CF_ZONE = config.CLOUDFLARE.SAAS.ZONE
+        except Exception:
+            return await ctx.warn("Cloudflare has not been configured, Contact owner.")
+        
+        cf_headers = {
+            'Authorization': f"Bearer {CF_TOKEN}",
+            'Content-Type': 'application/json'
+        }
+
+        payload = {
+        # create a custom hostname for the zone; Cloudflare will return validation records
+            "hostname": domain,
+        # request DV verification (TXT/HTTP) - Cloudflare will return required records in response
+            "ssl": {
+                "method": "txt", 
+                "type": "dv",
+                "settings": {
+                    "min_tls_version": "1.2"
+                }
+            }
+        }
+
+        try:
+            async with self.bot.session.post(
+                f"https://api.cloudflare.com/client/v4/zones/{CF_ZONE}/custom_hostnames",
+                headers=cf_headers,
+                json=payload,
+                timeout=30
+            ) as resp:
+                body = await resp.json(content_type=None)
+                if not resp.ok:
+                    err_msg = body.get("errors")
+                    return await ctx.warn(f"Cloudflare API error: {err_msg}")
+                
+                result = body.get("result", {})
+                ssl = result.get("ssl", {})
+                
+                validation_records = ssl.get("validation_records", [])
+                
+                record_lines = []
+                
+                record_lines.append(f"**CNAME:** `{domain}` → `cname.warm.lat` (Proxy: **ON** ***required*** for SaaS)")
+                
+                for rec in validation_records:
+                    rtype = "TXT"
+                    name = rec.get("txt_name") #or f"__warm-verification.{domain}"
+                    content = rec.get("txt_value") #or f"warm-verification={ctx.author.name}"
+                    if name and content:
+                        record_lines.append(f"**{rtype} Record (SSL):** `{name}` → `{content}`")
+                    
+                if not validation_records:
+                    record_lines.append(
+                        f"**TXT Fallback (Ownership):** `__warm-verification.{domain}` → `\"warm-verification={ctx.author.name}\"`"
+                )
+            new_domains = list(domains) + [domain]
+            await self.bot.db.execute(
+                """
+                UPDATE public.socials 
+                SET domains = $1::jsonb
+                WHERE user_id = $2
+                """,
+                json.dumps(new_domains),
+                ctx.author.id
+            )
+
+            embed = Embed(
+                title="Domain Setup - Cloudflare",
+                description=(
+                    "I've requested Cloudflare to add your custom hostname. Please add the DNS records below:\n\n"
+                    + "\n\n".join(record_lines)
+                    + "\n\n**Notes:**\n> - DNS propagation can take up to 24 hours\n> - Once records are live, use `domain verify` to complete verification"
+                )
+            )
+        
+            await ctx.send(embed=embed)
+        except asyncio.TimeoutError:
+            return await ctx.warn("Cloudflare API request timed out, please try again later.")
+        except Exception as e:
+            return await ctx.warn(f"Failed to contact Cloudflare: {e}")
 
     @socials_domain.command(name="verify")
     async def domain_verify(self, ctx: Context, domain: str):
@@ -6733,6 +6787,42 @@ class Fun(Cog):
             return await ctx.warn("This domain isn't in setup process! Use `domain setup` first")
 
         try:
+            CF_TOKEN = config.CLOUDFLARE.SAAS.TOKEN
+            CF_ZONE = config.CLOUDFLARE.SAAS.ZONE
+        except Exception:
+            return await ctx.warn("Cloudflare has not been configured, Contact owner.")
+        cf_headers = {
+            'Authorization': f"Bearer {CF_TOKEN}",
+            'Content-Type': 'application/json'
+        }
+        try:
+            async with self.bot.session.get(
+                f"https://api.cloudflare.com/client/v4/zones/{CF_ZONE}/custom_hostnames?hostname={domain}",
+                headers=cf_headers,
+                timeout=30
+            ) as resp:
+                body = await resp.json(content_type=None)
+                if not resp.ok:
+                    err_msg = body.get("errors")
+                    return await ctx.warn(f"Cloudflare API error: {err_msg}")
+                
+                result = body.get("result", [])
+                if not result:
+                    return await ctx.warn("No Cloudflare hostname found for this domain. Please ensure you completed `domain setup`.")
+                
+                hostname_info = result[0]
+                ssl_info = hostname_info.get("ssl", {})
+                status = ssl_info.get("status")
+                
+                if status == "active":
+                    cname_valid = True
+                    txt_valid = True
+                elif status == "pending_validation":
+                    cname_valid = False
+                    txt_valid = False
+                else:
+                    cname_valid = False
+                    txt_valid = False
             cname_records = await self.bot.loop.run_in_executor(
                 None, 
                 lambda: dns.resolver.resolve(domain, 'CNAME')

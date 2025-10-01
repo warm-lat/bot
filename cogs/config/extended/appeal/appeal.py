@@ -31,7 +31,7 @@ class AppealButton(Button):
                     return
 
                 config = await interaction.client.db.fetchrow(
-                    "SELECT * FROM appeal_config WHERE guild_id = $1",
+                    "SELECT * FROM public.appeal_config WHERE guild_id = $1",
                     self.guild_id or interaction.guild_id
                 )
 
@@ -275,7 +275,7 @@ class AppealActionsView(View):
         """Create a new appeal and notify moderators"""
         appeal = await self.bot.db.fetchrow(
             """
-            INSERT INTO appeals 
+            INSERT INTO public.appeals 
             (guild_id, user_id, action_type, status)
             VALUES ($1, $2, $3, 'pending')
             RETURNING id
@@ -286,7 +286,7 @@ class AppealActionsView(View):
         )
 
         config = await self.bot.db.fetchrow(
-            "SELECT * FROM appeal_config WHERE guild_id = $1",
+            "SELECT * FROM public.appeal_config WHERE guild_id = $1",
             guild_id
         )
 
@@ -415,7 +415,7 @@ class Appeal(MixinMeta, metaclass=CompositeMetaClass):
 
         appeal = await self.bot.db.fetchrow(
             """
-            UPDATE appeals 
+            UPDATE public.appeals 
             SET status = 'accepted', 
                 moderator_id = $1::bigint,
                 updated_at = CURRENT_TIMESTAMP
@@ -520,7 +520,7 @@ class Appeal(MixinMeta, metaclass=CompositeMetaClass):
 
         appeal = await self.bot.db.fetchrow(
             """
-            UPDATE appeals 
+            UPDATE public.appeals 
             SET status = 'rejected', 
                 moderator_id = $1::bigint,
                 updated_at = CURRENT_TIMESTAMP
@@ -567,13 +567,13 @@ class Appeal(MixinMeta, metaclass=CompositeMetaClass):
             warn = ctx_or_interaction.warn
 
         config = await self.bot.db.fetchrow(
-            "SELECT appeal_server_id, bypass_roles, direct_appeal FROM appeal_config WHERE guild_id = $1",
+            "SELECT appeal_server_id, bypass_roles, direct_appeal FROM public.appeal_config WHERE guild_id = $1",
             guild_id
         )
         
         if not config:
             config = await self.bot.db.fetchrow(
-                "SELECT appeal_server_id, bypass_roles, direct_appeal FROM appeal_config WHERE appeal_server_id = $1",
+                "SELECT appeal_server_id, bypass_roles, direct_appeal FROM public.appeal_config WHERE appeal_server_id = $1",
                 guild_id
             )
             if not config:

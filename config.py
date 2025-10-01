@@ -116,6 +116,12 @@ class RATELIMITS:
     PER_30S: int = 35
     PER_1M: int = 75
 
+class CLOUDFLARE:
+    
+    class SAAS:
+        TOKEN: str = "bjx2pf443xBAEaA6IfQ2XeKPwu4YSeE1YVHz2zbC"
+        ZONE: str = "8bd322a1c8ed171d1d4462f471735b2d"
+
 class DATABASE:
     DSN: str = "postgresql://evictskid:qq3gpcgksmtj9ckg@warm-db-70f72q:5432/warm"
     REDIS: str = "redis://default:jqcnpzlwlpqll4do@warm-cache-lihrnx:6379"
