@@ -159,7 +159,7 @@ class Information(Cog):
         if before.name != after.name:
             await self.bot.db.execute(
                 """
-                INSERT INTO gnames (guild_id, name, changed_at) 
+                INSERT INTO public.gnames (guild_id, name, changed_at) 
                 VALUES ($1, $2, $3)
                 """, 
                 before.id, 
@@ -174,7 +174,7 @@ class Information(Cog):
 
         await self.bot.db.execute(
             """
-            INSERT INTO name_history (user_id, username)
+            INSERT INTO public.name_history (user_id, username)
             VALUES ($1, $2)
             """,
             after.id,
@@ -192,7 +192,7 @@ class Information(Cog):
 
         await self.bot.db.execute(
             """
-            INSERT INTO boosters_lost (guild_id, user_id, lasted_for)
+            INSERT INTO public.boosters_lost (guild_id, user_id, lasted_for)
             VALUES ($1, $2, $3)
             ON CONFLICT (guild_id, user_id) DO UPDATE
             SET lasted_for = EXCLUDED.lasted_for
@@ -232,7 +232,7 @@ class Information(Cog):
                 value=f"**ping**: ``{round(self.bot.shards.get(shard).latency * 1000)}ms``\n**guilds**: ``{len(guilds)}``\n**users**: ``{users:,}``",
                 inline=True,
             )
-            embed.set_footer(text=f"You are on Shard {ctx.guild.shard_id}", icon_url=f"{self.bot.user.display_avatar.url}")
+            embed.set_footer(text=f"You are on Shard {ctx.guild.shard_id}.", icon_url=f"{self.bot.user.display_avatar.url}")
 
         await ctx.send(embed=embed)
 
@@ -283,9 +283,10 @@ class Information(Cog):
 
         embed = Embed(
             description=(
-                f"Made by [nxyy](https://discord.com/users/1137513168965476352) \n"
+                f"Skidded by [nxyy](https://discord.com/users/1137513168965476352), Made by [Evict](https://github.com/EvictServices) \n"
                 f"Utilizing ``{self._cached_commands:,}`` commands across ``{len(self.bot.cogs)}`` cogs (`{total_modules}` total modules)"
             ),
+            color=config.COLORS.NEUTRAL,
         )
         embed.set_author(
             name=self.bot.user.name,
@@ -312,7 +313,7 @@ class Information(Cog):
             value="\n".join(
                 [
                     f"**CPU:** `{self.process.cpu_percent()}%`",
-                    # f"**Memory:** `{format_size(self.process.memory_info().rss)}`",
+                    f"**Memory:** `{format_size(self.process.memory_info().rss)}`",
                     f"**Launched:** {format_dt(self.bot.uptime, 'R')}",
                 ]
             ),
@@ -362,7 +363,7 @@ class Information(Cog):
         )
         embed.set_thumbnail(url=self.bot.user.display_avatar.url)
 
-        return await ctx.neutral(embed=embed, view=view)
+        return await ctx.send(embed=embed, view=view)
 
     @app_commands.command(name='botinfo')
     @app_commands.allowed_installs(guilds=True, users=True)
