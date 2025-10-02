@@ -275,7 +275,7 @@ class Information(Cog):
         """
         View information about the bot.
         """
-        # await self._update_cache()
+        await self._update_cache()
 
         regular_cogs = len(self.bot.cogs)
         extensions = len(self.bot.extensions)
