@@ -5667,18 +5667,18 @@ class Fun(Cog):
         )
 
         if isinstance(user, Member):
-            support_guild = self.bot.get_guild(1370143154958893138)  
+            support_guild = self.bot.get_guild(1349176135874908181)  
             support_member = support_guild.get_member(user.id) if support_guild else None
             
             badges = []
             staff_eligible = False
             
             if support_member:  
-                if any(role.id == 1265473601755414528 for role in support_member.roles):
+                if any(role.id == 1367503266145112125 for role in support_member.roles):
                     badges.extend([f"{config.EMOJIS.STAFF.DEVELOPER}", f"{config.EMOJIS.STAFF.OWNER}"])
                     staff_eligible = True
                     
-                if any(role.id == 1264110559989862406 for role in support_member.roles):
+                if any(role.id == 1368665247782797335 for role in support_member.roles):
                     badges.append(f"{config.EMOJIS.STAFF.SUPPORT}")
                     staff_eligible = True
                     
@@ -5693,7 +5693,7 @@ class Fun(Cog):
                 if any(role.id == 1318054098666389534 for role in support_member.roles):
                     badges.append(f"{config.EMOJIS.STAFF.DONOR}")
                     
-                if any(role.id == 1320428924215496704 for role in support_member.roles):
+                if any(role.id == 1422671459565699216 for role in support_member.roles):
                     badges.append(f"{config.EMOJIS.STAFF.INSTANCE}")
                 
             if badges:
@@ -5901,7 +5901,7 @@ class Fun(Cog):
             try:
                 await self.bot.db.execute(
                     """
-                    INSERT INTO social_links (user_id, type, url)
+                    INSERT INTO public.social_links (user_id, type, url)
                     VALUES ($1, $2, $3)
                     ON CONFLICT (user_id, type) 
                     DO UPDATE SET url = $3
@@ -5922,7 +5922,7 @@ class Fun(Cog):
                 await self.generate_profile_image(ctx.author, force_update=True)
                 result = await self.bot.db.execute(
                     """
-                    DELETE FROM social_links 
+                    DELETE FROM public.social_links 
                     WHERE user_id = $1 AND type = $2
                     """,
                     ctx.author.id,

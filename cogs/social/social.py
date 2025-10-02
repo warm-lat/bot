@@ -352,7 +352,7 @@ class Social(Alerts, Cog):
             f"Enabled **{reposter}** reposting in {channel.mention}"
         )
 
-    @command(aliases=["rbx"], example="bingywingy03")
+    @command(aliases=["rbx"], example="nxyyfr")
     async def roblox(
         self,
         ctx: Context,
@@ -846,7 +846,7 @@ class Social(Alerts, Cog):
 
         return await ctx.send(embed=embed)
 
-    @command(aliases=["ca"], example="evictbot")
+    @command(aliases=["ca"], example="nxyyfr")
     @cooldown(1, 5, BucketType.user)
     async def cashapp(
         self,
@@ -1064,7 +1064,7 @@ class Social(Alerts, Cog):
     @tiktok.command(
         name="add",
         aliases=["feed"],
-        example="#tiktok evictbot"
+        example="#tiktok lostnxy"
     )
     @cooldown(1, 5, BucketType.user)
     @has_permissions(manage_channels=True)
