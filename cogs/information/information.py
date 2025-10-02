@@ -342,7 +342,7 @@ class Information(Cog):
             label="Support",
             style=discord.ButtonStyle.gray,
             emoji=config.EMOJIS.SOCIAL.DISCORD,
-            url="https://discord.gg/warm",
+            url="https://discord.gg/apply",
         )
 
         button3 = Button(

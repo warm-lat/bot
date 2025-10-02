@@ -37,8 +37,8 @@ class EMOJIS:
         FILTER: str = ""
     
     class SOCIAL:
-        DISCORD: str = ""
-        WEBSITE: str = ""
+        DISCORD: str = "<:discord:1423443912793657344>"
+        WEBSITE: str = "<:website:1423442144776949911>"
         GITHUB: str = "<:github:1423437308081733702>"
     
     class MISC:
