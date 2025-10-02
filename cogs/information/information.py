@@ -362,7 +362,7 @@ class Information(Cog):
         )
         embed.set_thumbnail(url=self.bot.user.display_avatar.url)
 
-        return await ctx.send(embed=embed, view=view)
+        return await ctx.neutral(embed=embed, view=view)
 
     @app_commands.command(name='botinfo')
     @app_commands.allowed_installs(guilds=True, users=True)
