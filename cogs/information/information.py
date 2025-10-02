@@ -1441,7 +1441,7 @@ class Information(Cog):
 
         await ctx.send(view=view)
 
-    @command(example="892675627373699072")
+    @command(example="1349176135874908181")
     async def gnames(self, ctx: Context, guild: Optional[Guild]):
         """
         View a guild's name history.
@@ -1452,7 +1452,7 @@ class Information(Cog):
         names = await self.bot.db.fetch(
             """
             SELECT name, changed_at
-            FROM gnames
+            FROM public.gnames
             WHERE guild_id = $1
             ORDER BY changed_at DESC
             """,
@@ -1481,7 +1481,7 @@ class Information(Cog):
         """
         await self.bot.db.execute(
             """
-            DELETE FROM gnames 
+            DELETE FROM public.gnames 
             WHERE guild_id = $1
             """, 
             ctx.guild.id

@@ -178,7 +178,7 @@ class RoleplayContext:
                                     int,
                                     await self.bot.db.fetchval(
                                         """
-                                        INSERT INTO roleplay (user_id, target_id, category)
+                                        INSERT INTO public.roleplay (user_id, target_id, category)
                                         VALUES ($1, $2, $3)
                                         ON CONFLICT (user_id, target_id, category)
                                         DO UPDATE SET amount = roleplay.amount + 1
@@ -223,7 +223,7 @@ class RoleplayContext:
                         int,
                         await self.bot.db.fetchval(
                             """
-                            INSERT INTO roleplay (user_id, target_id, category)
+                            INSERT INTO public.roleplay (user_id, target_id, category)
                             VALUES ($1, $2, $3)
                             ON CONFLICT (user_id, target_id, category)
                             DO UPDATE SET amount = roleplay.amount + 1
@@ -235,7 +235,7 @@ class RoleplayContext:
                         ),
                     )
 
-            images = f"https://r2.evict.bot/roleplay/{category}/{category}{random.randint(1, max)}.gif"
+            images = f"https://r2.warm.lat/roleplay/{category}/{category}{random.randint(1, max)}.gif"
             embed = Embed(
                     description=f"**{ctx.author.mention}** just killed {f'**{str(member.mention)}**' if member else 'themselves'}"
                     + (

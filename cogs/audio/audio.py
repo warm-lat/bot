@@ -42,7 +42,7 @@ import wavelink
 
 BASE_URL = "http://ws.audioscrobbler.com"
 
-log = getLogger("evict/audio")
+log = getLogger("warm/audio")
 
 SOURCE_PATTERNS = (
     regex.SPOTIFY_URL,
@@ -1061,7 +1061,7 @@ class Audio(Cog):
                     view.add_item(
                         discord.ui.Button(
                             label="Using Activities",
-                            url="https://docs.evict.bot/activity/setup",
+                            url="https://docs.warm.lat/activity/setup",
                             style=discord.ButtonStyle.link,
                             emoji=config.EMOJIS.SOCIAL.WEBSITE
                         )
@@ -1105,7 +1105,7 @@ class Audio(Cog):
                     view.add_item(
                         discord.ui.Button(
                             label="Using Activities",
-                            url="https://docs.evict.bot/activity/setup",
+                            url="https://docs.warm.lat/activity/setup",
                             style=discord.ButtonStyle.link,
                             emoji=config.EMOJIS.SOCIAL.WEBSITE
                         )
@@ -1339,7 +1339,7 @@ class Audio(Cog):
                     view.add_item(
                         discord.ui.Button(
                             label="Using Activities",
-                            url="https://docs.evict.bot/activity/setup",
+                            url="https://docs.warm.lat/activity/setup",
                             style=discord.ButtonStyle.link,
                             emoji=config.EMOJIS.SOCIAL.WEBSITE
                         )

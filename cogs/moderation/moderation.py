@@ -4737,8 +4737,8 @@ class Moderation(Cog):
 
         try:
             try:
-                category = await ctx.guild.create_category(name="evict mod")
-                role = await ctx.guild.create_role(name="evict-jail")
+                category = await ctx.guild.create_category(name="warm mod")
+                role = await ctx.guild.create_role(name="warm-jail")
 
                 for channel in ctx.guild.channels:
                     try:
@@ -4832,7 +4832,7 @@ class Moderation(Cog):
         """
         Add one or more fake permissions to a role.
         > Can use multiple permissions at once if seperated by a comma (,).
-        > https://docs.evict.bot/configuration/fakepermissions
+        > https://docs.warm.lat/configuration/fakepermissions
         """
 
         permissions_list = [perm.strip().lower() for perm in permissions.split(",")]
@@ -4915,7 +4915,7 @@ class Moderation(Cog):
         """
         Remove one or more fake permissions from a role's fake permissions.
         > Can use multiple permissions at once if seperated by a comma (,).
-        > https://docs.evict.bot/configuration/fakepermissions
+        > https://docs.warm.lat/configuration/fakepermissions
         """
 
         permissions_list = [perm.strip().lower() for perm in permissions.split(",")]

@@ -131,7 +131,7 @@ class Reposter:
         if record:
             if record["reposter_prefix"] and not ctx.message.content.lower().startswith(
                 (
-                    "evict",
+                    "warm",
                     ctx.guild.me.display_name,
                 )
             ):

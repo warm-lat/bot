@@ -1385,7 +1385,7 @@ class Lastfm(Cog):
         > `minimal` - A minimal embed with only the track and artist.
 
         You can also use a custom embed script to create your own embed.
-        Available variables can be found via our [documentation](https://docs.evict.bot/intro/#last-fm).
+        Available variables can be found via our [documentation](https://docs.warm.lat/intro/#last-fm).
         """
 
         if isinstance(style, Script) and not style.embed:

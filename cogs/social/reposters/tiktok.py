@@ -13,7 +13,7 @@ from main import Evict
 from core.client.context import Context
 import config
 
-log = logging.getLogger("evict.reposters.tiktok")
+log = logging.getLogger("warm.reposters.tiktok")
 
 class TikTokStats(BaseModel):
     likes: int = 0

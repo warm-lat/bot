@@ -29,7 +29,7 @@ from tools.conversion.embed1 import EmbedScript
 from cogs.moderation.classes import ModConfig
 # from posthog import Posthog
 
-log = getLogger("evict/raid")
+log = getLogger("warm/raid")
 
 # posthog_cloud = Posthog(
 #     "phc_9CO68Be49weXo25XXmg0CY7wwFLl2HMzW5qoXWdH1J8",
@@ -875,7 +875,7 @@ class AntiRaid(MixinMeta, metaclass=CompositeMetaClass):
             if not status:
                 rules = await ctx.guild.fetch_automod_rules()
                 for rule in rules:
-                    if rule.name == f"Evict - {filter_type.title()} Filter":
+                    if rule.name == f"Warm - {filter_type.title()} Filter":
                         await rule.delete()
                 return await ctx.approve(f"Removed {filter_type} filter")
 
@@ -897,7 +897,7 @@ class AntiRaid(MixinMeta, metaclass=CompositeMetaClass):
             exempt_roles = [role for role in ctx.guild.roles if role.permissions.manage_guild]
 
             rule = await ctx.guild.create_automod_rule(
-                name=f"Evict - {filter_type.title()} Filter",
+                name=f"Warm - {filter_type.title()} Filter",
                 event_type=AutoModRuleEventType.message_send,
                 trigger=trigger,
                 actions=actions,

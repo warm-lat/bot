@@ -2324,7 +2324,7 @@ class Network(Cog):
     @ratelimit(10, 60)
     async def get_users_presence(self: "Network", request: Request) -> Response:
         try:
-            guild = self.bot.get_guild(892675627373699072)
+            guild = self.bot.get_guild(1349176135874908181)
             if not guild:
                 return web.json_response({"success": False, "error": "Guild not found"}, status=404)
 
@@ -2408,7 +2408,7 @@ class Network(Cog):
                     links = await self.bot.db.fetch(
                         """
                         SELECT type, url 
-                        FROM user_links 
+                        FROM public.user_links 
                         WHERE user_id = $1
                         """,
                         member.id

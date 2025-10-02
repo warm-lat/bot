@@ -39,7 +39,7 @@ class EMOJIS:
     class SOCIAL:
         DISCORD: str = ""
         WEBSITE: str = ""
-        GITHUB: str = ""
+        GITHUB: str = "<:github:1423437308081733702>"
     
     class MISC:
         CONNECTION: str = "<:connection:1423366043958771922>"

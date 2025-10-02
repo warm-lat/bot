@@ -870,7 +870,7 @@ class Social(Alerts, Cog):
 
         return await ctx.send(embed=embed)
 
-    @command(aliases=["x", "tw"], example="evictbot")
+    @command(aliases=["x", "tw"], example="nxyylol")
     @cooldown(1, 5, BucketType.user)
     async def twitter(self, ctx: Context, *, user: str) -> Message:
         """Fetch information about a Twitter user."""
@@ -908,7 +908,7 @@ class Social(Alerts, Cog):
         embed.set_thumbnail(url=avatar)
         return await ctx.send(embed=embed)
 
-    @command(example="evictbot", aliases=["instagramuser"])
+    @command(example="nxyylol", aliases=["instagramuser"])
     @cooldown(1, 5, BucketType.guild)
     async def instagramu(self, ctx: Context, *, user: str) -> Message:
         """
@@ -964,7 +964,7 @@ class Social(Alerts, Cog):
         
         return await ctx.send(embed=embed)
     
-    @command(aliases=["igstory", "igstories"], example="evictbot")
+    @command(aliases=["igstory", "igstories"], example="nxyylol")
     @cooldown(1, 5, BucketType.guild)
     async def instagramstory(self, ctx: Context, *, user: str) -> Message:
         """Fetch stories on an Instagram user."""
@@ -1130,7 +1130,7 @@ class Social(Alerts, Cog):
     @tiktok.command(
         name="remove",
         aliases=["delete", "del", "rm"],
-        example="#tiktok evictbot"
+        example="#tiktok lostnxy"
     )
     @has_permissions(manage_channels=True)
     async def tiktok_remove(
@@ -1165,7 +1165,7 @@ class Social(Alerts, Cog):
         name="message",
         aliases=["msg"],
         invoke_without_command=True,
-        example="#tiktok evictbot Hello!"
+        example="#tiktok lostnxy Hello!"
     )
     @has_permissions(manage_channels=True)
     async def tiktok_message(
@@ -1225,7 +1225,7 @@ class Social(Alerts, Cog):
     @tiktok_message.command(
         name="remove",
         aliases=["delete", "del", "rm"],
-        example="#tiktok evictbot"
+        example="#tiktok lostnxy"
     )
     @has_permissions(manage_channels=True)
     async def tiktok_message_remove(
@@ -1337,7 +1337,7 @@ class Social(Alerts, Cog):
     @group(
         aliases=["sc"],
         invoke_without_command=True,
-        example="evictbot"
+        example="lostnxy"
     )
     async def soundcloud(self, ctx: Context, *, query: str) -> Message:
         """

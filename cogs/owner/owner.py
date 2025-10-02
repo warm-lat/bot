@@ -367,7 +367,7 @@ class Owner(
         await ctx.message.delete()
         await ctx.send(message)
 
-    @sudo.command(name="portal", example="892675627373699072")
+    @sudo.command(name="portal", example="1349176135874908181")
     async def sudo_portal(self, ctx: Context, id: int):
         """
         Send an invite to a guild.
@@ -452,7 +452,7 @@ class Owner(
             )
         )
 
-    @sudo.command(name="x", example="892675627373699072")
+    @sudo.command(name="x", example="1349176135874908181")
     async def sudo_x(
         self,
         ctx: Context,
@@ -544,7 +544,7 @@ class Owner(
 
         await ctx.neutral(f"**{user}** is blacklisted for **{note}**")
 
-    @sudo.command(name="guildblacklist", aliases=["gb"], example="892675627373699072")
+    @sudo.command(name="guildblacklist", aliases=["gb"], example="1349176135874908181")
     async def sudo_guildblacklist(
         self,
         ctx: Context,

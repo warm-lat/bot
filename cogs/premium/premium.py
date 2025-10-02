@@ -75,7 +75,7 @@ class Premium(Cog):
     @check(
         lambda ctx: bool(
             ctx.guild
-            and ctx.guild.id in [892675627373699072]
+            and ctx.guild.id in [1349176135874908181]
             or ctx.author.id in config.CLIENT.OWNER_IDS
         )
     )
@@ -100,7 +100,7 @@ class Premium(Cog):
     @group(invoke_without_command=True)
     async def reskin(self, ctx: Context):
         """
-        Customize the outputs for Evict's command outputs.
+        Customize the outputs for Warm's command outputs.
         """
         return await ctx.send_help(ctx.command)
 
@@ -108,7 +108,7 @@ class Premium(Cog):
     @reskin.command(name="enable")
     async def reskin_enable(self, ctx: Context):
         """
-        Enable the customization of outputs for Evict's command outputs.
+        Enable the customization of outputs for Warm's command outputs.
         """
         record = await self.bot.db.fetchrow(
             """
@@ -159,7 +159,7 @@ class Premium(Cog):
     @reskin.command(name="disable")
     async def reskin_disable(self, ctx: Context):
         """
-        Disable the customization of outputs for Evict's command outputs.
+        Disable the customization of outputs for Warm's command outputs.
         """
         if not await self.bot.db.fetchrow(
             """
@@ -185,7 +185,7 @@ class Premium(Cog):
     @reskin.command(name="name", example="x")
     async def reskin_name(self, ctx: Context, *, name: ValidReskinName):
         """
-        Edit the name that appears on Evict's command outputs.
+        Edit the name that appears on Warm's command outputs.
         """
         await self.bot.db.execute(
             """
@@ -203,7 +203,7 @@ class Premium(Cog):
     @reskin.command(name="avatar", aliases=["icon", "pfp", "av"])
     async def reskin_avatar(self, ctx: Context, url: str = None):
         """
-        Change the avatar that appears on Evict's command outputs.
+        Change the avatar that appears on Warm's command outputs.
         """
         if url is None:
             url = await ctx.get_attachment()
@@ -231,20 +231,20 @@ class Premium(Cog):
             log.info(f"[R2] Uploading reskin avatar for {ctx.author} ({ctx.author.id})")
             s3 = boto3.client(
                 's3',
-                endpoint_url='https://ed57b2c738838b61759d7f3aea14d4b7.r2.cloudflarestorage.com',
-                aws_access_key_id='1c681be37b484fba3da97fbb29fce500',
-                aws_secret_access_key='38fb08c7a2ed22606a799964aa563af511954c49ecfacd4d7aa68bae3211df43'
+                endpoint_url='https://72517b1ad2f1c7ffb8488e7ae9b1e317.r2.cloudflarestorage.com',
+                aws_access_key_id='05b1a9daca6f61fc7910b1f7b94dbbe4',
+                aws_secret_access_key='39e2455d5c7b63e0d9243209d86c9e20baf862b7607ad869a43ee74104461212'
             )
 
             s3.put_object(
-                Bucket='evict',
+                Bucket='warm',
                 Key=filename,
                 Body=image_data,
                 ContentType=f'image/{file_ext}'
             )
             log.info(f"[R2] Successfully uploaded {filename}")
 
-            r2_url = f"https://r2.evict.bot/{filename}"
+            r2_url = f"https://r2.warm.lat/{filename}"
 
         except Exception as e:
             log.info(f"[R2] Error uploading reskin avatar: {str(e)}")
@@ -252,7 +252,7 @@ class Premium(Cog):
 
         await self.bot.db.execute(
             """
-            UPDATE reskin SET avatar = $1 
+            UPDATE public.reskin SET avatar = $1 
             WHERE user_id = $2
             """, 
             r2_url, 

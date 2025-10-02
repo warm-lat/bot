@@ -16,7 +16,7 @@ from .panel import Panel
 if TYPE_CHECKING:
     from cogs.audio.audio import Context
 
-log = getLogger("evict/audio")
+log = getLogger("warm/audio")
 
 
 class Client(Player):

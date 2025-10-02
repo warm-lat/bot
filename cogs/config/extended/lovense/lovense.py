@@ -322,7 +322,7 @@ class Lovense(MixinMeta, metaclass=CompositeMetaClass):
                 json.loads(qr_data)
 
                 async with aiohttp.ClientSession() as session:
-                    async with session.get("https://r2.evict.bot/evict-new.png") as resp:
+                    async with session.get("https://r2.warm.lat/pfp.jpg") as resp:
                         if resp.status == 200:
                             logo_data = await resp.read()
                             logo = Image.open(BytesIO(logo_data))
@@ -355,7 +355,7 @@ class Lovense(MixinMeta, metaclass=CompositeMetaClass):
                 img.save(buffer, 'PNG')
                 buffer.seek(0)
 
-                file = discord.File(buffer, filename="evict-lovense-qr.png")
+                file = discord.File(buffer, filename="warm-lovense-qr.png")
 
                 embed = Embed(
                     title="Connect Your Lovense Device",

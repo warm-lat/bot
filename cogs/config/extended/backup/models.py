@@ -30,7 +30,7 @@ from tools import capture_time
 
 from .types import BackupData, BooleanArgs
 
-log = getLogger("evict/backup")
+log = getLogger("warm/backup")
 
 
 async def dump(guild: Guild) -> BackupData:
