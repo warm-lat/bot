@@ -101,6 +101,7 @@ class AUTHORIZATION:
     FERNET_KEY: str = "Ye0cdyst0iGNFo7vlvfyjZx7fBsNnzu0Xc7m5wHIavo="
     WEATHER: str = "6a3ab4420afb487794d171848253009"
     WOLFRAM: str = ""
+    AVH_ACCESS_KEY: str = "bc5e2ae5-5433-4030-bbaaf49ef043-9766-4d31"
     
     class REDDIT:
         CLIENT_ID: str = "7s2HJa0My0keJAiLvFhvZQ"

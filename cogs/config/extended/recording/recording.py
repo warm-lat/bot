@@ -68,8 +68,8 @@ class Recording(MixinMeta, metaclass=CompositeMetaClass):
             super().__init__(bot)
             self.bot = bot
             self.name = "Voice Recording"
-            self.bunny_api_key = "e7f156b0-cac9-4a5c-ac98bc76c5f6-9a39-4f53"
-            self.bunny_storage_zone = "warm-voice"
+            self.bunny_api_key = "ab51c4f1-4163-4c66-b75dc61fce14-0205-4411"
+            self.bunny_storage_zone = "warm-voice2"
             self.active_recordings = {}
         except Exception as e:
             log.error(f"Failed to initialize Recording cog: {e}")
@@ -102,12 +102,12 @@ class Recording(MixinMeta, metaclass=CompositeMetaClass):
         """Upload a file to BunnyCDN"""
         try:
             headers = {
-                "AccessKey": "e7f156b0-cac9-4a5c-ac98bc76c5f6-9a39-4f53"
+                "AccessKey": "ab51c4f1-4163-4c66-b75dc61fce14-0205-4411"
             }
             
             async with aiohttp.ClientSession() as session:
                 async with session.put(
-                    f"https://ny.storage.bunnycdn.com/warm-voice/recordings/{recording_id}.mp3",
+                    f"https://ny.storage.bunnycdn.com/warm-voice2/recordings/{recording_id}.mp3",
                     headers=headers,
                     data=open(file_path, 'rb')
                 ) as resp:
@@ -193,7 +193,7 @@ class Recording(MixinMeta, metaclass=CompositeMetaClass):
 
             await self.bot.db.execute(
                 """
-                INSERT INTO recordings (
+                INSERT INTO public.recordings (
                     id, guild_id, channel_id, initiator_id, started_at, status
                 ) VALUES ($1, $2, $3, $4, $5, $6)
                 """,
@@ -242,7 +242,7 @@ class Recording(MixinMeta, metaclass=CompositeMetaClass):
 
             await self.bot.db.execute(
                 """
-                UPDATE recordings 
+                UPDATE public.recordings 
                 SET ended_at = $1, status = $2, file_path = $3
                 WHERE id = $4
                 """,
@@ -280,7 +280,7 @@ class Recording(MixinMeta, metaclass=CompositeMetaClass):
         recordings = await self.bot.db.fetch(
             """
             SELECT id, channel_id, initiator_id, started_at, ended_at, file_path
-            FROM recordings
+            FROM public.recordings
             WHERE guild_id = $1
             ORDER BY started_at DESC
             LIMIT 10
@@ -322,10 +322,10 @@ class Recording(MixinMeta, metaclass=CompositeMetaClass):
     async def recording_delete(self, ctx: Context, recording_id: str):
         """Delete a recording"""
         try:
-            headers = {"AccessKey": "e7f156b0-cac9-4a5c-ac98bc76c5f6-9a39-4f53"}
+            headers = {"AccessKey": "ab51c4f1-4163-4c66-b75dc61fce14-0205-4411"}
             async with aiohttp.ClientSession() as session:
                 async with session.delete(
-                    f"https://ny.storage.bunnycdn.com/warm-voice/recordings/{recording_id}.mp3",
+                    f"https://ny.storage.bunnycdn.com/warm-voice2/recordings/{recording_id}.mp3",
                     headers=headers
                 ) as resp:
                     if resp.status not in (200, 404):
@@ -333,7 +333,7 @@ class Recording(MixinMeta, metaclass=CompositeMetaClass):
 
             result = await self.bot.db.execute(
                 """
-                DELETE FROM recordings
+                DELETE FROM public.recordings
                 WHERE id = $1 AND guild_id = $2
                 """,
                 recording_id, ctx.guild.id

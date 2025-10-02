@@ -38,9 +38,9 @@ class Listeners(Cog):
         """
         Upload avatar data to BunnyCDN and return the URL.
         """
-        upload_url = f"https://storage.bunnycdn.com/evict/avh/{user_id}/{avatar_hash}.{file_extension}"
+        upload_url = f"https://ny.storage.bunnycdn.com/warm2/avh/{user_id}/{avatar_hash}.{file_extension}"
         headers = {
-            "AccessKey": f"{config.AUTHORIZATION.AVH.ACCESS_KEY}",
+            "AccessKey": f"{config.AUTHORIZATION.AVH_ACCESS_KEY}",
             "Content-Type": "application/octet-stream",
         }
         
@@ -48,7 +48,7 @@ class Listeners(Cog):
             if upload_response.status != 201:
                 raise Exception(f"Failed to upload to BunnyCDN: {upload_response.status}")
             
-        return f"https://bunny.evict.bot/avh/{user_id}/{avatar_hash}.{file_extension}"
+        return f"https://bunny.warm.lat/avh/{user_id}/{avatar_hash}.{file_extension}"
 
     async def store_avatar_hash(self, user_id: int, avatar_hash: str, bunny_url: str) -> None:
         """
@@ -236,7 +236,7 @@ class Listeners(Cog):
         embed = Embed(
             title="Getting Started With Warm",
             description=(
-                "Hey! Thanks for your interest in **warm bot**. "
+                "Hey! Thanks for your interest in **Warm**. "
                 "The following will provide you with some tips on how to get started with your server!"
             ),
         )
@@ -400,7 +400,7 @@ class Listeners(Cog):
     async def on_ready(self):
         print(f"{self.__class__.__name__} cog has been loaded")
 
-    @tasks.loop(minutes=30)
+    @tasks.loop(minutes=60)
     async def update_topgg_stats(self):
         url = f"https://top.gg/api/bots/{self.bot.user.id}/stats"
         headers = {"Authorization": self.topgg_auth}

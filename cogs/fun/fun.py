@@ -503,23 +503,23 @@ class Fun(Cog):
         buffer.seek(0)
 
         filename = f"profile_{user.id}_{int(time.time())}.png"
-        headers = {"AccessKey": "10e0eb5f-79de-4ae9-a35a9b9f71e0-8c99-4a58"}
+        headers = {"AccessKey": "bc5e2ae5-5433-4030-bbaaf49ef043-9766-4d31"}
         
         async with aiohttp.ClientSession() as session:
             async with session.put(
-                f"https://storage.bunnycdn.com/evict/socials/{filename}",
+                f"https://ny.storage.bunnycdn.com/warm2/socials/{filename}",
                 headers=headers,
                 data=buffer.read()
             ) as upload:
                 if upload.status != 201:
                     raise Exception("Failed to upload to CDN")
 
-                new_url = f"https://bunny.evict.bot/socials/{filename}"
+                new_url = f"https://bunny.warm.lat/socials/{filename}"
 
                 if cached and cached['profile_image']:
                     old_filename = cached['profile_image'].split('/')[-1]
                     await session.delete(
-                        f"https://storage.bunnycdn.com/evict/socials/{old_filename}",
+                        f"https://ny.storage.bunnycdn.com/warm2/socials/{old_filename}",
                         headers=headers
                     )
 
@@ -1446,7 +1446,7 @@ class Fun(Cog):
             )
             output.seek(0)
 
-            await ctx.send(file=File(output, filename="evict-speechbubble.gif"))
+            await ctx.send(file=File(output, filename="warm-speechbubble.gif"))
 
     @hybrid_group(name="media", invoke_without_command=True)
     @discord.app_commands.allowed_installs(guilds=True, users=True)
@@ -6023,16 +6023,16 @@ class Fun(Cog):
                     ext = mimetypes.guess_extension(content_type) or '.mp4'
                     filename = f"{ctx.author.id}_{int(time.time())}{ext}"
                     
-                    headers = {"AccessKey": "10e0eb5f-79de-4ae9-a35a9b9f71e0-8c99-4a58"}
+                    headers = {"AccessKey": "bc5e2ae5-5433-4030-bbaaf49ef043-9766-4d31"}
                     async with session.put(
-                        f"https://storage.bunnycdn.com/evict/socials/{filename}",
+                        f"https://ny.storage.bunnycdn.com/warm2/socials/{filename}",
                         headers=headers,
                         data=media_data
                     ) as upload:
                         if upload.status != 201:
                             return await ctx.warn("Failed to upload media")
                         
-                        cdn_url = f"https://bunny.evict.bot/socials/{filename}"
+                        cdn_url = f"https://bunny.warm.lat/socials/{filename}"
                         await self.bot.db.execute(
                             """
                             UPDATE public.socials 
@@ -6204,16 +6204,16 @@ class Fun(Cog):
                         
                     filename = f"audio_{ctx.author.id}_{int(time.time())}{ext}"
                     
-                    headers = {"AccessKey": "10e0eb5f-79de-4ae9-a35a9b9f71e0-8c99-4a58"}
+                    headers = {"AccessKey": "bc5e2ae5-5433-4030-bbaaf49ef043-9766-4d31"}
                     async with session.put(
-                        f"https://storage.bunnycdn.com/evict/socials/{filename}",
+                        f"https://ny.storage.bunnycdn.com/warm2/socials/{filename}",
                         headers=headers,
                         data=media_data
                     ) as upload:
                         if upload.status != 201:
                             return await ctx.warn("Failed to upload audio")
                         
-                        cdn_url = f"https://bunny.evict.bot/socials/{filename}"
+                        cdn_url = f"https://bunny.warm.lat/socials/{filename}"
                         await self.bot.db.execute(
                             """
                             UPDATE public.socials 
@@ -6231,7 +6231,7 @@ class Fun(Cog):
                             old_filename = old_audio.split('/')[-1]
                             try:
                                 async with session.delete(
-                                    f"https://storage.bunnycdn.com/evict/socials/{old_filename}",
+                                    f"https://ny.storage.bunnycdn.com/warm2/socials/{old_filename}",
                                     headers=headers
                                 ) as delete:
                                     print(f"Deleted old audio: {delete.status}")
@@ -7285,7 +7285,7 @@ class Fun(Cog):
 #                     except Exception as e:
 #                         continue
 
-#             profile_link = f"evict.bot/@{user.name}"
+#             profile_link = f"warm.lat/@{user.name}"
 #             bbox = draw.textbbox((0, 0), profile_link, font=link_font)
 #             link_width = bbox[2] - bbox[0]
 #             link_x = (width - link_width) // 2
