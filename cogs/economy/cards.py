@@ -179,7 +179,7 @@ class Yugioh(Cog):
                 inline=False
             )
             
-        embed.set_footer(text="Use ;cards view <card name> to see more details")
+        embed.set_footer(text="Use ,cards view <card name> to see more details")
         await ctx.send(embed=embed)
 
     @cards.command(name="view")
@@ -846,7 +846,7 @@ class Yugioh(Cog):
             
         embed = discord.Embed(
             title="🏪 Card Market",
-            description="Use `;cards market buy <listing_id>` to purchase a card!",
+            description="Use `,cards market buy <listing_id>` to purchase a card!",
             color=discord.Color.blue()
         )
         
@@ -1016,10 +1016,10 @@ class Yugioh(Cog):
             title="🔄 Card Trade Session",
             description=(
                 f"Trade between {ctx.author.mention} and {member.mention}\n"
-                "Use `;trade add <card_name>` to add cards\n"
-                "Use `;trade remove <card_name>` to remove cards\n"
-                "Use `;trade confirm` when ready\n"
-                "Use `;trade cancel` to cancel"
+                "Use `,trade add <card_name>` to add cards\n"
+                "Use `,trade remove <card_name>` to remove cards\n"
+                "Use `,trade confirm` when ready\n"
+                "Use `,trade cancel` to cancel"
             ),
             color=discord.Color.blue()
         )
@@ -1030,7 +1030,7 @@ class Yugioh(Cog):
             return (
                 m.author in [ctx.author, member] and 
                 m.channel == ctx.channel and 
-                m.content.startswith(";trade")
+                m.content.startswith(",trade")
             )
             
         while trade_session['status'] == 'selecting':

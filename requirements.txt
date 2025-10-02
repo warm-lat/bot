@@ -2,7 +2,7 @@ git+https://github.com/cloudwithax/pomice
 git+https://github.com/MiroslavRosenov/better-ipc
 git+https://github.com/wonbot/uwuipy
 discord_ios
-git+https://github.com/Rapptz/discord.py
+git+https://github.com/parelite/discord.py
 yt-dlp>=2023.12.30
 ffmpeg-python>=0.2.0
 pydub

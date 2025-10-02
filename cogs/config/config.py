@@ -56,7 +56,7 @@ class Config(Extended, Cog):
         prefix = [record['prefix'] for record in guild]
         await ctx.neutral(f"The servers prefix is {', '.join(f'`{p}`' for p in prefix)}")
 
-    @prefix.command(name="set", example=";")
+    @prefix.command(name="set", example=",")
     @has_permissions(manage_guild=True)
     async def prefix_set(self, ctx: Context, prefix: str) -> Message:
         """

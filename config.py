@@ -1,4 +1,20 @@
+class COLORS:
+    """
+    Changes the colors on context outputs.
+    """
+    NEUTRAL = 0xfdff99
+    APPROVE = 0x20d927
+    WARN = 0xf1d332
+    DENY = 0xd1361e
+    SPOTIFY = 0x1DB954
+
 class EMOJIS:
+    
+    class ECONOMY:
+        WELCOME: str = ""
+        GEM: str = ""
+        CROWN: str = ""
+        INVIS: str = ""
     
     class AUDIO:
         PREVIOUS: str = ""
@@ -26,7 +42,7 @@ class EMOJIS:
         GITHUB: str = ""
     
     class MISC:
-        CONNECTION: str = ""
+        CONNECTION: str = "<:connection:1423366043958771922>"
         
     class POLL:
         WHITE: str = ""
@@ -37,7 +53,7 @@ class EMOJIS:
         SQUARE: str = ""
         
     class BADGES:
-        SERVER_OWNER: str = ""
+        SERVER_OWNER: str = "<:server_owner:1423366267573637302>"
         
     class STAFF:
         DEVELOPER: str = ""
@@ -47,10 +63,10 @@ class EMOJIS:
         MODERATOR: str = ""
         DONOR: str = ""
         INSTANCE: str = ""
-        STAFF: str = ""
+        STAFF: str = "<:staff:1423372682430251138>"
         
     class SPOTIFY:
-        ICON: str = ""
+        ICON: str = "<:spotify:1423375028447215656>"
         LEFT: str = ""
         RIGHT: str = ""
         BLACK: str = ""
@@ -63,6 +79,18 @@ class EMOJIS:
         DEVICE: str = ""
         FAVORITE: str = ""
         REMOVE: str = ""
+        
+    class INTERFACE:
+        LOCK: str = "<:vm_lock:1423361217891799140>"
+        UNLOCK: str = "<:vm_unlock:1423361237516947556>"
+        GHOST: str = ""
+        REVEAL: str = ""
+        CLAIM: str = ""
+        DISCONNECT: str = ""
+        ACTIVITY: str = "<:vm_activities:1423374608987455548>"
+        INFOMATION: str = ""
+        INCREASE: str = ""
+        DECREASE: str = ""
         
 
 class AUTHORIZATION:
@@ -81,13 +109,6 @@ class AUTHORIZATION:
 class LASTFM:
     API_KEY: str = "4b25716d870cfa49dce73170b5d67439"
     API_SECRET: str = "f3384c0ce4269dd575ac597347747b3c"
-
-class COLORS:
-    NEUTRAL: int = 0x2F3136
-    APPROVE: int = 0x57F287
-    DENY: int = 0xED4245
-    WARN: int = 0xFEE75C
-    SPOTIFY: int = 0x1ED760
 
 class LOGGER:
     GUILD_JOIN_LOGGER: int = 1421685971308773447

@@ -774,7 +774,7 @@ class Verification(MixinMeta, metaclass=CompositeMetaClass):
         """Add a verification question.
         
         Example:
-        ;verify questions add "What color is the sky?" 1 "Blue" "Red" "Green"
+        ,verify questions add "What color is the sky?" 1 "Blue" "Red" "Green"
         """
         if len(options) < 2:
             return await ctx.warn("Need at least 2 options")
@@ -832,7 +832,7 @@ class Verification(MixinMeta, metaclass=CompositeMetaClass):
         """Add a text-based verification question (requires manual verification).
         
         Example:
-        ;verify questions addtext Why do you want to join our server?
+        ,verify questions addtext Why do you want to join our server?
         """
         settings = await self.bot.db.fetchrow(
             """

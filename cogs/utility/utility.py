@@ -4013,7 +4013,7 @@ class Utility(Extended, Cog):
         if ctx.invoked_subcommand is None:
             await ctx.send_help(ctx.command)
 
-    @instance.command(name="setup", example="xxx ;")
+    @instance.command(name="setup", example="xxx ,")
     async def instance_setup(self, ctx: Context, name: str, prefix: str) -> Message:
         """Setup and deploy your instance"""
         if len(prefix) > 3:

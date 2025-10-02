@@ -247,7 +247,7 @@ class Listeners(Cog):
             name="**Prefix 🤖**",
             value=(
                 "The most important thing is my prefix. "
-                f"It is set to `;` by default for this server and it is also customizable, "
+                f"It is set to `,` by default for this server and it is also customizable, "
                 "so if you don't like this prefix, you can always change it with `prefix` command!"
             ),
             inline=False,

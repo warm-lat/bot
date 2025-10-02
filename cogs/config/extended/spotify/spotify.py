@@ -663,7 +663,7 @@ class Spotify(MixinMeta, metaclass=CompositeMetaClass):
                 ) as resp:
                     if resp.status != 200:
                         log.error(f"Failed to refresh token: {await resp.text()}")
-                        await ctx.warn("Failed to refresh Spotify token. Please relink using `;spotify link`")
+                        await ctx.warn("Failed to refresh Spotify token. Please relink using `,spotify link`")
                         return None
                     
                     data = await resp.json()

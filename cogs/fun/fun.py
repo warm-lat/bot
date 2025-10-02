@@ -6722,9 +6722,7 @@ class Fun(Cog):
         }
 
         payload = {
-        # create a custom hostname for the zone; Cloudflare will return validation records
             "hostname": domain,
-        # request DV verification (TXT/HTTP) - Cloudflare will return required records in response
             "ssl": {
                 "method": "txt", 
                 "type": "dv",
@@ -6994,7 +6992,7 @@ class Fun(Cog):
     async def mini(self, ctx: Context, *, prompt: str) -> Message:
         """
         Get responses using OpenAI's O1-mini model.
-        Premium users get $15 worth of credits per 2 weeks.
+        Premium users get $10 worth of credits per month.
         Free users get 10 uses per day.
         
         Cost: $0.01 per response
@@ -7010,7 +7008,7 @@ class Fun(Cog):
         is_donor = await self.bot.db.fetchval(
             """
             SELECT EXISTS(
-                SELECT 1 FROM donators 
+                SELECT 1 FROM public.donators 
                 WHERE user_id = $1
             )
             """,
@@ -7023,7 +7021,7 @@ class Fun(Cog):
             credits = await self.bot.db.fetchval(
                 """
                 SELECT credits
-                FROM dalle_credits
+                FROM public.dalle_credits
                 WHERE user_id = $1
                 """,
                 ctx.author.id
@@ -7032,19 +7030,19 @@ class Fun(Cog):
             if credits is None:
                 await self.bot.db.execute(
                     """
-                    INSERT INTO dalle_credits (user_id, credits, last_reset)
+                    INSERT INTO public.dalle_credits (user_id, credits, last_reset)
                     VALUES ($1, $2, NOW())
                     """,
                     ctx.author.id,
-                    15.00
+                    10.00
                 )
-                credits = decimal.Decimal('15.00')
+                credits = decimal.Decimal('10.00')
 
             if credits < base_cost:
                 return await ctx.warn(
                     f"Insufficient credits! You have ${credits:.3f} remaining.\n"
                     f"This response would cost ${base_cost:.3f}.\n"
-                    "Credits reset every 2 weeks."
+                    "Credits reset every month."
                 )
         else:
             key = f"mini:{ctx.author.id}"
@@ -7117,7 +7115,7 @@ class Fun(Cog):
                         new_credits = credits - base_cost
                         await self.bot.db.execute(
                             """
-                            UPDATE dalle_credits
+                            UPDATE public.dalle_credits
                             SET credits = $1
                             WHERE user_id = $2
                             """,

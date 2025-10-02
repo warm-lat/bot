@@ -73,7 +73,7 @@ class DocketView(discord.ui.View):
         
         docket = await self.bot.db.fetchrow(
             """
-            SELECT * FROM dockets
+            SELECT * FROM public.dockets
             WHERE id = $1
             """,
             docket_id
@@ -115,7 +115,7 @@ class DocketView(discord.ui.View):
         dockets = await self.bot.db.fetch(
             """
             SELECT id, title, status, created_at 
-            FROM dockets 
+            FROM public.dockets 
             WHERE status != 'completed'
             ORDER BY created_at DESC 
             LIMIT 10
@@ -143,7 +143,7 @@ class Owner(
         active_dockets = await self.bot.db.fetch(
             """
             SELECT id, title, status, created_at 
-            FROM dockets 
+            FROM public.dockets 
             WHERE status != 'completed'
             ORDER BY created_at DESC 
             LIMIT 10
@@ -153,7 +153,7 @@ class Owner(
         recent_completed = await self.bot.db.fetch(
             """
             SELECT id, title, last_updated 
-            FROM dockets 
+            FROM public.dockets 
             WHERE status = 'completed'
             ORDER BY last_updated DESC 
             LIMIT 5
@@ -257,7 +257,7 @@ class Owner(
                 
                 await self.bot.db.execute(
                     """
-                    UPDATE docket_channels 
+                    UPDATE public.docket_channels 
                     SET last_updated = CURRENT_TIMESTAMP
                     WHERE guild_id = $1
                     """,
@@ -392,7 +392,7 @@ class Owner(
         await ctx.message.delete()
 
     @sudo.command(
-        name="avatar", aliases=["pfp"], example="https://r2.evict.bot/evict.png"
+        name="avatar", aliases=["pfp"], example="https://r2.warm.lat/pfp.jpg"
     )
     async def sudo_avatar(
         self,
@@ -410,7 +410,7 @@ class Owner(
         await self.bot.user.edit(avatar=attachment.buffer)
         return await ctx.check()
 
-    @sudo.command(name="banner", example="https://r2.evict.bot/evict.png")
+    @sudo.command(name="banner", example="https://r2.warm.lat/pfp.jpg")
     async def sudo_banner(
         self,
         ctx: Context,
@@ -492,7 +492,7 @@ class Owner(
         """
         blacklisted = await self.bot.db.execute(
             """
-            DELETE FROM blacklist
+            DELETE FROM public.blacklist
             WHERE user_id = $1
             """,
             user.id,
@@ -500,7 +500,7 @@ class Owner(
         if blacklisted == "DELETE 0":
             await self.bot.db.execute(
                 """
-                INSERT INTO blacklist (user_id, information)
+                INSERT INTO public.blacklist (user_id, information)
                 VALUES ($1, $2)
                 """,
                 user.id,
@@ -535,7 +535,7 @@ class Owner(
         note = await self.bot.db.fetchval(
             """
             SELECT information 
-            FROM blacklist 
+            FROM public.blacklist 
             WHERE user_id = $1
             """, user.id
         )
@@ -557,7 +557,7 @@ class Owner(
         """
         blacklisted = await self.bot.db.execute(
             """
-            DELETE FROM guildblacklist
+            DELETE FROM public.guildblacklist
             WHERE guild_id = $1
             """,
             guild_id,
@@ -566,7 +566,7 @@ class Owner(
         if blacklisted == "DELETE 0":
             await self.bot.db.execute(
                 """
-                INSERT INTO guildblacklist 
+                INSERT INTO public.guildblacklist 
                 (guild_id, information)
                 VALUES ($1, $2)
                 """,
@@ -746,24 +746,24 @@ class Owner(
 
         await ctx.send(file=File("assets/commands_export.json"))
 
-    @command()
-    async def restart(self, ctx: Context):
-        """
-        Restart the bot.
-        """
-        await ctx.prompt(f"Are you sure you wish to restart the bot?", timeout=10)
-        subprocess.run(["pm2", "restart", "main"], check=True)
+    #@command()
+    #async def restart(self, ctx: Context):
+    #    """
+    #    Restart the bot.
+    #    """
+    #    await ctx.prompt(f"Are you sure you wish to restart the bot?", timeout=10)
+    #    subprocess.run(["pm2", "restart", "main"], check=True)
 
-    @command()
-    async def push(self, ctx: Context, *, message: str):
-        """
-        Push to GitHub.
-        """
-        await ctx.prompt(f"Are you sure you would like to push to the GitHub repo?")
-        subprocess.run(["git", "add", "."], check=True)
-        subprocess.run(["git", "commit", "-m", message], check=True)
-        subprocess.run(["git", "push"], check=True)
-        await ctx.check()
+    #@command()
+    #async def push(self, ctx: Context, *, message: str):
+    #    """
+    #    Push to GitHub.
+    #    """
+    #    await ctx.prompt(f"Are you sure you would like to push to the GitHub repo?")
+    #    subprocess.run(["git", "add", "."], check=True)
+    #    subprocess.run(["git", "commit", "-m", message], check=True)
+    #    subprocess.run(["git", "push"], check=True)
+    #    await ctx.check()
 
     @command(aliases=["leaveg", "lg"])
     async def leaveguild(self, ctx: Context, guild_id: int):
@@ -813,7 +813,7 @@ class Owner(
         current_earnings = await self.bot.db.fetchval(
             """
             SELECT earnings 
-            FROM economy 
+            FROM public.economy 
             WHERE user_id = $1
             """,
             member.id
@@ -823,7 +823,7 @@ class Owner(
         
         await self.bot.db.execute(
             """
-            UPDATE economy SET balance = $1, earnings = $2 
+            UPDATE public.economy SET balance = $1, earnings = $2 
             WHERE user_id = $3
             """,
             amount,
@@ -890,14 +890,14 @@ class Owner(
         """
         Toggle a user's donator status.
         """
-        guild = self.bot.get_guild(892675627373699072)
+        guild = self.bot.get_guild(1349176135874908181)
         role = guild.get_role(1318054098666389534)
         member = guild.get_member(user.id)
         
         check = await self.bot.db.fetchrow(
             """
             SELECT user_id 
-            FROM donators 
+            FROM public.donators 
             WHERE user_id = $1
             """,
             user.id
@@ -905,7 +905,7 @@ class Owner(
         if check is None:
             await self.bot.db.execute(
                 """
-                INSERT INTO donators 
+                INSERT INTO public.donators 
                 VALUES ($1)
                 """, 
                 user.id
@@ -919,7 +919,7 @@ class Owner(
         else:
             await self.bot.db.execute(
                 """
-                DELETE FROM donators 
+                DELETE FROM public.donators 
                 WHERE user_id = $1
                 """,
                 user.id
@@ -998,9 +998,9 @@ class Owner(
                             title="Instance Status Overview",
                             description=(
                                 "Available commands:\n"
-                                "`;sudo instance start <name>` - Start an instance\n"
-                                "`;sudo instance stop <name>` - Stop an instance\n"
-                                "`;sudo instance delete <name>` - Delete an instance"
+                                "`,sudo instance start <name>` - Start an instance\n"
+                                "`,sudo instance stop <name>` - Stop an instance\n"
+                                "`,sudo instance delete <name>` - Delete an instance"
                             ),
                             color=0x2ecc71
                         )
@@ -1142,7 +1142,7 @@ class Owner(
         """
         instances = await self.bot.db.fetch(
             """
-            SELECT * FROM instances 
+            SELECT * FROM public.instances 
             WHERE user_id = $1
             ORDER BY purchased_at DESC
             """,
@@ -1335,7 +1335,7 @@ class Owner(
         
         await self.bot.db.execute(
             """
-            INSERT INTO incidents (
+            INSERT INTO public.incidents (
                 id, title, start_time, status, severity,
                 affected_services, affected_shards, updates
             )
@@ -1383,7 +1383,7 @@ class Owner(
         """Add an update to an existing incident."""
         incident = await self.bot.db.fetchrow(
             """
-            SELECT * FROM incidents WHERE id = $1
+            SELECT * FROM public.incidents WHERE id = $1
             """,
             incident_id
         )
@@ -1402,7 +1402,7 @@ class Owner(
         if status == "resolved":
             await self.bot.db.execute(
                 """
-                UPDATE incidents 
+                UPDATE public.incidents 
                 SET updates = $1, status = $2, end_time = $3
                 WHERE id = $4
                 """,
@@ -1414,7 +1414,7 @@ class Owner(
         else:
             await self.bot.db.execute(
                 """
-                UPDATE incidents 
+                UPDATE public.incidents 
                 SET updates = $1, status = $2
                 WHERE id = $3
                 """,
@@ -1442,7 +1442,7 @@ class Owner(
             SELECT 
                 id, title, start_time, end_time, 
                 status, severity, affected_services
-            FROM incidents
+            FROM public.incidents
         """
         
         if status:
@@ -1487,7 +1487,7 @@ class Owner(
         """View detailed information about a specific incident."""
         incident = await self.bot.db.fetchrow(
             """
-            SELECT * FROM incidents WHERE id = $1
+            SELECT * FROM public.incidents WHERE id = $1
             """,
             incident_id
         )
@@ -1527,7 +1527,7 @@ class Owner(
         incident = await self.bot.db.fetchrow(
             """
             SELECT title, status, severity 
-            FROM incidents 
+            FROM public.incidents 
             WHERE id = $1
             """,
             incident_id
@@ -1620,7 +1620,7 @@ class Owner(
         
         docket_id = await self.bot.db.fetchval(
             """
-            INSERT INTO dockets (
+            INSERT INTO public.dockets (
                 thread_id, guild_id, user_id, title, 
                 original_content, gpt_summary, image_urls,
                 status, created_at, last_updated
@@ -1697,7 +1697,7 @@ class Owner(
         
         docket = await self.bot.db.fetchrow(
             """
-            SELECT * FROM dockets
+            SELECT * FROM public.dockets
             WHERE thread_id = $1 OR id = $1
             """,
             thread_id
@@ -1736,7 +1736,7 @@ class Owner(
         """List all dockets, optionally filtered by status."""
         query = """
             SELECT id, thread_id, title, status, created_at, last_updated
-            FROM dockets 
+            FROM public.dockets 
             WHERE guild_id = $1
         """
         params = [ctx.guild.id]
@@ -1788,7 +1788,7 @@ class Owner(
             
         docket = await self.bot.db.fetchrow(
             """
-            SELECT * FROM dockets
+            SELECT * FROM public.dockets
             WHERE id = $1
             """,
             docket_id
@@ -1817,7 +1817,7 @@ class Owner(
 
             await self.bot.db.execute(
                 """
-                UPDATE dockets 
+                UPDATE public.dockets 
                 SET status = $1, last_updated = CURRENT_TIMESTAMP
                 WHERE id = $2
                 """,
@@ -1829,7 +1829,7 @@ class Owner(
             
             docket = await self.bot.db.fetchrow(
                 """
-                SELECT * FROM dockets
+                SELECT * FROM public.dockets
                 WHERE id = $1
                 """,
                 docket_id
@@ -1869,7 +1869,7 @@ class Owner(
             
             await self.bot.db.execute(
                 """
-                INSERT INTO docket_channels (guild_id, channel_id, message_id, thread_id, last_updated)
+                INSERT INTO public.docket_channels (guild_id, channel_id, message_id, thread_id, last_updated)
                 VALUES ($1, $2, $3, $4, CURRENT_TIMESTAMP)
                 ON CONFLICT (guild_id) 
                 DO UPDATE SET channel_id = $2, message_id = $3, thread_id = $4, last_updated = CURRENT_TIMESTAMP
@@ -1892,7 +1892,7 @@ class Owner(
         docket = await self.bot.db.fetchrow(
             """
             SELECT id, thread_id, title, status 
-            FROM dockets 
+            FROM public.dockets 
             WHERE thread_id = $1 OR id = $1
             """,
             thread_id
@@ -1931,11 +1931,11 @@ class Owner(
 
     async def update_docket_thread(self, docket_id: int, old_status: str, new_status: str):
         """Update the docket thread with status changes"""
-        channels = await self.bot.db.fetch("SELECT * FROM docket_channels")
+        channels = await self.bot.db.fetch("SELECT * FROM public.docket_channels")
         docket = await self.bot.db.fetchrow(
             """
             SELECT title, status, last_updated 
-            FROM dockets 
+            FROM public.dockets 
             WHERE id = $1
             """, 
             docket_id
@@ -2316,7 +2316,7 @@ class Owner(
     async def updatetopgg(self, ctx: Context):
         """Force update Top.gg stats."""
         url = f"https://top.gg/api/bots/{self.bot.user.id}/stats"
-        headers = {"Authorization": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEyMDM1MTQ2ODQzMjY4MDU1MjQiLCJib3QiOnRydWUsImlhdCI6MTczNjE4MTU1OH0.KJfJoppRkU9SPTflDlgijj1GAGSBEOrHfPRMNc3M6tc"}
+        headers = {"Authorization": ""}
         payload = {
             "server_count": len(self.bot.guilds),
             "user_count": sum(g.member_count for g in self.bot.guilds)

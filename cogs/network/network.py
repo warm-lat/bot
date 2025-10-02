@@ -4151,7 +4151,7 @@ class Network(Cog):
 
     @route("/config")
     async def config(self: "Network", request: Request) -> Response:
-        DEFAULT_PREFIX = ";"
+        DEFAULT_PREFIX = ","
         try:
             auth_header = request.headers.get("Authorization")
             if not auth_header or not auth_header.startswith("Bearer "):

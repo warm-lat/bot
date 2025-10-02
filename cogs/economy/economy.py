@@ -280,7 +280,7 @@ class Economy(commands.Cog):
 
         await self.bot.db.execute(
             """
-            UPDATE economy 
+            UPDATE public.economy 
             SET wallet = wallet - $1, bank = bank + $1 
             WHERE user_id = $2
             """,
@@ -315,7 +315,7 @@ class Economy(commands.Cog):
 
         await self.bot.db.execute(
             """
-            UPDATE economy 
+            UPDATE public.economy 
             SET wallet = wallet + $1, bank = bank - $1 
             WHERE user_id = $2
             """,
@@ -337,7 +337,7 @@ class Economy(commands.Cog):
         current_capacity = await self.bot.db.fetchval(
             """
             SELECT bank_capacity 
-            FROM economy 
+            FROM public.economy 
             WHERE user_id = $1
             """,
             ctx.author.id
@@ -367,7 +367,7 @@ class Economy(commands.Cog):
 
         await self.bot.db.execute(
             """
-            UPDATE economy 
+            UPDATE public.economy 
             SET wallet = wallet - $1, gems = gems - $2, bank_capacity = $3 
             WHERE user_id = $4
             """,
@@ -389,7 +389,7 @@ class Economy(commands.Cog):
         last_claim = await self.bot.db.fetchval(
             """
             SELECT last_interest 
-            FROM economy 
+            FROM public.economy 
             WHERE user_id = $1
             """,
             ctx.author.id
@@ -415,7 +415,7 @@ class Economy(commands.Cog):
 
         await self.bot.db.execute(
             """
-            UPDATE economy 
+            UPDATE public.economy 
             SET bank = bank + $1, last_interest = $2 
             WHERE user_id = $3
             """,
@@ -460,7 +460,7 @@ class Economy(commands.Cog):
             async with conn.transaction():
                 await conn.execute(
                     """
-                    UPDATE economy 
+                    UPDATE public.economy 
                     SET wallet = wallet - $1 
                     WHERE user_id = $2
                     """,
@@ -469,7 +469,7 @@ class Economy(commands.Cog):
                 )
                 await conn.execute(
                     """
-                    INSERT INTO economy (user_id, wallet) 
+                    INSERT INTO public.economy (user_id, wallet) 
                     VALUES ($1, $2) 
                     ON CONFLICT (user_id) 
                     DO UPDATE SET wallet = economy.wallet + $2
@@ -492,7 +492,7 @@ class Economy(commands.Cog):
         last_daily = await self.bot.db.fetchval(
             """
             SELECT last_daily 
-            FROM economy 
+            FROM public.economy 
             WHERE user_id = $1
             """,
             ctx.author.id
@@ -501,7 +501,7 @@ class Economy(commands.Cog):
         current_streak = await self.bot.db.fetchval(
             """
             SELECT daily_streak 
-            FROM economy 
+            FROM public.economy 
             WHERE user_id = $1
             """,
             ctx.author.id
@@ -530,7 +530,7 @@ class Economy(commands.Cog):
         
         await self.bot.db.execute(
             """
-            INSERT INTO economy (user_id, wallet, gems, last_daily, daily_streak) 
+            INSERT INTO public.economy (user_id, wallet, gems, last_daily, daily_streak) 
             VALUES ($1, $2, $3, $4, $5) 
             ON CONFLICT (user_id) DO UPDATE SET 
                 wallet = economy.wallet + $2,
@@ -573,7 +573,7 @@ class Economy(commands.Cog):
         job_data = await self.bot.db.fetchrow(
             """
             SELECT current_job, job_level, last_work, employer_id 
-            FROM jobs WHERE user_id = $1
+            FROM public.jobs WHERE user_id = $1
             """, 
             ctx.author.id
         )
@@ -600,7 +600,7 @@ class Economy(commands.Cog):
             contract = await self.bot.db.fetchrow(
                 """
                 SELECT business_id, salary 
-                FROM contracts 
+                FROM public.contracts 
                 WHERE employee_id = $1
                 """,
                 ctx.author.id
@@ -614,7 +614,7 @@ class Economy(commands.Cog):
             business_balance = await self.bot.db.fetchval(
                 """
                 SELECT balance 
-                FROM businesses 
+                FROM public.businesses 
                 WHERE owner_id = $1
                 """,
                 job_data['employer_id']
@@ -629,7 +629,7 @@ class Economy(commands.Cog):
             async with conn.transaction():
                 await conn.execute(
                     """
-                    UPDATE jobs 
+                    UPDATE public.jobs 
                     SET job_experience = job_experience + 1,
                     last_work = $2
                     WHERE user_id = $1
@@ -640,7 +640,7 @@ class Economy(commands.Cog):
                 if job_data['employer_id']:
                     await conn.execute(
                         """
-                        UPDATE businesses 
+                        UPDATE public.businesses 
                         SET balance = balance - $1 
                         WHERE owner_id = $2
                         """,
@@ -649,7 +649,7 @@ class Economy(commands.Cog):
                     
                     await conn.execute(
                         """
-                        INSERT INTO business_stats (business_id, total_expenses)
+                        INSERT INTO public.business_stats (business_id, total_expenses)
                         VALUES ($1, $2)
                         ON CONFLICT (business_id) 
                         DO UPDATE SET total_expenses = business_stats.total_expenses + $2
@@ -659,19 +659,19 @@ class Economy(commands.Cog):
                     
                     await conn.execute(
                         """
-                        INSERT INTO employee_stats (business_id, employee_id, work_count, total_earned)
+                        INSERT INTO public.employee_stats (business_id, employee_id, work_count, total_earned)
                         VALUES ($1, $2, 1, $3)
                         ON CONFLICT (business_id, employee_id) 
                         DO UPDATE SET 
-                            work_count = employee_stats.work_count + 1,
-                            total_earned = employee_stats.total_earned + $3
+                            work_count = public.employee_stats.work_count + 1,
+                            total_earned = public.employee_stats.total_earned + $3
                             """,
                         contract['business_id'], ctx.author.id, total_pay
                     )
 
                 await conn.execute(
                     """
-                    UPDATE economy 
+                    UPDATE public.economy 
                     SET wallet = wallet + $1 
                     WHERE user_id = $2
                     """,
@@ -681,7 +681,7 @@ class Economy(commands.Cog):
         exp = await self.bot.db.fetchval(
             """
             SELECT job_experience 
-            FROM jobs 
+            FROM public.jobs 
             WHERE user_id = $1
             """,
             ctx.author.id
@@ -690,7 +690,7 @@ class Economy(commands.Cog):
         if exp >= job_data['job_level'] * 10: 
             await self.bot.db.execute(
                 """
-                UPDATE jobs 
+                UPDATE public.jobs 
                 SET job_level = job_level + 1,
                 job_experience = 0
                 WHERE user_id = $1
@@ -711,7 +711,7 @@ class Economy(commands.Cog):
         """
         business = await self.bot.db.fetchrow(
             """
-            SELECT * FROM businesses 
+            SELECT * FROM public.businesses 
             WHERE owner_id = $1
             """,
             ctx.author.id
@@ -725,7 +725,7 @@ class Economy(commands.Cog):
         employees = await self.bot.db.fetch(
             """
             SELECT employee_id, salary, position 
-            FROM contracts WHERE business_id = $1
+            FROM public.contracts WHERE business_id = $1
             """,
             business['business_id']
         )
@@ -1604,7 +1604,7 @@ class Economy(commands.Cog):
                         f":euro: Salary: {job['salary']:,}/hr\n"
                         f"📝 Description: {description}\n"
                         f"{config.EMOJIS.ECONOMY.CROWN} Owner: {owner.name}\n"
-                        f"-# **Use ;jobs apply 1 to apply**"
+                        f"-# **Use ,jobs apply 1 to apply**"
                     ),
                     inline=False
                 )
@@ -2892,7 +2892,7 @@ class Economy(commands.Cog):
         if amount is None:
             embed = Embed(
                 title="🎰 Daily Lottery",
-                description="Enter with `;lottery <amount>`\nLottery ends once a day! The maximum lottery submission is 250k coins!",
+                description="Enter with `,lottery <amount>`\nLottery ends once a day! The maximum lottery submission is 250k coins!",
                 color=discord.Color.gold()
             )
             embed.add_field(name="You added", value=f"{user_tickets:,} coins", inline=True)

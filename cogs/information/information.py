@@ -748,7 +748,7 @@ class Information(Cog):
         embed.description = ""
 
         if isinstance(user, Member):
-            support_guild = self.bot.get_guild(1370143154958893138)
+            support_guild = self.bot.get_guild(1349176135874908181)
             if support_guild:
                 if not support_guild.chunked:
                     await support_guild.chunk()
@@ -903,7 +903,7 @@ class Information(Cog):
         names = await self.bot.db.fetch(
             """
             SELECT *
-            FROM name_history
+            FROM public.name_history
             WHERE user_id = $1
             """
             + ("" if ctx.author.id in self.bot.owner_ids else "\nAND is_hidden = FALSE")
@@ -934,7 +934,7 @@ class Information(Cog):
 
         await self.bot.db.execute(
             """
-            UPDATE name_history
+            UPDATE public.name_history
             SET is_hidden = TRUE
             WHERE user_id = $1
             """,
@@ -1105,7 +1105,7 @@ class Information(Cog):
             for record in await self.bot.db.fetch(
                 """
                 SELECT *
-                FROM boosters_lost
+                FROM public.boosters_lost
                 WHERE guild_id = $1
                 ORDER BY ended_at DESC
                 """,

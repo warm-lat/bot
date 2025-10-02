@@ -35,7 +35,7 @@ class ReplyModal(Modal, title="Reply to Confession"):
             try:
                 await interaction.client.db.execute(
                     """
-                    INSERT INTO confess_replies (message_id, user_id, guild_id)
+                    INSERT INTO public.confess_replies (message_id, user_id, guild_id)
                     VALUES ($1, $2, $3)
                     """,
                     reply_message.id, interaction.user.id, interaction.guild.id
@@ -44,7 +44,7 @@ class ReplyModal(Modal, title="Reply to Confession"):
             except Exception as db_error:
                 print(f"Database error: {db_error}")
             
-            e.set_footer(text=f"Report this reply with ;confessions report {reply_message.id}")
+            e.set_footer(text=f"Report this reply with ,confessions report {reply_message.id}")
             await reply_message.edit(embed=e)
             
             await interaction.response.send_message("Reply sent!", ephemeral=True)
@@ -83,7 +83,7 @@ class confessModal(Modal, title="Confess Here"):
 
             blacklist = await interaction.client.db.fetch(
                 """
-                SELECT word FROM confess_blacklist 
+                SELECT word FROM public.confess_blacklist 
                 WHERE guild_id = $1
                 """,
                 interaction.guild.id
@@ -99,7 +99,7 @@ class confessModal(Modal, title="Confess Here"):
                         )
 
             check = await interaction.client.db.fetchrow(
-                "SELECT * FROM confess WHERE guild_id = {}".format(interaction.guild.id)
+                "SELECT * FROM public.confess WHERE guild_id = {}".format(interaction.guild.id)
             )
 
             if check:
@@ -117,6 +117,21 @@ class confessModal(Modal, title="Confess Here"):
                     ".ru",
                     ".it",
                     ".de",
+                    ".my",
+                    ".net",
+                    ".store",
+                    ".lat",
+                    ".link",
+                    ".online",
+                    ".site",
+                    ".tech",
+                    ".website",
+                    ".space",
+                    ".fun",
+                    ".club",
+                    ".shop",
+                    ".live",
+                    ".me",
                 ]
 
                 if any(link in self.children[0].value for link in links):
@@ -139,24 +154,24 @@ class confessModal(Modal, title="Confess Here"):
 
                 e.set_author(
                     name=f"anonymous confession #{count}",
-                    url="https://discord.gg/warm",
+                    url="https://discord.gg/apply",
                     icon_url=interaction.guild.icon,
                 )
 
-                e.set_footer(text=f"type /confess to send a confession • Report this confession with ;confessions report {count}")
+                e.set_footer(text=f"type /confess to send a confession • Report this confession with ,confessions report {count}")
 
                 view = discord.ui.View()
                 view.add_item(ReplyButton())
                 message = await channel.send(embed=e, view=view)
 
                 await interaction.client.db.execute(
-                    "UPDATE confess SET confession = $1 WHERE guild_id = $2",
+                    "UPDATE public.confess SET confession = $1 WHERE guild_id = $2",
                     count,
                     interaction.guild.id,
                 )
 
                 await interaction.client.db.execute(
-                    "INSERT INTO confess_members VALUES ($1,$2,$3)",
+                    "INSERT INTO public.confess_members VALUES ($1,$2,$3)",
                     interaction.guild.id,
                     interaction.user.id,
                     count,
@@ -167,7 +182,7 @@ class confessModal(Modal, title="Confess Here"):
                 reactions = await interaction.client.db.fetchrow(
                     """
                     SELECT upvote, downvote 
-                    FROM confess 
+                    FROM public.confess 
                     WHERE guild_id = $1
                     """,
                     interaction.guild.id
