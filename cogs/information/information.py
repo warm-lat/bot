@@ -312,7 +312,7 @@ class Information(Cog):
             value="\n".join(
                 [
                     f"**CPU:** `{self.process.cpu_percent()}%`",
-                    f"**Memory:** `{format_size(self.process.memory_info().rss)}`",
+                    # f"**Memory:** `{format_size(self.process.memory_info().rss)}`",
                     f"**Launched:** {format_dt(self.bot.uptime, 'R')}",
                 ]
             ),

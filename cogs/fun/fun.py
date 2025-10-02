@@ -6270,7 +6270,7 @@ class Fun(Cog):
     @socials.command(name="toggleactivity")
     async def socials_toggleactivity(self, ctx: Context):
         """Toggle the visibility of your activity status."""
-        support_guild = self.bot.get_guild(892675627373699072)
+        support_guild = self.bot.get_guild(1349176135874908181)
         if not support_guild or not support_guild.get_member(ctx.author.id):
             return await ctx.warn("You must be in the support server to use this feature!")
 
