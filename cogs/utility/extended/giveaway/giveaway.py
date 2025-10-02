@@ -82,7 +82,7 @@ class Giveaway(MixinMeta, metaclass=CompositeMetaClass):
             for record in await self.bot.db.fetch(
                 """
                 SELECT *
-                FROM giveaway
+                FROM public.giveaway
                 WHERE ends_at <= NOW()
                 AND ended = FALSE
                 """,
@@ -110,7 +110,7 @@ class Giveaway(MixinMeta, metaclass=CompositeMetaClass):
         if scheduled_deletion:
             await self.bot.db.executemany(
                 """
-                DELETE FROM giveaway
+                DELETE FROM public.giveaway
                 WHERE guild_id = $1
                 AND channel_id = $2
                 AND message_id = $3
@@ -373,7 +373,7 @@ class Giveaway(MixinMeta, metaclass=CompositeMetaClass):
             for record in await self.bot.db.fetch(
                 """
                 SELECT *
-                FROM giveaway
+                FROM public.giveaway
                 WHERE guild_id = $1
                 """,
                 ctx.guild.id,
@@ -407,7 +407,7 @@ class Giveaway(MixinMeta, metaclass=CompositeMetaClass):
         """
         settings = await self.bot.db.fetchval(
             """
-            SELECT bonus_roles FROM giveaway_settings
+            SELECT bonus_roles FROM public.giveaway_settings
             WHERE guild_id = $1
             """,
             ctx.guild.id
@@ -437,10 +437,10 @@ class Giveaway(MixinMeta, metaclass=CompositeMetaClass):
         """
         await self.bot.db.execute(
             """
-            INSERT INTO giveaway_settings (guild_id, bonus_roles)
+            INSERT INTO public.giveaway_settings (guild_id, bonus_roles)
             VALUES ($1, $2::jsonb)
             ON CONFLICT (guild_id) DO UPDATE
-            SET bonus_roles = giveaway_settings.bonus_roles || $2::jsonb
+            SET bonus_roles = public.giveaway_settings.bonus_roles || $2::jsonb
             """,
             ctx.guild.id,
             {str(role.id): bonus}

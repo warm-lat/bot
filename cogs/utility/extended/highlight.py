@@ -46,7 +46,7 @@ class Highlight(MixinMeta, metaclass=CompositeMetaClass):
             for record in await self.bot.db.fetch(
                 """
                 SELECT DISTINCT ON (user_id) *
-                FROM highlights
+                FROM public.highlights
                 WHERE guild_id = $1
                 AND POSITION(word IN $2) > 0
                 """,
@@ -153,7 +153,7 @@ class Highlight(MixinMeta, metaclass=CompositeMetaClass):
         except Forbidden:
             await self.bot.db.execute(
                 """
-                DELETE FROM highlights
+                DELETE FROM public.highlights
                 AND user_id = $1
                 """,
                 member.id,
@@ -186,7 +186,7 @@ class Highlight(MixinMeta, metaclass=CompositeMetaClass):
         try:
             await self.bot.db.execute(
                 """
-                INSERT INTO highlights (guild_id, user_id, word)
+                INSERT INTO public.highlights (guild_id, user_id, word)
                 VALUES ($1, $2, $3)
                 """,
                 ctx.guild.id,
@@ -212,7 +212,7 @@ class Highlight(MixinMeta, metaclass=CompositeMetaClass):
         word = word.lower()
         result = await self.bot.db.execute(
             """
-            DELETE FROM highlights
+            DELETE FROM public.highlights
             WHERE guild_id = $1
             AND user_id = $2
             AND word = $3
@@ -243,7 +243,7 @@ class Highlight(MixinMeta, metaclass=CompositeMetaClass):
 
         result = await self.bot.db.execute(
             """
-            DELETE FROM highlights
+            DELETE FROM public.highlights
             WHERE guild_id = $1
             AND user_id = $2
             """,
@@ -271,7 +271,7 @@ class Highlight(MixinMeta, metaclass=CompositeMetaClass):
             for record in await self.bot.db.fetch(
                 """
                 SELECT word
-                FROM highlights
+                FROM public.highlights
                 WHERE guild_id = $1
                 """,
                 ctx.guild.id,

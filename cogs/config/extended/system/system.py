@@ -79,7 +79,7 @@ class System(MixinMeta, metaclass=CompositeMetaClass):
         records = await self.bot.db.fetch(
             f"""
             SELECT channel_id, template, delete_after
-            FROM {message_type}_message
+            FROM public.{message_type}_message
             WHERE guild_id = $1
             """,
             guild_id,
@@ -131,7 +131,7 @@ class System(MixinMeta, metaclass=CompositeMetaClass):
         if scheduled_deletion:
             await self.bot.db.execute(
                 f"""
-                DELETE FROM {message_type}_message
+                DELETE FROM public.{message_type}_message
                 WHERE channel_id = ANY($1::BIGINT[])
                 """,
                 scheduled_deletion,
@@ -221,7 +221,7 @@ class System(MixinMeta, metaclass=CompositeMetaClass):
         
         removal, identifiers = await asyncio.gather(
             self.bot.db.fetchval(
-                "SELECT welcome_removal FROM settings WHERE guild_id = $1",
+                "SELECT welcome_removal FROM public.settings WHERE guild_id = $1",
                 guild.id
             ),
             self.bot.redis.smembers(key)
@@ -337,7 +337,7 @@ class System(MixinMeta, metaclass=CompositeMetaClass):
                 for record in await self.bot.db.fetch(
                     """
                     SELECT channel_id
-                    FROM welcome_message
+                    FROM public.welcome_message
                     WHERE guild_id = $1
                     """,
                     ctx.guild.id,
@@ -350,7 +350,7 @@ class System(MixinMeta, metaclass=CompositeMetaClass):
 
         await self.bot.db.execute(
             """
-            INSERT INTO welcome_message (
+            INSERT INTO public.welcome_message (
                 guild_id,
                 channel_id,
                 template,
@@ -392,7 +392,7 @@ class System(MixinMeta, metaclass=CompositeMetaClass):
 
         result = await self.bot.db.execute(
             """
-            DELETE FROM welcome_message
+            DELETE FROM public.welcome_message
             WHERE guild_id = $1
             AND channel_id = $2
             """,
@@ -421,7 +421,7 @@ class System(MixinMeta, metaclass=CompositeMetaClass):
             await self.bot.db.fetchval(
                 """
                 SELECT template
-                FROM welcome_message
+                FROM public.welcome_message
                 WHERE guild_id = $1
                 AND channel_id = $2
                 """,
@@ -461,7 +461,7 @@ class System(MixinMeta, metaclass=CompositeMetaClass):
 
         result = await self.bot.db.execute(
             """
-            DELETE FROM welcome_message
+            DELETE FROM public.welcome_message
             WHERE guild_id = $1
             """,
             ctx.guild.id,
@@ -488,7 +488,7 @@ class System(MixinMeta, metaclass=CompositeMetaClass):
             for record in await self.bot.db.fetch(
                 """
                 SELECT channel_id
-                FROM welcome_message
+                FROM public.welcome_message
                 WHERE guild_id = $1
                 """,
                 ctx.guild.id,
@@ -547,7 +547,7 @@ class System(MixinMeta, metaclass=CompositeMetaClass):
                 for record in await self.bot.db.fetch(
                     """
                     SELECT channel_id
-                    FROM goodbye_message
+                    FROM public.goodbye_message
                     WHERE guild_id = $1
                     """,
                     ctx.guild.id,
@@ -561,7 +561,7 @@ class System(MixinMeta, metaclass=CompositeMetaClass):
 
         await self.bot.db.execute(
             """
-            INSERT INTO goodbye_message (
+            INSERT INTO public.goodbye_message (
                 guild_id,
                 channel_id,
                 template,
@@ -603,7 +603,7 @@ class System(MixinMeta, metaclass=CompositeMetaClass):
 
         result = await self.bot.db.execute(
             """
-            DELETE FROM goodbye_message
+            DELETE FROM public.goodbye_message
             WHERE guild_id = $1
             AND channel_id = $2
             """,
@@ -635,7 +635,7 @@ class System(MixinMeta, metaclass=CompositeMetaClass):
             await self.bot.db.fetchval(
                 """
                 SELECT template
-                FROM goodbye_message
+                FROM public.goodbye_message
                 WHERE guild_id = $1
                 AND channel_id = $2
                 """,
@@ -675,7 +675,7 @@ class System(MixinMeta, metaclass=CompositeMetaClass):
 
         result = await self.bot.db.execute(
             """
-            DELETE FROM goodbye_message
+            DELETE FROM public.goodbye_message
             WHERE guild_id = $1
             """,
             ctx.guild.id,
@@ -702,7 +702,7 @@ class System(MixinMeta, metaclass=CompositeMetaClass):
             for record in await self.bot.db.fetch(
                 """
                 SELECT channel_id
-                FROM goodbye_message
+                FROM public.goodbye_message
                 WHERE guild_id = $1
                 """,
                 ctx.guild.id,

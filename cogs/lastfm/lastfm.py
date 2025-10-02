@@ -800,7 +800,7 @@ class Lastfm(Cog):
         name="set",
         aliases=["connect", "login"],
         max_concurrency=INDEX_CONCURRENCY,
-        example="resentdev",
+        example="nxyylol",
     )
     async def lastfm_set(
         self,

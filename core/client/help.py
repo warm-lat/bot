@@ -48,7 +48,7 @@ class EvictHelp(MinimalHelpCommand):
         embed.add_field(
             name="Invite",
             value="**[invite](https://discord.com/oauth2/authorize?client_id=1420609343283531776)**  • "
-            "**[support](https://discord.gg/warm)**  • "
+            "**[support](https://discord.gg/apply)**  • "
             "**[view on web](https://warm.lat)**",
             inline=False,
         )

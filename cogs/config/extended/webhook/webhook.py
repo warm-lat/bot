@@ -76,7 +76,7 @@ class Webhook(MixinMeta, metaclass=CompositeMetaClass):
             await self.bot.db.fetchval(
                 """
                 SELECT webhook_id
-                FROM webhook
+                FROM public.webhook
                 WHERE guild_id = $1
                 AND channel_id = $2
                 """,
@@ -96,7 +96,7 @@ class Webhook(MixinMeta, metaclass=CompositeMetaClass):
 
         await self.bot.db.execute(
             """
-            INSERT INTO webhook (
+            INSERT INTO public.webhook (
                 identifier,
                 guild_id,
                 channel_id,
@@ -129,7 +129,7 @@ class Webhook(MixinMeta, metaclass=CompositeMetaClass):
 
         data = await self.bot.db.fetchrow(
             """
-            DELETE FROM webhook
+            DELETE FROM public.webhook
             WHERE guild_id = $1
             AND identifier = $2
             RETURNING channel_id, webhook_id
@@ -168,7 +168,7 @@ class Webhook(MixinMeta, metaclass=CompositeMetaClass):
             for record in await self.bot.db.fetch(
                 """
                 SELECT identifier, channel_id, author_id
-                FROM webhook
+                FROM public.webhook
                 WHERE guild_id = $1
                 """,
                 ctx.guild.id,
@@ -210,7 +210,7 @@ class Webhook(MixinMeta, metaclass=CompositeMetaClass):
         data = await self.bot.db.fetchrow(
             """
             SELECT webhook_id, channel_id
-            FROM webhook
+            FROM public.webhook
             WHERE guild_id = $1
             AND identifier = $2
             """,

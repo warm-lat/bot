@@ -34,7 +34,7 @@ class Thread(MixinMeta, metaclass=CompositeMetaClass):
         watched = await self.bot.db.fetch(
             """
             SELECT *
-            FROM thread
+            FROM public.thread
             WHERE thread_id = $1
             """,
             after.id,
@@ -58,7 +58,7 @@ class Thread(MixinMeta, metaclass=CompositeMetaClass):
             )
             await self.bot.db.execute(
                 """
-                DELETE FROM thread
+                DELETE FROM public.thread
                 WHERE thread_id = $1
                 """,
                 after.id,
@@ -98,7 +98,7 @@ class Thread(MixinMeta, metaclass=CompositeMetaClass):
         try:
             await self.bot.db.execute(
                 """
-                INSERT INTO thread (
+                INSERT INTO public.thread (
                     guild_id,
                     thread_id
                 )
@@ -130,7 +130,7 @@ class Thread(MixinMeta, metaclass=CompositeMetaClass):
 
         result = await self.bot.db.execute(
             """
-                DELETE FROM thread
+                DELETE FROM public.thread
                 WHERE guild_id = $1
                 AND thread_id = $2
                 """,
@@ -160,7 +160,7 @@ class Thread(MixinMeta, metaclass=CompositeMetaClass):
 
         result = await self.bot.db.execute(
             """
-            DELETE FROM thread
+            DELETE FROM public.thread
             WHERE guild_id = $1
             """,
             ctx.guild.id,
@@ -185,7 +185,7 @@ class Thread(MixinMeta, metaclass=CompositeMetaClass):
             for record in await self.bot.db.fetch(
                 """
                 SELECT thread_id
-                FROM thread
+                FROM public.thread
                 WHERE guild_id = $1
                 """,
                 ctx.guild.id,

@@ -213,10 +213,11 @@ class BackupManager:
         Run both schema and full backups.
         """
         timestamp = datetime.now(timezone.utc)
-        schema_success = await self.create_schema_backup(timestamp)
+        #schema_success = await self.create_schema_backup(timestamp)
         full_success = await self.create_full_backup(timestamp)
         
-        if schema_success and full_success:
+        #if schema_success and full_success:
+        if full_success:
             self.cleanup_old_backups()
             return True
         return False 

@@ -27,7 +27,7 @@ class Reaction(MixinMeta, metaclass=CompositeMetaClass):
             await self.bot.db.fetchval(
                 """
                 SELECT ARRAY_AGG(emoji)
-                FROM reaction_trigger
+                FROM public.reaction_trigger
                 WHERE guild_id = $1
                 AND LOWER($2) LIKE '%' || LOWER(trigger) || '%'
                 GROUP BY trigger
@@ -55,7 +55,7 @@ class Reaction(MixinMeta, metaclass=CompositeMetaClass):
         if scheduled_deletion:
             await self.bot.db.execute(
                 """
-                DELETE FROM reaction_trigger
+                DELETE FROM public.reaction_trigger
                 WHERE guild_id = $1
                 AND emoji = ANY($2::TEXT[])
                 """,
@@ -102,7 +102,7 @@ class Reaction(MixinMeta, metaclass=CompositeMetaClass):
             await self.bot.db.fetchval(
                 """
                 SELECT COUNT(*)
-                FROM reaction_trigger
+                FROM public.reaction_trigger
                 WHERE guild_id = $1
                 AND trigger = LOWER($2)
                 """,
@@ -116,7 +116,7 @@ class Reaction(MixinMeta, metaclass=CompositeMetaClass):
         try:
             await self.bot.db.execute(
                 """
-                INSERT INTO reaction_trigger (
+                INSERT INTO public.reaction_trigger (
                     guild_id,
                     trigger,
                     emoji
@@ -156,7 +156,7 @@ class Reaction(MixinMeta, metaclass=CompositeMetaClass):
 
         result = await self.bot.db.execute(
             """
-            DELETE FROM reaction_trigger
+            DELETE FROM public.reaction_trigger
             WHERE guild_id = $1
             AND trigger = LOWER($2)
             """,
@@ -186,7 +186,7 @@ class Reaction(MixinMeta, metaclass=CompositeMetaClass):
 
         result = await self.bot.db.execute(
             """
-            DELETE FROM reaction_trigger
+            DELETE FROM public.reaction_trigger
             WHERE guild_id = $1
             """,
             ctx.guild.id,
@@ -215,7 +215,7 @@ class Reaction(MixinMeta, metaclass=CompositeMetaClass):
                 SELECT
                     trigger,
                     ARRAY_AGG(emoji) AS emojis
-                FROM reaction_trigger
+                FROM public.reaction_trigger
                 WHERE guild_id = $1
                 GROUP BY trigger
                 """,

@@ -90,7 +90,7 @@ class Crypto(MixinMeta, metaclass=CompositeMetaClass):
         if scheduled_deletion:
             await self.bot.db.execute(
                 """
-                DELETE FROM crypto
+                DELETE FROM public.crypto
                 WHERE transaction_id = ANY($1::TEXT[])
                 """,
                 scheduled_deletion,
@@ -165,7 +165,7 @@ class Crypto(MixinMeta, metaclass=CompositeMetaClass):
         try:
             await self.bot.db.execute(
                 """
-                INSERT INTO crypto (user_id, channel_id, transaction_id, transaction_type)
+                INSERT INTO public.crypto (user_id, channel_id, transaction_id, transaction_type)
                 VALUES ($1, $2, $3, $4)
                 """,
                 ctx.author.id,
@@ -194,7 +194,7 @@ class Crypto(MixinMeta, metaclass=CompositeMetaClass):
 
         result = await self.bot.db.execute(
             """
-            DELETE FROM crypto
+            DELETE FROM public.crypto
             WHERE user_id = $1
             AND transaction_id = $2
             """,
@@ -223,7 +223,7 @@ class Crypto(MixinMeta, metaclass=CompositeMetaClass):
             f"{channel.mention} - [`{shorten(record['transaction_id'], 12)}`](https://www.blockchain.com/explorer/transactions/{record['transaction_type'].lower()}/{record['transaction_id']})"
             for record in await self.bot.db.fetch(
                 """
-                SELECT * FROM crypto
+                SELECT * FROM public.crypto
                 WHERE user_id = $1
                 """,
                 ctx.author.id,

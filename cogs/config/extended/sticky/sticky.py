@@ -42,7 +42,7 @@ class Sticky(MixinMeta, metaclass=CompositeMetaClass):
         record = await self.bot.db.fetchrow(
             """
             SELECT message_id, template
-            FROM sticky_message
+            FROM public.sticky_message
             WHERE guild_id = $1
             AND channel_id = $2
             """,
@@ -74,7 +74,7 @@ class Sticky(MixinMeta, metaclass=CompositeMetaClass):
         except HTTPException:
             await self.bot.db.execute(
                 """
-                DELETE FROM sticky_message
+                DELETE FROM public.sticky_message
                 WHERE guild_id = $1
                 AND channel_id = $2
                 """,
@@ -84,7 +84,7 @@ class Sticky(MixinMeta, metaclass=CompositeMetaClass):
         else:
             await self.bot.db.execute(
                 """
-                UPDATE sticky_message
+                UPDATE public.sticky_message
                 SET message_id = $3
                 WHERE guild_id = $1
                 AND channel_id = $2
@@ -133,7 +133,7 @@ class Sticky(MixinMeta, metaclass=CompositeMetaClass):
             message = await script.send(channel)
             await self.bot.db.execute(
                 """
-                INSERT INTO sticky_message (
+                INSERT INTO public.sticky_message (
                     guild_id,
                     channel_id,
                     message_id,

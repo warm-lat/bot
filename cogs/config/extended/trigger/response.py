@@ -68,7 +68,7 @@ class Response(MixinMeta, metaclass=CompositeMetaClass):
         record = await self.bot.db.fetchrow(
             """
             SELECT *
-            FROM response_trigger
+            FROM public.response_trigger
             WHERE guild_id = $1
             AND LOWER($2) LIKE '%' || LOWER(trigger) || '%'
             """,
@@ -174,7 +174,7 @@ class Response(MixinMeta, metaclass=CompositeMetaClass):
         try:
             await self.bot.db.execute(
                 """
-                INSERT INTO response_trigger (
+                INSERT INTO public.response_trigger (
                     guild_id,
                     trigger,
                     template,
@@ -236,7 +236,7 @@ class Response(MixinMeta, metaclass=CompositeMetaClass):
 
         result = await self.bot.db.execute(
             """
-            UPDATE response_trigger
+            UPDATE public.response_trigger
             SET template = $3, strict = $4, reply = $5, delete = $6, delete_after = $7
             WHERE guild_id = $1
             AND trigger = $2
@@ -271,7 +271,7 @@ class Response(MixinMeta, metaclass=CompositeMetaClass):
 
         result = await self.bot.db.execute(
             """
-            DELETE FROM response_trigger
+            DELETE FROM public.response_trigger
             WHERE guild_id = $1
             AND trigger = $2
             """,
@@ -299,7 +299,7 @@ class Response(MixinMeta, metaclass=CompositeMetaClass):
         record = await self.bot.db.fetchrow(
             """
             SELECT template, strict, reply, delete, delete_after
-            FROM response_trigger
+            FROM public.response_trigger
             WHERE guild_id = $1
             AND trigger = $2
             """,
@@ -344,7 +344,7 @@ class Response(MixinMeta, metaclass=CompositeMetaClass):
 
         result = await self.bot.db.execute(
             """
-            DELETE FROM response_trigger
+            DELETE FROM public.response_trigger
             WHERE guild_id = $1
             """,
             ctx.guild.id,
@@ -377,7 +377,7 @@ class Response(MixinMeta, metaclass=CompositeMetaClass):
             for record in await self.bot.db.fetch(
                 """
                 SELECT trigger, strict, reply, delete, delete_after
-                FROM response_trigger
+                FROM public.response_trigger
                 WHERE guild_id = $1
                 """,
                 ctx.guild.id,

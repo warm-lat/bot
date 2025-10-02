@@ -313,7 +313,7 @@ class Config(Extended, Cog):
 
         exists = await self.bot.db.fetchval(
             """
-            SELECT EXISTS(SELECT 1 FROM mod WHERE guild_id = $1)
+            SELECT EXISTS(SELECT 1 FROM public.mod WHERE guild_id = $1)
             """,
             ctx.guild.id
         )
@@ -321,7 +321,7 @@ class Config(Extended, Cog):
         if exists:
             await self.bot.db.execute(
                 """
-                UPDATE mod SET dm_{0} = CASE 
+                UPDATE public.mod SET dm_{0} = CASE 
                 WHEN dm_{0}::boolean = true 
                 THEN false ELSE true END 
                 WHERE guild_id = $1
@@ -331,7 +331,7 @@ class Config(Extended, Cog):
         else:
             await self.bot.db.execute(
                 f"""
-                INSERT INTO mod (guild_id, dm_{action}, dm_enabled) 
+                INSERT INTO public.mod (guild_id, dm_{action}, dm_enabled) 
                 VALUES ($1, true, true)
                 """,
                 ctx.guild.id
@@ -339,7 +339,7 @@ class Config(Extended, Cog):
         
         new_state = await self.bot.db.fetchval(
             f"""
-            SELECT dm_{action}::boolean FROM mod 
+            SELECT dm_{action}::boolean FROM public.mod 
             WHERE guild_id = $1
             """,
             ctx.guild.id
@@ -354,7 +354,7 @@ class Config(Extended, Cog):
         """View current DM message for an action or list all configured actions."""
         settings = await self.bot.db.fetchrow(
             """
-            SELECT * FROM mod 
+            SELECT * FROM public.mod 
             WHERE guild_id = $1
             """, 
             ctx.guild.id
@@ -402,7 +402,7 @@ class Config(Extended, Cog):
         if not script:
             await self.bot.db.execute(
                 """
-                UPDATE mod SET dm_" + action + " = NULL 
+                UPDATE public.mod SET dm_" + action + " = NULL 
                 WHERE guild_id = $1
                 """,
                 ctx.guild.id
@@ -411,7 +411,7 @@ class Config(Extended, Cog):
 
         exists = await self.bot.db.fetchval(
             """
-            SELECT EXISTS(SELECT 1 FROM mod 
+            SELECT EXISTS(SELECT 1 FROM public.mod 
             WHERE guild_id = $1)
             """,
             ctx.guild.id
@@ -420,7 +420,7 @@ class Config(Extended, Cog):
         if exists:
             await self.bot.db.execute(
                 f"""
-                UPDATE mod SET dm_{action} = $1 
+                UPDATE public.mod SET dm_{action} = $1 
                 WHERE guild_id = $2
                 """,
                 script.template,
@@ -1106,7 +1106,7 @@ class Config(Extended, Cog):
         """
         lang_code = await self.bot.db.fetchval(
             """
-            SELECT language_code FROM translation_contributors 
+            SELECT language_code FROM public.translation_contributors 
             WHERE user_id = $1
             """, 
             ctx.author.id
@@ -1201,7 +1201,7 @@ class Config(Extended, Cog):
         """
         lang_code = await self.bot.db.fetchval(
             """
-            SELECT language_code FROM translation_contributors 
+            SELECT language_code FROM public.translation_contributors 
             WHERE user_id = $1
             """, 
             ctx.author.id
@@ -1315,7 +1315,7 @@ class Config(Extended, Cog):
         """
         lang_code = await self.bot.db.fetchval(
             """
-            SELECT language_code FROM translation_contributors 
+            SELECT language_code FROM public.translation_contributors 
             WHERE user_id = $1
             """, 
             ctx.author.id

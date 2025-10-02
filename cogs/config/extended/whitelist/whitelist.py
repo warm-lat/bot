@@ -42,7 +42,7 @@ class Whitelist(MixinMeta, metaclass=CompositeMetaClass):
             bool,
             await self.bot.db.fetchval(
                 """
-                INSERT INTO whitelist (guild_id, status)
+                INSERT INTO public.whitelist (guild_id, status)
                 VALUES ($1, TRUE)
                 ON CONFLICT (guild_id)
                 DO UPDATE SET status = NOT whitelist.status
@@ -73,7 +73,7 @@ class Whitelist(MixinMeta, metaclass=CompositeMetaClass):
 
         await self.bot.db.execute(
             """
-            INSERT INTO whitelist (guild_id, action)
+            INSERT INTO public.whitelist (guild_id, action)
             VALUES ($1, $2)
             ON CONFLICT (guild_id)
             DO UPDATE SET action = EXCLUDED.action
@@ -170,7 +170,7 @@ class Whitelist(MixinMeta, metaclass=CompositeMetaClass):
         record = await self.bot.db.fetchrow(
             """
             SELECT status, action
-            FROM whitelist
+            FROM public.whitelist
             WHERE guild_id = $1
             """,
             member.guild.id,
