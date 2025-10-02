@@ -168,7 +168,7 @@ async def getprefix(bot, message):
     check = await bot.db.fetchrow(
         """
         SELECT * FROM 
-        selfprefix WHERE 
+        public.selfprefix WHERE 
         user_id = $1
         """, 
         message.author.id
@@ -179,7 +179,7 @@ async def getprefix(bot, message):
     res = await bot.db.fetchrow(
         """
         SELECT * FROM 
-        prefix WHERE 
+        public.prefix WHERE 
         guild_id = $1
         """, 
         message.guild.id
@@ -596,7 +596,7 @@ class Evict(commands.AutoShardedBot):
                     port=config.LAVALINK.PORT,
                     password=config.LAVALINK.PASSWORD,
                     secure=True,
-                    identifier="Listen [USA#1]",
+                    identifier=f"Listen [USA] {time.time()}",
                     spotify_client_id=config.LAVALINK.SPOTIFY_CLIENT_ID,
                     spotify_client_secret=config.LAVALINK.SPOTIFY_CLIENT_SECRET,
                 )
