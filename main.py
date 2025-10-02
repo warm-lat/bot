@@ -295,7 +295,7 @@ class Evict(commands.AutoShardedBot):
                 roles=False,
                 users=True,
             ),
-            shard_count=6,
+            shard_count=3,
             command_prefix=getprefix,
             help_command=EvictHelp(),
             case_insensitive=True,
