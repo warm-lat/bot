@@ -65,7 +65,7 @@ from tools.formatter import human_join, plural, short_timespan
 from tools.converters.basic import Location
 from managers.paginator import Paginator
 
-REPO_PATH = "/root/evict/.git"
+REPO_PATH = "/app/.git"
 
 class PollFlags(FlagConverter):
     title: str = flag(
@@ -275,7 +275,7 @@ class Information(Cog):
         """
         View information about the bot.
         """
-        await self._update_cache()
+        # await self._update_cache()
 
         regular_cogs = len(self.bot.cogs)
         extensions = len(self.bot.extensions)
