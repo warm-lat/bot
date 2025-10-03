@@ -9,17 +9,30 @@ class COLORS:
     SPOTIFY = 0x1DB954
 
 class EMOJIS:
+    class TICKETS:
+        TRASH: str = "<:trash:1423751023842955385>"
+    class MISC:
+        CONNECTION: str = "<:connection:1423366043958771922>"
+        CRYPTO: str = "<:crypto:1423750202195705966>"
+        BITCOIN: str = "<:bitcoin:1423749258573774970>"
+        ETHEREUM: str = "<:ethereum:1423749684194705520>"
+        LITECOIN: str = "<:litecoin:1423750291429527734>"
+        XRP: str = "<:xrp:1423750848873496618>"
+    class BADGES:
+        SERVER_OWNER: str = "<:server_owner:1423366267573637302>"
     class FUN:
         GAY: str = ""
         LESBIAN: str = ""
         DUMBASS: str = ""
-    
+    class SOCIAL:
+        DISCORD: str = "<:discord:1423443912793657344>"
+        WEBSITE: str = "<:website:1423442144776949911>"
+        GITHUB: str = "<:github:1423437308081733702>"
     class ECONOMY:
         WELCOME: str = ""
         GEM: str = ""
         CROWN: str = ""
         INVIS: str = ""
-    
     class AUDIO:
         PREVIOUS: str = ""
         PAUSE: str = ""
@@ -28,10 +41,6 @@ class EMOJIS:
         REPEAT_TRACK: str = ""
         RESUME: str = ""
         QUEUE: str = ""
-    
-    class TICKETS:
-        TRASH: str = ""
-        
     class CONTEXT:
         APPROVE: str = ""
         DENY: str = ""
@@ -39,15 +48,6 @@ class EMOJIS:
         LEFT: str = ""
         RIGHT: str = ""
         FILTER: str = ""
-    
-    class SOCIAL:
-        DISCORD: str = "<:discord:1423443912793657344>"
-        WEBSITE: str = "<:website:1423442144776949911>"
-        GITHUB: str = "<:github:1423437308081733702>"
-    
-    class MISC:
-        CONNECTION: str = "<:connection:1423366043958771922>"
-        
     class POLL:
         WHITE: str = ""
         WLR: str = ""
@@ -55,10 +55,6 @@ class EMOJIS:
         BLR: str = ""
         BRR: str = ""
         SQUARE: str = ""
-        
-    class BADGES:
-        SERVER_OWNER: str = "<:server_owner:1423366267573637302>"
-        
     class STAFF:
         DEVELOPER: str = ""
         OWNER: str = ""
@@ -68,7 +64,6 @@ class EMOJIS:
         DONOR: str = ""
         INSTANCE: str = ""
         STAFF: str = "<:staff:1423372682430251138>"
-        
     class SPOTIFY:
         ICON: str = "<:spotify:1423375028447215656>"
         LEFT: str = ""
@@ -83,7 +78,6 @@ class EMOJIS:
         DEVICE: str = ""
         FAVORITE: str = ""
         REMOVE: str = ""
-        
     class INTERFACE:
         LOCK: str = "<:vm_lock:1423361217891799140>"
         UNLOCK: str = "<:vm_unlock:1423361237516947556>"
