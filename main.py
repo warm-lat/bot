@@ -368,7 +368,7 @@ class Evict(commands.AutoShardedBot):
         log.info("Starting the bot...")
 
         super().run(
-            config.DISCORD.TOKEN,
+            config.CLIENT.TOKEN,
             reconnect=True,
             log_handler=None,
         )

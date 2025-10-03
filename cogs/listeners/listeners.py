@@ -234,33 +234,13 @@ class Listeners(Cog):
         Set a custom join message upon bot join.
         """
         embed = Embed(
-            title="Getting Started With Warm",
+            title="hey, thanks for adding warm",
             description=(
-                "Hey! Thanks for your interest in **Warm**. "
-                "The following will provide you with some tips on how to get started with your server!"
+                "prefix is `,` and you can get started by running `,help`"
             ),
         )
 
         embed.set_thumbnail(url=self.bot.user.display_avatar)
-
-        embed.add_field(
-            name="**Prefix 🤖**",
-            value=(
-                "The most important thing is my prefix. "
-                f"It is set to `,` by default for this server and it is also customizable, "
-                "so if you don't like this prefix, you can always change it with `prefix` command!"
-            ),
-            inline=False,
-        )
-
-        embed.add_field(
-            name="**Documentation and Help 📚**",
-            value=(
-                "You can always visit our [documentation](https://docs.warm.lat)"
-                " and view the list of commands that are available [here](https://warm.lat/commands)"
-                " - and if that isn't enough, feel free to join our [Support Server](https://discord.gg/apply) for extra assistance!"
-            ),
-        )
 
         await self.bot.notify(guild, embed=embed)
         try:

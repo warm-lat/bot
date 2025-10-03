@@ -3177,7 +3177,7 @@ class Utility(Extended, Cog):
                 upload_request = await self.bot.session.post(
                     f"https://discord.com/api/v10/channels/{ctx.channel.id}/attachments",
                     headers={
-                        "Authorization": f"Bot {config.DISCORD.TOKEN}",
+                        "Authorization": f"Bot {config.CLIENT.TOKEN}",
                         "Content-Type": "application/json"
                     },
                     json={
@@ -3197,7 +3197,7 @@ class Utility(Extended, Cog):
                     upload_url,
                     headers={
                         "Content-Type": "audio/ogg",
-                        "Authorization": f"Bot {config.DISCORD.TOKEN}"
+                        "Authorization": f"Bot {config.CLIENT.TOKEN}"
                     },
                     data=audio_data
                 )
@@ -3206,7 +3206,7 @@ class Utility(Extended, Cog):
                     f"https://discord.com/api/v10/channels/{ctx.channel.id}/messages",
                     headers={
                         "Content-Type": "application/json",
-                        "Authorization": f"Bot {config.DISCORD.TOKEN}"
+                        "Authorization": f"Bot {config.CLIENT.TOKEN}"
                     },
                     json={
                         "flags": 8192,

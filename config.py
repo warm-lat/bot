@@ -105,6 +105,10 @@ class AUTHORIZATION:
     class REDDIT:
         CLIENT_ID: str = "7s2HJa0My0keJAiLvFhvZQ"
         CLIENT_SECRET: str = "C2oX-F-4uR6r4q_6RvUq8LRLrqsR8g"
+        
+    class LASTFM: 
+        KEY: str = "4b25716d870cfa49dce73170b5d67439"
+        SECRET: str = "f3384c0ce4269dd575ac597347747b3c"
     
 class LASTFM:
     API_KEY: str = "4b25716d870cfa49dce73170b5d67439"
@@ -116,13 +120,13 @@ class LOGGER:
     USER_BLACKLIST_LOGGER: int = 1421686092394135562
 
 class CLIENT:
+    TOKEN: str = "MTQyMDYwOTM0MzI4MzUzMTc3Ng.G7Mk1E.nwns-aEzbAQFYK7UXCDpz2L3peMfYhroxYgujU"
     PREFIX: str = ","
     INVITE_URL: str = "https://discord.com/api/oauth2/authorize?client_id=1420609343283531776&permissions=8&scope=bot%20applications.commands"
     SUPPORT_URL: str = "https://discord.gg/warm"
     TWITCH_URL: str = "https://twitch.tv/nxyyontop"
     OWNER_IDS: list = [1137513168965476352]
     DESCRIPTION: str = "A bot to manage your Discord server."
-    
 
 class LAVALINK:
     NODE_COUNT: int = 2
@@ -149,9 +153,6 @@ class DATABASE:
 
 class POSTHOG:
     TRACK_SELF: bool = False
-
-class DISCORD:
-    TOKEN: str = "MTQyMDYwOTM0MzI4MzUzMTc3Ng.G7Mk1E.nwns-aEzbAQFYK7UXCDpz2L3peMfYhroxYgujU"
     
 class NETWORK:
     HOST: str = "0.0.0.0"

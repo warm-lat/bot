@@ -1798,8 +1798,8 @@ class Audio(Cog):
         clean_title, clean_artist = await self.clean_title_for_search(track.title, track.author)
         timestamp = int(time.time())
 
-        lastfm_key = ""
-        lastfm_secret = ""
+        lastfm_key = config.AUTHORIZATION.LASTFM.KEY
+        lastfm_secret = config.AUTHORIZATION.LASTFM.SECRET
         
         method = "track.scrobble"
         api_sig = hashlib.md5(

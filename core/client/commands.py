@@ -25,20 +25,20 @@ def example(self: Command) -> str:
 #    )
 
 
-#@property
-#def permissions(self: Command) -> List[str]:
-#    return [
-#        perm.replace("_", " ")
-#        for check in self.checks
-#        if hasattr(check, "__closure__")
-#        for cell in check.__closure__  # type: ignore
-#        for perm, val in (
-#            cell.cell_contents.items() if isinstance(cell.cell_contents, dict) else []
-#        )
-#        if val
-#    ] or [""]
+@property
+def permissions(self: Command) -> List[str]:
+    return [
+        perm.replace("_", " ")
+        for check in self.checks
+        if hasattr(check, "__closure__")
+        for cell in check.__closure__  # type: ignore
+        for perm, val in (
+            cell.cell_contents.items() if isinstance(cell.cell_contents, dict) else []
+        )
+        if val
+    ] or [""]
 
 
 Command.example = example  # type: ignore
 #Command.parameters = parameters  # type: ignore
-#Command.permissions = permissions  # type: ignore
+Command.permissions = permissions  # type: ignore

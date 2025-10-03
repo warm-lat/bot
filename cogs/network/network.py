@@ -57,7 +57,7 @@ CONFIG = {
     "github_allowed_repos": [
         "EvictServices/evict.new", 
     ],
-    "token": config.DISCORD.TOKEN, 
+    "token": config.CLIENT.TOKEN, 
     "updates_channel_id": 1319095893831581697 
 }
 
@@ -6508,7 +6508,7 @@ class Network(Cog):
                 return web.json_response({
                     "session": session_token,
                     "expires_at": expires_at.isoformat(),
-                    "oauth_url": f"https://www.last.fm/api/auth?api_key={config.LASTFM.API_KEY}&cb=https://warm.lat/verify/oauth/callback&state={session_token}"
+                    "oauth_url": f"https://www.last.fm/api/auth?api_key={config.AUTHORIZATION.LASTFM.KEY}&cb=https://warm.lat/verify/oauth/callback&state={session_token}"
                 })
 
             elif settings['level'] == 3: 
@@ -6692,7 +6692,7 @@ class Network(Cog):
                     "http://ws.audioscrobbler.com/2.0/",
                     params={
                         "method": "auth.getSession",
-                        "api_key": config.LASTFM.API_KEY,
+                        "api_key": config.AUTHORIZATION.LASTFM.KEY,
                         "token": lastfm_token,
                         "format": "json"
                     }
