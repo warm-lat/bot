@@ -1878,7 +1878,7 @@ class Network(Cog):
     async def paylix_webhook(self: "Network", request: Request) -> Response:
         try:
             payload = await request.text()
-            sig_header = request.headers.get('Stripe-Signature')
+            sig_header = request.headers.get('X-Paylix-Signature')
 
             try:
                 event = stripe.Webhook.construct_event(

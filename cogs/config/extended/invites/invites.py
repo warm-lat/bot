@@ -601,7 +601,7 @@ class Invites(MixinMeta, metaclass=CompositeMetaClass):
         rewards = await self.bot.db.fetch(
             """
             SELECT role_id, required_invites
-            FROM invite_rewards
+            FROM public.invite_rewards
             WHERE guild_id = $1
             ORDER BY required_invites ASC
             """,
@@ -642,7 +642,7 @@ class Invites(MixinMeta, metaclass=CompositeMetaClass):
 
         await self.bot.db.execute(
             """
-            INSERT INTO invite_rewards (guild_id, role_id, required_invites)
+            INSERT INTO public.invite_rewards (guild_id, role_id, required_invites)
             VALUES ($1, $2, $3)
             ON CONFLICT (guild_id, role_id) 
             DO UPDATE SET required_invites = $3
@@ -659,7 +659,7 @@ class Invites(MixinMeta, metaclass=CompositeMetaClass):
         """
         result = await self.bot.db.execute(
             """
-            DELETE FROM invite_rewards
+            DELETE FROM public.invite_rewards
             WHERE guild_id = $1 AND role_id = $2
             """,
             ctx.guild.id, role.id
@@ -680,7 +680,7 @@ class Invites(MixinMeta, metaclass=CompositeMetaClass):
         invite_count = await self.bot.db.fetchval(
             """
             SELECT SUM(uses) + SUM(bonus_uses) as total_invites
-            FROM invite_tracking 
+            FROM public.invite_tracking 
             WHERE guild_id = $1 AND user_id = $2
             """,
             ctx.guild.id, target.id
@@ -689,7 +689,7 @@ class Invites(MixinMeta, metaclass=CompositeMetaClass):
         rewards = await self.bot.db.fetch(
             """
             SELECT role_id, required_invites
-            FROM invite_rewards
+            FROM public.invite_rewards
             WHERE guild_id = $1
             ORDER BY required_invites ASC
             """,
@@ -743,7 +743,7 @@ class Invites(MixinMeta, metaclass=CompositeMetaClass):
                 fake_join_threshold,
                 account_age_requirement,
                 server_age_requirement
-            FROM invite_config
+            FROM public.invite_config
             WHERE guild_id = $1
             """,
             ctx.guild.id
@@ -795,7 +795,7 @@ class Invites(MixinMeta, metaclass=CompositeMetaClass):
         rewards = await self.bot.db.fetch(
             """
             SELECT role_id, required_invites
-            FROM invite_rewards
+            FROM public.invite_rewards
             WHERE guild_id = $1
             ORDER BY required_invites ASC
             """,
@@ -821,7 +821,7 @@ class Invites(MixinMeta, metaclass=CompositeMetaClass):
                 COUNT(DISTINCT user_id) as total_tracked,
                 COUNT(DISTINCT inviter_id) as total_inviters,
                 COUNT(CASE WHEN joined_at > NOW() - INTERVAL '7 days' THEN 1 END) as recent_joins
-            FROM invite_tracking
+            FROM public.invite_tracking
             WHERE guild_id = $1
             """,
             ctx.guild.id
@@ -842,7 +842,7 @@ class Invites(MixinMeta, metaclass=CompositeMetaClass):
         rewards = await self.bot.db.fetch(
             """
             SELECT role_id, required_invites
-            FROM invite_rewards
+            FROM public.invite_rewards
             WHERE guild_id = $1
             ORDER BY required_invites ASC
             """,
@@ -870,7 +870,7 @@ class Invites(MixinMeta, metaclass=CompositeMetaClass):
     async def _is_tracking_enabled(self, guild_id: int) -> bool:
         """Check if invite tracking is enabled for the guild"""
         return await self.bot.db.fetchval(
-            "SELECT is_enabled FROM invite_config WHERE guild_id = $1",
+            "SELECT is_enabled FROM public.invite_config WHERE guild_id = $1",
             guild_id
         ) or False
 
@@ -921,7 +921,7 @@ class Invites(MixinMeta, metaclass=CompositeMetaClass):
                 fake_join_threshold,
                 account_age_requirement,
                 server_age_requirement
-            FROM invite_config 
+            FROM public.invite_config 
             WHERE guild_id = $1 AND is_enabled = true
             """,
             member.guild.id

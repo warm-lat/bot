@@ -9,6 +9,10 @@ class COLORS:
     SPOTIFY = 0x1DB954
 
 class EMOJIS:
+    class FUN:
+        GAY: str = ""
+        LESBIAN: str = ""
+        DUMBASS: str = ""
     
     class ECONOMY:
         WELCOME: str = ""
