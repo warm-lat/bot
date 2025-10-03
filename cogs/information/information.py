@@ -283,7 +283,6 @@ class Information(Cog):
 
         embed = Embed(
             description=(
-                f"Skidded by [nxyy](https://discord.com/users/1137513168965476352), Made by [Evict](https://github.com/EvictServices) \n"
                 f"Utilizing ``{self._cached_commands:,}`` commands across ``{len(self.bot.cogs)}`` cogs (`{total_modules}` total modules)"
             ),
             color=config.COLORS.NEUTRAL,
@@ -333,20 +332,13 @@ class Information(Cog):
         )
 
         button1 = Button(
-            label="GitHub",
-            style=discord.ButtonStyle.gray,
-            emoji=config.EMOJIS.SOCIAL.GITHUB,
-            url="https://github.com/nxyystore",
-        )
-
-        button2 = Button(
             label="Support",
             style=discord.ButtonStyle.gray,
             emoji=config.EMOJIS.SOCIAL.DISCORD,
             url="https://discord.gg/apply",
         )
 
-        button3 = Button(
+        button2 = Button(
             label="Website",
             style=discord.ButtonStyle.gray,
             emoji=config.EMOJIS.SOCIAL.WEBSITE,
@@ -356,7 +348,6 @@ class Information(Cog):
         view = discord.ui.View()
         view.add_item(button1)
         view.add_item(button2)
-        view.add_item(button3)
 
         embed.set_footer(
             text=f"warm/v{self.bot.version} • Latest Commit: {self._cached_commit}"

@@ -4,6 +4,7 @@ from discord.ext.commands import FlagConverter as OriginalFlagConverter
 from typing_extensions import Self
 
 from .context import Context, Embed
+from .commands import *
 from .database import Database, Settings
 from .redis import Redis
 

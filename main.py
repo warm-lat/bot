@@ -917,7 +917,7 @@ class Evict(commands.AutoShardedBot):
                 """
                 SELECT EXISTS(
                     SELECT 1
-                    FROM blacklist
+                    FROM public.blacklist
                     WHERE user_id = $1
                 )
                 """,
