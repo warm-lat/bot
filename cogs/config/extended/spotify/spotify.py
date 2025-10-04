@@ -790,6 +790,17 @@ class PlaybackControlsView(discord.ui.View):
                     track_url = data['item']['external_urls']['spotify'] if data.get('item') and data['item'].get('external_urls') else None
                     
                     self.pause.emoji = config.EMOJIS.SPOTIFY.PAUSE if not is_playing else config.EMOJIS.SPOTIFY.PLAY
+                    message = await interaction.original_response()
+                    existing_view = discord.ui.View.from_message(message) if message else None
+                    
+                    new_view = discord.ui.View(timeout=60)
+                    for item in self.children:
+                        new_view.add_item(item)
+                    if existing_view:
+                        for item in existing_view.children:
+                            if isinstance(item, discord.ui.Select):
+                                new_view.add_item(item)
+                    
                     await interaction.response.edit_message(view=self)
                     
                     description = f"{'⏸️ Paused' if is_playing else '▶️ Playing'} "
