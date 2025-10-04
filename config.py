@@ -78,6 +78,8 @@ class EMOJIS:
         DEVICE: str = ""
         FAVORITE: str = ""
         REMOVE: str = ""
+        PREVIOUS: str = ""
+        
     class INTERFACE:
         LOCK: str = "<:vm_lock:1423361217891799140>"
         UNLOCK: str = "<:vm_unlock:1423361237516947556>"
