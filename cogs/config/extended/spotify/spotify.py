@@ -284,7 +284,7 @@ class Spotify(MixinMeta, metaclass=CompositeMetaClass):
                 headers=headers
             ) as resp:
                 if resp.status in (204, 200):
-                    embed = Embed(description=f"{config.EMOJIS.SPOTIFY.LISTENING} Resumed playback", color=config.COLORS.SPOTIFY)
+                    embed = Embed(description=f"{config.EMOJIS.SPOTIFY.PLAY} Resumed playback", color=config.COLORS.SPOTIFY)
                     return await ctx.send(embed=embed)
                 return await ctx.warn("Failed to resume playback")
             
@@ -305,7 +305,7 @@ class Spotify(MixinMeta, metaclass=CompositeMetaClass):
                         ) as track_resp:
                             if track_resp.status == 200:
                                 track_data = await track_resp.json()
-                                embed = Embed(description=f"{config.EMOJIS.SPOTIFY.LISTENING} Playing **{track_data['name']}** by **{track_data['artists'][0]['name']}**", color=config.COLORS.SPOTIFY)
+                                embed = Embed(description=f"{config.EMOJIS.SPOTIFY.PLAY} Playing **{track_data['name']}** by **{track_data['artists'][0]['name']}**", color=config.COLORS.SPOTIFY)
                                 return await ctx.send(embed=embed)
                     return await ctx.warn("Failed to play track")
                     
@@ -325,7 +325,7 @@ class Spotify(MixinMeta, metaclass=CompositeMetaClass):
                         ) as playlist_resp:
                             if playlist_resp.status == 200:
                                 playlist_data = await playlist_resp.json()
-                                embed = Embed(description=f"{config.EMOJIS.SPOTIFY.LISTENING} Playing playlist **{playlist_data['name']}**", color=config.COLORS.SPOTIFY)
+                                embed = Embed(description=f"{config.EMOJIS.SPOTIFY.PLAY} Playing playlist **{playlist_data['name']}**", color=config.COLORS.SPOTIFY)
                                 return await ctx.send(embed=embed)
                     return await ctx.warn("Failed to play playlist")
         
@@ -348,7 +348,7 @@ class Spotify(MixinMeta, metaclass=CompositeMetaClass):
                 json={"uris": [track['uri']]}
             ) as resp:
                 if resp.status in (204, 200):
-                    embed = Embed(description=f"{config.EMOJIS.SPOTIFY.LISTENING} Playing **{track['name']}** by **{track['artists'][0]['name']}**", color=config.COLORS.SPOTIFY)
+                    embed = Embed(description=f"{config.EMOJIS.SPOTIFY.PLAY} Playing **{track['name']}** by **{track['artists'][0]['name']}**", color=config.COLORS.SPOTIFY)
                     return await ctx.send(embed=embed)
                 return await ctx.warn("Failed to play track")
 
@@ -406,7 +406,7 @@ class Spotify(MixinMeta, metaclass=CompositeMetaClass):
             headers=headers
         ) as resp:
             if resp.status in (204, 200):
-                embed = Embed(description=f"{config.EMOJIS.SPOTIFY.LISTENING} Volume set to {volume}%", color=config.COLORS.SPOTIFY)
+                embed = Embed(description=f"{config.EMOJIS.SPOTIFY.VOLUME} Volume set to {volume}%", color=config.COLORS.SPOTIFY)
                 return await ctx.send(embed=embed)
             return await ctx.warn("Failed to set volume")
 
@@ -518,7 +518,7 @@ class Spotify(MixinMeta, metaclass=CompositeMetaClass):
                 return await ctx.send(embed=embed)
             return await ctx.warn("Failed to toggle shuffle")
 
-    @spotify.command(name="repeat", aliases=["loop"], example="off")
+    @spotify.command(name="repeat", aliases=["loop"], example="track")
     async def spotify_repeat(self, ctx: Context, mode: Optional[Literal["off", "track", "context"]] = None) -> Message:
         """
         Change repeat mode.
@@ -736,17 +736,17 @@ class PlaybackControlsView(discord.ui.View):
         self.token = token
         
         self.previous = discord.ui.Button(emoji=f"{config.EMOJIS.SPOTIFY.PREVIOUS}", style=discord.ButtonStyle.gray)
-        self.play_pause = discord.ui.Button(emoji=f"{config.EMOJIS.SPOTIFY.PAUSE}", style=discord.ButtonStyle.gray)
+        self.pause = discord.ui.Button(emoji=f"{config.EMOJIS.SPOTIFY.PAUSE}", style=discord.ButtonStyle.gray)
         self.next = discord.ui.Button(emoji=f"{config.EMOJIS.SPOTIFY.NEXT}", style=discord.ButtonStyle.gray)
         self.volume = discord.ui.Button(emoji=f"{config.EMOJIS.SPOTIFY.VOLUME}", style=discord.ButtonStyle.gray)
         
         self.previous.callback = self.previous_track
-        self.play_pause.callback = self.toggle_playback
+        self.pause.callback = self.toggle_playback
         self.next.callback = self.next_track
         self.volume.callback = self.toggle_mute
         
         self.add_item(self.previous)
-        self.add_item(self.play_pause)
+        self.add_item(self.pause)
         self.add_item(self.next)
         self.add_item(self.volume)
         
@@ -760,9 +760,9 @@ class PlaybackControlsView(discord.ui.View):
             headers=headers
         ) as resp:
             if resp.status in (204, 200):
-                await interaction.response.send_message("⏮️ Previous track")
+                await interaction.response.send_message("⏮️ Previous track", ephemeral=True)
             else:
-                await interaction.response.send_message("❌ Failed to go to previous track")
+                await interaction.response.send_message("❌ Failed to go to previous track", ephemeral=True)
                 
     async def toggle_playback(self, interaction: discord.Interaction):
         if interaction.user.id != self.ctx.author.id:
@@ -774,7 +774,7 @@ class PlaybackControlsView(discord.ui.View):
             headers=headers
         ) as resp:
             if resp.status != 200:
-                await interaction.response.send_message("❌ Failed to get playback state")
+                await interaction.response.send_message("❌ Failed to get playback state", ephemeral=True)
                 return
                 
             data = await resp.json()
@@ -786,12 +786,25 @@ class PlaybackControlsView(discord.ui.View):
                 headers=headers
             ) as resp:
                 if resp.status in (204, 200):
-                    await interaction.response.send_message(
-                        "⏸️ Paused" if is_playing else "▶️ Playing",
-                        ephemeral=True
+                    track_name = data['item']['name'] if data.get('item') else "Unknown Track"
+                    track_url = data['item']['external_urls']['spotify'] if data.get('item') and data['item'].get('external_urls') else None
+                    
+                    self.pause.emoji = config.EMOJIS.SPOTIFY.PAUSE if not is_playing else config.EMOJIS.SPOTIFY.PLAY
+                    await interaction.response.edit_message(view=self)
+                    
+                    description = f"{'⏸️ Paused' if is_playing else '▶️ Playing'} "
+                    if track_url:
+                        description += f"**[{track_name}]({track_url})**"
+                    else:
+                        description += f"**{track_name}**"
+                    embed = Embed(
+                        title=f"{config.EMOJIS.SPOTIFY.ICON} Spotify Playback",
+                        description=description,
+                        color=config.COLORS.SPOTIFY
                     )
+                    await interaction.response.send_message(embed=embed, ephemeral=True)
                 else:
-                    await interaction.response.send_message("❌ Failed to toggle playback")
+                    await interaction.response.send_message("❌ Failed to toggle playback", ephemeral=True)
                     
     async def next_track(self, interaction: discord.Interaction):
         if interaction.user.id != self.ctx.author.id:
@@ -803,9 +816,9 @@ class PlaybackControlsView(discord.ui.View):
             headers=headers
         ) as resp:
             if resp.status in (204, 200):
-                await interaction.response.send_message("⏭️ Next track")
+                await interaction.response.send_message("⏭️ Next track", ephemeral=True)
             else:
-                await interaction.response.send_message("❌ Failed to skip track")
+                await interaction.response.send_message("❌ Failed to skip track", ephemeral=True)
 
     async def toggle_mute(self, interaction: discord.Interaction):
         if interaction.user.id != self.ctx.author.id:
@@ -817,6 +830,6 @@ class PlaybackControlsView(discord.ui.View):
             headers=headers
         ) as resp:
             if resp.status in (204, 200):
-                await interaction.response.send_message("🔇 Muted")
+                await interaction.response.send_message("🔇 Muted", ephemeral=True)
             else:
-                await interaction.response.send_message("❌ Failed to mute playback")
+                await interaction.response.send_message("❌ Failed to mute playback", ephemeral=True)

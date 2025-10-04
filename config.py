@@ -146,7 +146,6 @@ class RATELIMITS:
     PER_1M: int = 75
 
 class CLOUDFLARE:
-    
     class SAAS:
         TOKEN: str = "bjx2pf443xBAEaA6IfQ2XeKPwu4YSeE1YVHz2zbC"
         ZONE: str = "8bd322a1c8ed171d1d4462f471735b2d"

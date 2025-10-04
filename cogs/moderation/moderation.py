@@ -1895,7 +1895,7 @@ class Moderation(Cog):
     @hybrid_group(
         aliases=["lock"],
         invoke_without_command=True,
-        example="#general idk why",
+        example="#general shut up",
     )
     @has_permissions(manage_roles=True)
     async def lockdown(
