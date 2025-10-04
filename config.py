@@ -82,6 +82,7 @@ class EMOJIS:
         PAUSE: str = "<:sp_pause:1424091848900739213>"
         NEXT: str = "<:sp_next:1424090799355986021>"
         VOLUME: str = "<:sp_volume:1424089962730754159>"
+        PLAY: str = "<:sp_play:1424169876544819262>"
     class INTERFACE:
         LOCK: str = "<:vm_lock:1423361217891799140>"
         UNLOCK: str = "<:vm_unlock:1423361237516947556>"
