@@ -25,7 +25,7 @@ from .vanity import Vanity
 from .webhook import Webhook
 from .whitelist import Whitelist
 from .suggest import Suggest
-# from .spotify import Spotify
+from .spotify import Spotify
 from .invites import Invites
 from .joindm import JoinDM
 from .lovense import Lovense
@@ -62,7 +62,7 @@ class Extended(
     Statistics,
     BoosterRole,
     Info,
-    # Spotify,
+    Spotify,
     CommandManagement,
     Invites,
     JoinDM,

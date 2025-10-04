@@ -2939,7 +2939,7 @@ class Lastfm(Cog):
         return await ctx.send(embed=embed)
 
     @command(aliases=["sp", "spotifysong", "song"], example="Lil Tjay F.N")
-    async def spotify(
+    async def songsearch(
         self,
         ctx: Context,
         *,

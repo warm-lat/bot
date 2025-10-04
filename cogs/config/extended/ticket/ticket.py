@@ -188,7 +188,7 @@ class Ticket(MixinMeta, metaclass=CompositeMetaClass):
         with open(file_path, "w", encoding="utf-8") as f:
             json.dump(transcript_data, f, indent=4, ensure_ascii=False)
 
-        await ctx.send(f"Transcript saved: https://logs.warm.lat/{log_id}")
+        await ctx.send(f"Transcript saved: https://warm.lat/tickets/{log_id}")
 
     async def generate_transcript(self, channel: TextChannel):
         transcript = {

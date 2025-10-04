@@ -294,7 +294,7 @@ class Audio(Cog):
                         "method": "track.search",
                         "track": title,
                         "artist": artist,
-                        "api_key": "bc84a74e4b3cf9eb040fbeaab4071df5",
+                        "api_key": config.AUTHENICATION.LASTFM.KEY,
                         "format": "json"
                     }
                         

@@ -675,7 +675,7 @@ class Config(Extended, Cog):
         try:
             await self.bot.db.execute(
                 """
-                INSERT INTO tags 
+                INSERT INTO public.tags 
                 (guild_id, name, owner_id, template)
                 VALUES ($1, $2, $3, $4)
                 """,
@@ -699,7 +699,7 @@ class Config(Extended, Cog):
         record = await self.bot.db.fetchrow(
             """
             SELECT owner_id 
-            FROM tags 
+            FROM public.tags 
             WHERE guild_id = $1 
             AND LOWER(name) = LOWER($2)
             """,
@@ -715,7 +715,7 @@ class Config(Extended, Cog):
 
         await self.bot.db.execute(
             """
-            UPDATE tags 
+            UPDATE public.tags 
             SET template = $3 
             WHERE guild_id = $1 
             AND LOWER(name) = LOWER($2)
@@ -736,7 +736,7 @@ class Config(Extended, Cog):
         record = await self.bot.db.fetchrow(
             """
             SELECT owner_id 
-            FROM tags 
+            FROM public.tags 
             WHERE guild_id = $1 
             AND LOWER(name) = LOWER($2)
             """,
