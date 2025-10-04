@@ -198,8 +198,8 @@ class Interface(View):
     def create_dropdown_embed(self, guild):
         """Create the dropdown style interface embed"""
         embed = Embed(
-            title="Voicemaster Control Menu",
-            description="control your voice channe using the dropdown below",
+            title="Voicemaster Interface",
+            description="control your voice channel using the dropdown below",
             color=0x2B2D31 
         )
         embed.set_author(

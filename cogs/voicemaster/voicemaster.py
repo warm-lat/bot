@@ -480,7 +480,7 @@ class VoiceMaster(Cog):
                             embed = script.objects['embeds'][0]
                         else:
                             embed = Embed(
-                                title="Voicemaster Control Menu",
+                                title="Voicemaster Interface",
                                 description="control your voice channel using the dropdown below",
                                 color=0x2B2D31
                             )
@@ -488,7 +488,7 @@ class VoiceMaster(Cog):
                             embed.set_thumbnail(url=self.bot.user.display_avatar)
                     except Exception as e:
                         embed = Embed(
-                            title="Voicemaster Control Menu",
+                            title="Voicemaster Interface",
                             description="control your voice channel using the dropdown below",
                             color=0x2B2D31
                         )
@@ -496,7 +496,7 @@ class VoiceMaster(Cog):
                         embed.set_thumbnail(url=self.bot.user.display_avatar)
                 else:
                     embed = Embed(
-                        title="Voicemaster Control Menu",
+                        title="Voicemaster Interface",
                         description="control your voice channel using the dropdown below",
                         color=0x2B2D31
                     )
@@ -544,7 +544,7 @@ class VoiceMaster(Cog):
                 )
 
             await ctx.approve(
-                "Finished setting up the **VoiceMaster** channels. A category and two channels have been created, you can move the channels or rename them if you want."
+                "Finished setting up the **VoiceMaster** channels."
             )
             return
 
@@ -581,7 +581,7 @@ class VoiceMaster(Cog):
 
     @voicemaster.command(
         name="category",
-        example="Voice Channels",
+        example="VC",
     )
     @has_permissions(manage_guild=True)
     async def voicemaster_category(
@@ -600,7 +600,7 @@ class VoiceMaster(Cog):
             )
         except Exception:
             return await ctx.warn(
-                "Server is not configured in the **database**, you need to run `voicemaster setup` to be able to run this command"
+                "Server is not configured in the **database**, you need to run `voicemaster setup` to be able to run this command."
             )
 
         return await ctx.approve(
@@ -626,7 +626,7 @@ class VoiceMaster(Cog):
             )
         except Exception:
             return await ctx.warn(
-                "Server is not configured in the **database**, you need to run `voicemaster setup` to be able to run this command"
+                "Server is not configured in the **database**, you need to run `voicemaster setup` to be able to run this command."
             )
 
         return await ctx.approve(
@@ -635,7 +635,7 @@ class VoiceMaster(Cog):
 
     @voicemaster.command(
         name="defaultregion",
-        example="russia",
+        example="new york",
     )
     @has_permissions(manage_guild=True)
     async def voicemaster_defaultregion(self, ctx: Context, *, region: Region):
@@ -652,7 +652,7 @@ class VoiceMaster(Cog):
             )
         except Exception:
             return await ctx.warn(
-                "Server is not configured in the **database**, you need to run `voicemaster setup` to be able to run this command"
+                "Server is not configured in the **database**, you need to run `voicemaster setup` to be able to run this command."
             )
 
         return await ctx.approve(
@@ -678,7 +678,7 @@ class VoiceMaster(Cog):
             )
         except Exception:
             return await ctx.warn(
-                "Server is not configured in the **database**, you need to run `voicemaster setup` to be able to run this command"
+                "Server is not configured in the **database**, you need to run `voicemaster setup` to be able to run this command."
             )
 
         return await ctx.approve(
@@ -770,7 +770,7 @@ class VoiceMaster(Cog):
 
     @voicemaster.command(
         name="transfer",
-        example="@x",
+        example="@_mism.",
     )
     async def voicemaster_transfer(self, ctx: Context, *, member: Member):
         """Transfer ownership of your channel to another member"""
@@ -920,7 +920,7 @@ class VoiceMaster(Cog):
 
     @voicemaster.command(
         name="permit",
-        example="@x",
+        example="@_mism.",
         aliases=["allow"],
     )
     async def voicemaster_permit(self, ctx: Context, *, target: Member | Role):
@@ -938,7 +938,7 @@ class VoiceMaster(Cog):
 
     @voicemaster.command(
         name="reject",
-        example="@x",
+        example="@_mism.",
         aliases=[
             "remove",
             "deny",

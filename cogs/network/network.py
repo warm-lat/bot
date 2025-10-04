@@ -4216,7 +4216,7 @@ class Network(Cog):
                     invoke_unban,
                     invoke_timeout,
                     invoke_untimeout
-                FROM settings 
+                FROM public.settings 
                 WHERE guild_id = $1
                 """,
                 int(guild_id)
@@ -4225,7 +4225,7 @@ class Network(Cog):
             whitelist_settings = await self.bot.db.fetchrow(
                 """
                 SELECT status, action
-                FROM whitelist
+                FROM public.whitelist
                 WHERE guild_id = $1
                 """,
                 int(guild_id)
@@ -4234,7 +4234,7 @@ class Network(Cog):
             vanity_settings = await self.bot.db.fetchrow(
                 """
                 SELECT role_id, channel_id, template
-                FROM vanity
+                FROM public.vanity
                 WHERE guild_id = $1
                 """,
                 int(guild_id)
@@ -5948,7 +5948,7 @@ class Network(Cog):
             return web.json_response({"error": "Internal server error"}, status=500)
 
     @route("/voice")
-    @ratelimit(5, 60)
+    @ratelimit(15, 60)
     async def voice_info(self: "Network", request: Request) -> Response:
         try:
             auth_header = request.headers.get("Authorization")

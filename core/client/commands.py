@@ -6,10 +6,10 @@ from dataclasses import dataclass
 from discord.ext.commands import Command
 
 
-#@dataclass
-#class Parameter:
-#    name: str
-#    optional: bool
+@dataclass
+class Parameter:
+    name: str
+    optional: bool
 
 
 @property
@@ -17,12 +17,12 @@ def example(self: Command) -> str:
     return self.__original_kwargs__.get("example", "")
 
 
-#@property
-#def parameters(self: Command) -> str:
-#    return ", ".join(
-#        name
-#        for name, param in list(inspect.signature(self.callback).parameters.items())[2:]
-#    )
+@property
+def parameters(self: Command) -> str:
+    return ", ".join(
+        name
+        for name, param in list(inspect.signature(self.callback).parameters.items())[2:]
+    )
 
 
 @property
@@ -40,5 +40,5 @@ def permissions(self: Command) -> List[str]:
 
 
 Command.example = example  # type: ignore
-#Command.parameters = parameters  # type: ignore
+Command.parameters = parameters  # type: ignore
 Command.permissions = permissions  # type: ignore

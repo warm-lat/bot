@@ -97,7 +97,6 @@ class BrowserHandler:
                     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
                     "(KHTML, like Gecko) Chrome/140.0.7339.16 Safari/537.36"
                 ),
-                proxy={"server": "http://127.1:40000"} if hasattr(config, 'USE_PROXY') and getattr(config, 'USE_PROXY', False) else None,
             )
             log.info("Browser context created successfully")
             
