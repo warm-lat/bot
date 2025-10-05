@@ -8,7 +8,7 @@ from discord import Embed, Message
 from discord.errors import NotFound
 from datetime import datetime, timezone
 from typing import Optional, Literal
-
+import base64
 from managers.paginator import Paginator
 from core.client.context import Context
 from tools import CompositeMetaClass, MixinMeta
