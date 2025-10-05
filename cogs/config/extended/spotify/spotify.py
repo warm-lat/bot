@@ -5,7 +5,7 @@ import config
 from discord.ext.commands import group, hybrid_command, hybrid_group
 from discord.ext import commands
 from discord import Embed, Message
-
+from discord.errors import NotFound
 from datetime import datetime, timezone
 from typing import Optional, Literal
 
@@ -790,10 +790,13 @@ class PlaybackControlsView(discord.ui.View):
                     track_url = data['item']['external_urls']['spotify'] if data.get('item') and data['item'].get('external_urls') else None
                     
                     self.pause.emoji = config.EMOJIS.SPOTIFY.PAUSE if not is_playing else config.EMOJIS.SPOTIFY.PLAY
-                    message = await interaction.original_response()
-                    existing_view = discord.ui.View.from_message(message) if message else None
+                    try:
+                        message = await interaction.original_response()
+                        existing_view = discord.ui.View.from_message(message) if message else None
+                    except NotFound:
+                        existing_view = None
                     
-                    new_view = discord.ui.View(timeout=60)
+                    new_view = discord.ui.View()
                     for item in self.children:
                         new_view.add_item(item)
                     if existing_view:
