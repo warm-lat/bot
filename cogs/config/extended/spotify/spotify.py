@@ -792,7 +792,7 @@ class PlaybackControlsView(discord.ui.View):
                     
                     self.pause.emoji = config.EMOJIS.SPOTIFY.PAUSE if not is_playing else config.EMOJIS.SPOTIFY.PLAY
                     try:
-                        message = await interaction.original_response()
+                        message = await interaction.message.fetch()
                         existing_view = discord.ui.View.from_message(message) if message else None
                     except NotFound:
                         existing_view = None
