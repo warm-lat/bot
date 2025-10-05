@@ -123,7 +123,7 @@ class Spotify(MixinMeta, metaclass=CompositeMetaClass):
             if data.get('is_playing'):
                 states.append(f"{config.EMOJIS.SPOTIFY.LISTENING} Playing")
             else:
-                states.append("⏸️ Paused")
+                states.append(f"{config.EMOJIS.SPOTIFY.PAUSE} Paused")
             if data.get('shuffle_state'):
                 states.append(f"{config.EMOJIS.SPOTIFY.SHUFFLE} Shuffle")
             if data.get('repeat_state') != "off":
