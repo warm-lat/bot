@@ -805,7 +805,7 @@ class PlaybackControlsView(discord.ui.View):
                             if isinstance(item, discord.ui.Select):
                                 new_view.add_item(item)
                     
-                    await interaction.response.edit_message(view=self)
+                    await interaction.response.edit_message(view=new_view)
                     
                     description = f"{'⏸️ Paused' if is_playing else '▶️ Playing'} "
                     if track_url:
