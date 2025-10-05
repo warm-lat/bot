@@ -799,12 +799,13 @@ class PlaybackControlsView(discord.ui.View):
                     
                     new_view = discord.ui.View(timeout=60)
                     
-                    for item in self.children:
+                    for i, item in enumerate(self.children):
                         new_view.add_item(item)
                         
                     if existing_view and hasattr(existing_view, 'children'):
                         for item in existing_view.children:
                             if isinstance(item, discord.ui.Select):
+                                item.row = len(self.children) // 5
                                 new_view.add_item(item)
                     
                     await interaction.response.edit_message(view=new_view)
