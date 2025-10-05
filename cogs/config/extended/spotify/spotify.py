@@ -797,9 +797,11 @@ class PlaybackControlsView(discord.ui.View):
                     except NotFound:
                         existing_view = None
                     
-                    new_view = discord.ui.View()
+                    new_view = discord.ui.View(timeout=60)
+                    
                     for item in self.children:
                         new_view.add_item(item)
+                        
                     if existing_view and hasattr(existing_view, 'children'):
                         for item in existing_view.children:
                             if isinstance(item, discord.ui.Select):
