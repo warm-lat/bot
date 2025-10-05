@@ -44,7 +44,6 @@ class Spotify(MixinMeta, metaclass=CompositeMetaClass):
             return
         
         log.info(f"Making Spotify API request for user {ctx.author.id}")
-        log.info(f"Access token: {token[:20]}...")
         
         headers = {
             "Authorization": f"Bearer {token}",
@@ -58,7 +57,6 @@ class Spotify(MixinMeta, metaclass=CompositeMetaClass):
             headers=headers
         ) as resp:
             log.info(f"Spotify API response status: {resp.status}")
-            log.info(f"Response headers: {dict(resp.headers)}")
             
             if resp.status == 204:
                 embed = Embed(
@@ -793,21 +791,21 @@ class PlaybackControlsView(discord.ui.View):
                     self.pause.emoji = config.EMOJIS.SPOTIFY.PAUSE if not is_playing else config.EMOJIS.SPOTIFY.PLAY
                     try:
                         message = await interaction.message.fetch()
-                        existing_view = discord.ui.View.from_message(message) if message else None
+                        views = discord.ui.View.from_message(message) if message else None
                     except NotFound:
-                        existing_view = None
+                        views = None
+                    playback = PlaybackControlsView(self.ctx, self.token)
                     
                     new_view = discord.ui.View(timeout=60)
                     
-                    for i, item in enumerate(self.children):
-                        item.row = i // 5
-                        new_view.add_item(item)
-                        
-                    if existing_view and hasattr(existing_view, 'children'):
-                        for item in existing_view.children:
+                    if views and hasattr(views, 'children'):
+                        for item in views.children:
                             if isinstance(item, discord.ui.Select):
-                                item.row = (len(self.children) // 5) + 1
                                 new_view.add_item(item)
+                                
+                    for i, item in enumerate(playback):
+                        item.row = (len(new_view.children) // 5)
+                        new_view.add_item(item)
                     
                     await interaction.response.edit_message(view=new_view)
                     
