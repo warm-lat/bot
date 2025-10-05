@@ -656,10 +656,11 @@ class Spotify(MixinMeta, metaclass=CompositeMetaClass):
                     data={
                         "grant_type": "refresh_token",
                         "refresh_token": linked['refresh_token'],
-                        "client_id": config.LAVALINK.SPOTIFY_CLIENT_ID,
-                        "client_secret": config.LAVALINK.SPOTIFY_CLIENT_SECRET,
                     },
-                    headers={"Content-Type": "application/x-www-form-urlencoded"}
+                    headers={
+                        "Content-Type": "application/x-www-form-urlencoded",
+                        "Authorization": f"Basic {base64.b64encode(f'{config.LAVALINK.SPOTIFY_CLIENT_ID}:{config.LAVALINK.SPOTIFY_CLIENT_SECRET}'.encode()).decode()}"
+                        }
                 ) as resp:
                     if resp.status != 200:
                         log.error(f"Failed to refresh token: {await resp.text()}")
