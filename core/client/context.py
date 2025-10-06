@@ -689,7 +689,7 @@ class Embed(discord.Embed):
         description = description or value
         super().__init__(
             colour=colour,
-            color=color or config.COLORS.APPROVE,
+            color=color or config.COLORS.NEUTRAL,
             title=title,
             type=type,
             url=url,
