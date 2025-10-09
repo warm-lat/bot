@@ -189,7 +189,7 @@ class BackupLoader:
         self.data = loads(data)
         self.options = BooleanArgs([])
         self.semaphore = Semaphore(4)
-        self.reason = "Backup loaded by evict"
+        self.reason = "Backup loaded by warm.lat"
         self.id_translator = {}
 
     async def get_overwrites(self, data: dict[str, dict[str, Optional[bool]]]):

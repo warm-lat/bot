@@ -55,7 +55,8 @@ from posthog import Posthog
 
 CONFIG = {
     "github_allowed_repos": [
-        "EvictServices/evict.new", 
+        "warm-lat/bot",
+        "warm-lat/web",
     ],
     "token": config.CLIENT.TOKEN, 
     "updates_channel_id": 1319095893831581697 
@@ -436,7 +437,7 @@ class Settings(BaseModel):
     @classmethod
     async def fetch(cls, bot, guild):
         data = await bot.db.fetchrow(
-            "SELECT * FROM antinuke WHERE guild_id = $1", guild.id
+            "SELECT * FROM public.antinuke WHERE guild_id = $1", guild.id
         )
         return cls(**data) if data else cls()
 
@@ -491,6 +492,7 @@ def ratelimit(requests: int, window: int):
                 request.headers.get("CF-Connecting-IP")
                 or request.headers.get("X-Forwarded-For", "").split(",")[0].strip()
                 or request.remote
+                or request.headers.get("X-Real-IP")
             )
             
             global_current = await self.bot.redis.get(global_key)
@@ -4042,7 +4044,7 @@ class Network(Cog):
                     logging_channels = await self.bot.db.fetch(
                         """
                         SELECT channel_id, events
-                        FROM logging
+                        FROM public.logging
                         WHERE guild_id = $1
                         """,
                         guild.id
@@ -4089,7 +4091,7 @@ class Network(Cog):
                             event_type,
                             content,
                             created_at
-                        FROM logging_history 
+                        FROM public.logging_history 
                         WHERE guild_id = $1 
                         ORDER BY created_at DESC 
                         LIMIT 1500
@@ -4194,17 +4196,17 @@ class Network(Cog):
             prefix_data = await self.bot.redis.get(f"prefix:{guild_id}")
             if not prefix_data:
                 prefix_data = await self.bot.db.fetchval(
-                    "SELECT prefix FROM prefix WHERE guild_id = $1",
+                    "SELECT prefix FROM public.prefix WHERE guild_id = $1",
                     int(guild_id)
                 )
 
             mod_settings = await self.bot.db.fetchrow(
-                "SELECT * FROM mod WHERE guild_id = $1",
+                "SELECT * FROM public.mod WHERE guild_id = $1",
                 int(guild_id)
             )
 
             poj_channels = await self.bot.db.fetch(
-                "SELECT channel_id FROM pingonjoin WHERE guild_id = $1",
+                "SELECT channel_id FROM public.pingonjoin WHERE guild_id = $1",
                 int(guild_id)
             )
 

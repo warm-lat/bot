@@ -243,10 +243,6 @@ class Listeners(Cog):
         embed.set_thumbnail(url=self.bot.user.display_avatar)
 
         await self.bot.notify(guild, embed=embed)
-        try:
-            await guild.owner.send(embed=embed)
-        except discord.Forbidden:
-            pass
 
     @Cog.listener("on_guild_join")
     async def blacklist_check(self, guild: Guild) -> None:

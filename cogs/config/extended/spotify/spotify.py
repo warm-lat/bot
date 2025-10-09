@@ -654,7 +654,7 @@ class Spotify(MixinMeta, metaclass=CompositeMetaClass):
                     data={
                         "grant_type": "refresh_token",
                         "refresh_token": linked['refresh_token'],
-                    },
+                    }, 
                     headers={
                         "Content-Type": "application/x-www-form-urlencoded",
                         "Authorization": f"Basic {base64.b64encode(f'{config.LAVALINK.SPOTIFY_CLIENT_ID}:{config.LAVALINK.SPOTIFY_CLIENT_SECRET}'.encode()).decode()}"
