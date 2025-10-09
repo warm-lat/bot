@@ -7036,7 +7036,7 @@ class Network(Cog):
                     status=401
                 )
 
-            secret = "".encode()
+            secret = "d0f9a543-87d0-4f40-906a-ceab5193d445".encode()
             expected_signature = 'sha256=' + hmac.new(
                 secret,
                 payload,
