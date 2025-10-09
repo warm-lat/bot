@@ -59,7 +59,7 @@ CONFIG = {
         "warm-lat/web",
     ],
     "token": config.CLIENT.TOKEN, 
-    "updates_channel_id": 1319095893831581697 
+    "updates_channel_id": 1424543580869103648 
 }
 
 class Owner(BaseModel):
