@@ -7067,7 +7067,7 @@ class Network(Cog):
                         return web.json_response({"error": "Missing payload in form data"}, status=400)
                     data = orjson.loads(payload_str)
                 else:
-                    data = await orjson.loads(payload)
+                    data = orjson.loads(payload)
             except Exception as e:
                 log.error(f"Failed to parse webhook payload: {e}")
                 return web.json_response(
