@@ -32,7 +32,7 @@ class Lovense(MixinMeta, metaclass=CompositeMetaClass):
         return await self.bot.db.fetchval(
             """
             SELECT is_enabled 
-            FROM lovense_config 
+            FROM public.lovense_config 
             WHERE guild_id = $1
             """,
             guild_id
@@ -48,7 +48,7 @@ class Lovense(MixinMeta, metaclass=CompositeMetaClass):
         data = await self.bot.db.fetchrow(
             """
             SELECT device_id, device_type, last_active
-            FROM lovense_devices 
+            FROM public.lovense_devices 
             WHERE guild_id = $1 AND user_id = $2
             """,
             ctx.guild.id, target.id
@@ -73,7 +73,7 @@ class Lovense(MixinMeta, metaclass=CompositeMetaClass):
         """Enable Lovense integration for the server."""
         await self.bot.db.execute(
             """
-            INSERT INTO lovense_config (guild_id, is_enabled)
+            INSERT INTO public.lovense_config (guild_id, is_enabled)
             VALUES ($1, true)
             ON CONFLICT (guild_id)
             DO UPDATE SET is_enabled = true
@@ -88,7 +88,7 @@ class Lovense(MixinMeta, metaclass=CompositeMetaClass):
         """Disable Lovense integration for the server."""
         await self.bot.db.execute(
             """
-            INSERT INTO lovense_config (guild_id, is_enabled)
+            INSERT INTO public.lovense_config (guild_id, is_enabled)
             VALUES ($1, false)
             ON CONFLICT (guild_id)
             DO UPDATE SET is_enabled = false
@@ -133,7 +133,7 @@ class Lovense(MixinMeta, metaclass=CompositeMetaClass):
 
         await self.bot.db.execute(
             """
-            INSERT INTO lovense_devices 
+            INSERT INTO public.lovense_devices 
             (guild_id, user_id, device_id, device_type, last_active)
             VALUES ($1, $2, $3, $4, CURRENT_TIMESTAMP)
             ON CONFLICT (guild_id, user_id) 
@@ -155,7 +155,7 @@ class Lovense(MixinMeta, metaclass=CompositeMetaClass):
         """Unlink your Lovense device"""
         result = await self.bot.db.execute(
             """
-            DELETE FROM lovense_devices
+            DELETE FROM public.lovense_devices
             WHERE guild_id = $1 AND user_id = $2
             """,
             ctx.guild.id, ctx.author.id
@@ -172,7 +172,7 @@ class Lovense(MixinMeta, metaclass=CompositeMetaClass):
         """Set the channel for Lovense activity logs."""
         await self.bot.db.execute(
             """
-            INSERT INTO lovense_config (guild_id, log_channel_id)
+            INSERT INTO public.lovense_config (guild_id, log_channel_id)
             VALUES ($1, $2)
             ON CONFLICT (guild_id)
             DO UPDATE SET log_channel_id = $2
@@ -187,7 +187,7 @@ class Lovense(MixinMeta, metaclass=CompositeMetaClass):
         settings = await self.bot.db.fetchrow(
             """
             SELECT is_enabled
-            FROM lovense_config
+            FROM public.lovense_config
             WHERE guild_id = $1
             """,
             ctx.guild.id
@@ -208,7 +208,7 @@ class Lovense(MixinMeta, metaclass=CompositeMetaClass):
         devices = await self.bot.db.fetch(
             """
             SELECT user_id, device_type, last_active
-            FROM lovense_devices
+            FROM public.lovense_devices
             WHERE guild_id = $1
             """,
             ctx.guild.id
@@ -241,7 +241,7 @@ class Lovense(MixinMeta, metaclass=CompositeMetaClass):
         existing = await self.bot.db.fetchrow(
             """
             SELECT device_id 
-            FROM lovense_devices 
+            FROM public.lovense_devices 
             WHERE guild_id = $1 AND user_id = $2
             """,
             ctx.guild.id, ctx.author.id
@@ -262,7 +262,7 @@ class Lovense(MixinMeta, metaclass=CompositeMetaClass):
             
             await self.bot.db.execute(
                 """
-                INSERT INTO lovense_connections (token, guild_id, user_id, created_at)
+                INSERT INTO public.lovense_connections (token, guild_id, user_id, created_at)
                 VALUES ($1, $2, $3, NOW())
                 """,
                 user_token, ctx.guild.id, ctx.author.id
@@ -814,7 +814,7 @@ class Lovense(MixinMeta, metaclass=CompositeMetaClass):
         return await self.bot.db.fetch(
             """
             SELECT device_id, device_type, last_active
-            FROM lovense_devices 
+            FROM public.lovense_devices 
             WHERE guild_id = $1 AND user_id = $2
             """,
             guild_id, user_id
@@ -825,8 +825,8 @@ class Lovense(MixinMeta, metaclass=CompositeMetaClass):
         return await self.bot.db.fetch(
             """
             SELECT d.device_id, d.device_type, d.last_active, d.user_id as owner_id
-            FROM lovense_devices d
-            JOIN lovense_shares s ON d.device_id = s.device_id
+            FROM public.lovense_devices d
+            JOIN public.lovense_shares s ON d.device_id = s.device_id
             WHERE s.guild_id = $1 AND s.target_id = $2
             """,
             guild_id, user_id

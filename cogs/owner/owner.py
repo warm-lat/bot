@@ -2008,7 +2008,8 @@ class Owner(
                 user_embed = Embed(
                     title="🎉 Beta Dashboard Access Granted",
                     description=(
-                        "You've been granted access to Warm's beta dashboard!\n\n Moderator: <@930383131863842816> `930383131863842816`\n\n"
+                        "You've been **granted** access to Warm's beta dashboard!\n"
+                        "Moderator: {ctx.author.mention}`{ctx.author.id}`\n"
                         "Here's everything you need to know:"
                     ),
                     color=0x2B2D31
@@ -2030,7 +2031,7 @@ class Owner(
                 )
                 user_embed.add_field(
                     name=f"{config.EMOJIS.SOCIAL.DISCORD} Need Help?",
-                    value="Join our [support server](https://discord.gg/apply) for assistance or contact @66adam",
+                    value=f"Join our [support server](https://discord.gg/apply) for assistance\n or contact <@1137513168965476352>",
                     inline=True
                 )
                 user_embed.set_footer(text="Thank you for helping test our new dashboard!")
@@ -2069,14 +2070,15 @@ class Owner(
         """List pending beta dashboard requests"""
         try:
             entries = []
-            async for record in self.bot.db.fetch(
+            records = await self.bot.db.fetch(
                 """
                 SELECT user_id, added_at, added_by, notes
                 FROM public.beta_dashboard
                 WHERE status = 'pending'
                 ORDER BY added_at DESC
                 """
-            ):
+            )
+            for record in records:
                 user = self.bot.get_user(record['user_id'])
                 added_by = self.bot.get_user(record['added_by'])
                 entries.append(
