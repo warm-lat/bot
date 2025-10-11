@@ -1416,17 +1416,21 @@ class Ticket(MixinMeta, metaclass=CompositeMetaClass):
         """
         View all blacklisted entities.
         """
+        
+        records = await self.bot.db.fetch(
+            """
+            SELECT UNNEST(blacklisted_ids) AS target_id
+            FROM ticket.config
+            WHERE guild_id = $1
+            """,
+            ctx.guild.id,
+        )
+        if not records:
+            return await ctx.warn("No members have been blacklisted yet!")
 
         targets = [
             f"{target.mention} (`{target.id}`)"
-            for record in await self.bot.db.fetch(
-                """
-                SELECT UNNEST(blacklisted_ids) AS target_id
-                FROM ticket.config
-                WHERE guild_id = $1
-                """,
-                ctx.guild.id,
-            )
+            for record in records
             if (target := ctx.guild.get_member(record["target_id"]))
             or (target := ctx.guild.get_role(record["target_id"]))
         ]
