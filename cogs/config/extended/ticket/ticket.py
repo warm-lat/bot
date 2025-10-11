@@ -1541,7 +1541,7 @@ class Ticket(MixinMeta, metaclass=CompositeMetaClass):
                 ctx.guild.id,
             )
             
-            if not config:
+            if not config or not config.get('staff_ids'):
                 await ctx.warn("You're missing the `manage_channels` permission!")
                 return False
             
