@@ -62,7 +62,7 @@ class Extended(
     Statistics,
     BoosterRole,
     Info,
-    Spotify,
+    #Spotify,
     CommandManagement,
     Invites,
     JoinDM,

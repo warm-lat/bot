@@ -2255,7 +2255,7 @@ class SimpleVerifyButton(discord.ui.View):
     )
     async def verify(self, interaction: discord.Interaction, button: discord.ui.Button):
         settings = await self.bot.db.fetchrow(
-            "SELECT * FROM guild_verification WHERE guild_id = $1",
+            "SELECT * FROM public.guild_verification WHERE guild_id = $1",
             interaction.guild_id
         )
         

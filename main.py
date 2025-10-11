@@ -645,7 +645,7 @@ class Evict(commands.AutoShardedBot):
             exc_info=exc,
         )
 
-        key = secrets.token_urlsafe(54)
+        key = secrets.token_urlsafe(32)
         self.traceback[key] = exc
 
         return await ctx.warn(

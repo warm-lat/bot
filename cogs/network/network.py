@@ -6089,8 +6089,8 @@ class Network(Cog):
                         embed = discord.Embed(
                             title="New Vote",
                             description=(
-                                f"🎉 {user.mention} (`{user.id}`) has voted for the bot!\n\n"
-                                "Access to donator-only commands granted for 6 hours.\n"
+                                f"🎉 {user.mention} (`{user.id}`) has voted for Warm!\n\n"
+                                "Their access to donator-only commands is granted for 6 hours.\n"
                                 "Vote again in 12 hours to maintain access."
                             ),
                             color=0x2f3136,
@@ -7059,7 +7059,15 @@ class Network(Cog):
             await self.bot.redis.set(cache_key, "1", ex=2)  
 
             try:
-                data = orjson.loads(payload)
+                if request.content_type == 'application/x-www-form-urlencoded':
+                    form_data = await request.post()
+                    payload_str = form_data.get('payload')
+                    if not payload_str:
+                        log.error("Webhook payload is missing from form data")
+                        return web.json_response({"error": "Missing payload in form data"}, status=400)
+                    data = orjson.loads(payload_str)
+                else:
+                    data = await orjson.loads(payload)
             except Exception as e:
                 log.error(f"Failed to parse webhook payload: {e}")
                 return web.json_response(

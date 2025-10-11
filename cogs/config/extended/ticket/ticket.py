@@ -1305,18 +1305,22 @@ class Ticket(MixinMeta, metaclass=CompositeMetaClass):
         """
         View all roles which can see tickets.
         """
+        
+        records = await self.bot.db.fetch(
+            """
+            SELECT UNNEST(staff_ids) AS role_id
+            FROM ticket.config
+            WHERE guild_id = $1
+            """,
+            ctx.guild.id,
+        )
+        if not records:
+            return await ctx.warn("No roles have been allowed yet!")
 
         roles = [
             f"{role.mention} (`{role.id}`)"
-            for record in await self.bot.db.fetch(
-                """
-                SELECT UNNEST(staff_ids) AS role_id
-                FROM ticket.config
-                WHERE guild_id = $1
-                """,
-                ctx.guild.id,
-            )
-            if (role := ctx.guild.get_member(record["role_id"]))
+            for record in records
+            if (role := ctx.guild.get_role(record["role_id"]))
         ]
         if not roles:
             return await ctx.warn("No roles have been allowed yet!")
