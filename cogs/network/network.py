@@ -1,35 +1,21 @@
 # POSTHOG -> HOG.EVICT.BOT
 # THIS HAS BEEN DEPRECATED -> TOO MANY REQUESTS WHICH SLOWS DOWN THE BOT
 
-import os
-import json
-import logging
-import config
-import asyncio
-import time
-import discord
-import aiohttp
-import stripe
-import orjson
+import os, json, logging, config, asyncio, time, discord, aiohttp, stripe, orjson, hmac, hashlib, functools, traceback, re, uuid
 from discord import Embed
-import hashlib
-import hmac
 from random import choice
-import functools
-import traceback
 from typing import Any, Dict, List, Optional
-import re
-import uuid
 from urllib.parse import urlencode
 import dns.resolver
 import secrets
 import random
 import string
+import aiobotocore
 from Crypto.Cipher import AES
 from Crypto.Util.Padding import unpad
 
 from main import Evict
-
+from cogs.config.extended.ticket import upload_to_r2
 from aiohttp import web, WSMsgType
 from aiohttp.abc import AbstractAccessLogger
 from aiohttp_cors import setup as cors_setup, ResourceOptions
@@ -742,6 +728,24 @@ class Network(Cog):
         self.app.router.add_get("/ws/music/{guild_id}", self.music_websocket)
 
         self.failed_payment_notifications = defaultdict(list)
+    async def download_from_r2(self, file_name: str):
+        """Downloads a file from Cloudflare R2 Storage."""
+        session = aiobotocore.get_session()
+        async with session.create_client(
+            "s3",
+            endpoint_url=config.CLOUDFLARE.ENDPOINT_URL,
+            aws_access_key_id=config.CLOUDFLARE.ACCESS_KEY_ID,
+            aws_secret_access_key=config.CLOUDFLARE.SECRET_ACCESS_KEY,
+        ) as client:
+            try:
+                response = await client.get_object(
+                    Bucket=config.CLOUDFLARE.BUCKET_NAME, Key=file_name
+                )
+                async with response["Body"] as stream:
+                    content = await stream.read()
+                return json.loads(content)
+            except client.exceptions.NoSuchKey:
+                return None
 
     def required_xp(self, level: int, multiplier: int = 1) -> int:
         """
@@ -1286,37 +1290,33 @@ class Network(Cog):
         if not user_id:
             return web.json_response({"error": "Missing User-ID header"}, status=400)
 
-        ticket_path = f"/root/tickets/{ticket_id}.json"
-        user_ids_path = f"/root/tickets/{ticket_id}_ids.json"
-
-        if not os.path.isfile(ticket_path):
-            log.warning(f"Ticket {ticket_id} not found.")
-            return web.json_response({"error": "Ticket not found"}, status=404)
-
-        if not os.path.isfile(user_ids_path):
-            log.warning(f"Access list for ticket {ticket_id} not found.")
-            return web.json_response(
-                {"error": "Access list not found for ticket"}, status=404
-            )
-
+        ticket_path = f"tickets/{ticket_id}.json"
+        user_ids_path = f"tickets/{ticket_id}_ids.json"
+        
         try:
-            with open(user_ids_path, "r") as ids_file:
-                user_data = json.load(ids_file)
-                if user_id not in map(str, user_data.get("ids", [])):
-                    log.warning(
-                        f"User {user_id} is not authorized to access ticket {ticket_id}."
-                    )
-                    return web.json_response(
-                        {"error": "User not authorized to access this ticket"},
-                        status=403,
-                    )
-
-            with open(ticket_path, "r") as file:
-                ticket_data = json.load(file)
+            user_data = await self.download_from_r2(user_ids_path)
+            if user_data is None:
+                log.warning(f"Access list for ticket {ticket_id} not found in R2.")
+                return web.json_response(
+                    {"error": "Access list not found for ticket"}, status=404
+                )
+            if user_id not in map(str, user_data.get("ids", [])):
+                log.warning(
+                    f"User {user_id} is not authorized to access ticket {ticket_id}."
+                )
+                return web.json_response(
+                    {"error": "User not authorized to access this ticket"},
+                    status=403,
+                )
+                
+            ticket_data = await self.download_from_r2(ticket_path)
+            if ticket_data is None:
+                log.warning(f"Ticket {ticket_id} not found in R2.")
+                return web.json_response({"error": "Ticket not found"}, status=404)
 
             log.info(f"Ticket {ticket_id} successfully fetched for User-ID: {user_id}.")
             return web.json_response(ticket_data)
-
+        
         except Exception as e:
             log.error(f"Error reading ticket {ticket_id}: {e}")
             return web.json_response({"error": "Internal server error"}, status=500)
@@ -1339,41 +1339,27 @@ class Network(Cog):
             ticket_data = data["ticket_data"]
             user_ids = data["user_ids"]
             
-            ticket_path = f"/root/tickets/{ticket_id}.json"
-            user_ids_path = f"/root/tickets/{ticket_id}_ids.json"
+            ticket_path = f"tickets/{ticket_id}.json"
+            user_ids_path = f"tickets/{ticket_id}_ids.json"
             
-            if os.path.isfile(ticket_path):
+            if await self.download_from_r2(ticket_path):
                 return web.json_response(
                     {"error": f"Ticket {ticket_id} already exists"}, 
                     status=409
                 )
                 
-            os.makedirs("/root/tickets", exist_ok=True)
-            
-            try:
-                with open(ticket_path, "w") as f:
-                    json.dump(ticket_data, f, indent=4)
+            asyncio.gather(
+                self.upload_to_r2(ticket_path, ticket_data),
+                self.upload_to_r2(user_ids_path, {"ids": user_ids})
+            )
                     
-                with open(user_ids_path, "w") as f:
-                    json.dump({"ids": user_ids}, f, indent=4)
-                    
-                log.info(f"Created ticket {ticket_id} with access for users: {user_ids}")
+            log.info(f"Created ticket {ticket_id} with access for users: {user_ids}")
                 
-                return web.json_response({
+            return web.json_response({
                     "success": True,
                     "message": f"Ticket {ticket_id} created successfully",
                     "ticket_id": ticket_id
                 })
-                
-            except IOError as e:
-                log.error(f"Failed to write ticket files: {e}")
-                for path in [ticket_path, user_ids_path]:
-                    if os.path.exists(path):
-                        os.remove(path)
-                return web.json_response(
-                    {"error": "Failed to save ticket files"}, 
-                    status=500
-                )
                 
         except json.JSONDecodeError:
             return web.json_response(

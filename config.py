@@ -9,6 +9,8 @@ class COLORS:
     SPOTIFY = 0x1DB954
 
 class EMOJIS:
+    class BADGES:
+        SERVER_OWNER: str = "<:server_owner:1423366267573637302>"
     class TICKETS:
         TRASH: str = "<:trash:1423751023842955385>"
     class MISC:
@@ -18,8 +20,6 @@ class EMOJIS:
         ETHEREUM: str = "<:ethereum:1423749684194705520>"
         LITECOIN: str = "<:litecoin:1423750291429527734>"
         XRP: str = "<:xrp:1423750848873496618>"
-    class BADGES:
-        SERVER_OWNER: str = "<:server_owner:1423366267573637302>"
     class FUN:
         GAY: str = ""
         LESBIAN: str = ""
