@@ -89,11 +89,11 @@ class EMOJIS:
         GHOST: str = ""
         REVEAL: str = ""
         CLAIM: str = ""
-        DISCONNECT: str = ""
+        DISCONNECT: str = "<:vm_disconnect:1427013718679621733>"
         ACTIVITY: str = "<:vm_activities:1423374608987455548>"
-        INFOMATION: str = ""
+        INFOMATION: str = "<:vm_info:1427011288575246367>"
         INCREASE: str = "<:vm_increase:1424064290985345086>"
-        DECREASE: str = ""
+        DECREASE: str = "<:vm_decrease:1427013412176662689>"
         
 
 class AUTHORIZATION:
