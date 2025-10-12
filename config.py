@@ -130,7 +130,7 @@ class CLIENT:
     INVITE_URL: str = "https://discord.com/api/oauth2/authorize?client_id=1420609343283531776&permissions=8&scope=bot%20applications.commands"
     SUPPORT_URL: str = "https://discord.gg/apply"
     TWITCH_URL: str = "https://twitch.tv/nxyyontop"
-    OWNER_IDS: list = [1137513168965476352]
+    OWNER_IDS: list = [1137513168965476352, 1076218266416054293]
     DESCRIPTION: str = "A bot to manage your Discord server."
 
 class LAVALINK:

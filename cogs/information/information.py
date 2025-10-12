@@ -232,6 +232,7 @@ class Information(Cog):
                 value=f"**ping**: ``{round(self.bot.shards.get(shard).latency * 1000)}ms``\n**guilds**: ``{len(guilds)}``\n**users**: ``{users:,}``",
                 inline=True,
             )
+            embed.set_author(name=ctx.authordisplay_name, icon_url=ctx.author.display_avatar.url)
             embed.set_footer(text=f"You are on Shard {ctx.guild.shard_id}.", icon_url=f"{self.bot.user.display_avatar.url}")
 
         await ctx.send(embed=embed)
@@ -271,6 +272,8 @@ class Information(Cog):
         return await ctx.send(view=view)
 
     @hybrid_command(name="about", aliases=["botinfo", "bi"])
+    @app_commands.allowed_installs(guilds=True, users=True)
+    @app_commands.allowed_contexts(guilds=True, dms=True, private_channels=True)
     async def about(self, ctx: Context) -> Message:
         """
         View information about the bot.
@@ -355,14 +358,6 @@ class Information(Cog):
         embed.set_thumbnail(url=self.bot.user.display_avatar.url)
 
         return await ctx.send(embed=embed, view=view)
-
-    @app_commands.command(name='botinfo')
-    @app_commands.allowed_installs(guilds=True, users=True)
-    @app_commands.allowed_contexts(guilds=True, dms=True, private_channels=True)
-    async def botinfo_slash(self, interaction: Interaction):
-        """View information about the bot."""
-        ctx = await Context.from_interaction(interaction)
-        await self.about(ctx)
 
     @command(example="warm", aliases=["ii"])
     async def inviteinfo(self, ctx: Context, *, invite: Invite) -> Message:
