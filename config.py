@@ -148,10 +148,10 @@ class RATELIMITS:
 
 class CLOUDFLARE:
     class R2:
-        ENDPOINT: str = "https://accountid.r2.cloudflarestorage.com"
-        ACCESS_KEY: str = "your_access_key"
-        ACCESS_SECRET: str = "your_secret_key"
-        BUCKET: str = "your_bucket_name"
+        ENDPOINT: str = "https://72517b1ad2f1c7ffb8488e7ae9b1e317.r2.cloudflarestorage.com"
+        ACCESS_KEY: str = "05b1a9daca6f61fc7910b1f7b94dbbe4"
+        ACCESS_SECRET: str = "8658e134fde10e369290bacce548c8c377b87da3a399bacb7158f92c07b116ac"
+        BUCKET: str = "warm"
     
     class SAAS:
         TOKEN: str = "bjx2pf443xBAEaA6IfQ2XeKPwu4YSeE1YVHz2zbC"
