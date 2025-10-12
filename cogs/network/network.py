@@ -13,7 +13,7 @@ import string
 import aiobotocore
 from Crypto.Cipher import AES
 from Crypto.Util.Padding import unpad
-
+from aiobotocore.session import get_session
 from main import Evict
 from aiohttp import web, WSMsgType
 from aiohttp.abc import AbstractAccessLogger
@@ -730,7 +730,7 @@ class Network(Cog):
         
     async def upload_to_r2(self, file_name: str, data: dict):
         """Uploads a file to Cloudflare R2 Storage."""
-        session = aiobotocore.get_session()
+        session = get_session()
         async with session.create_client(
             "s3",
             endpoint_url=config.CLOUDFLARE.R2.ENDPOINT,
@@ -745,7 +745,7 @@ class Network(Cog):
             )
     async def download_from_r2(self, file_name: str):
         """Downloads a file from Cloudflare R2 Storage."""
-        session = aiobotocore.get_session()
+        session = get_session()
         async with session.create_client(
             "s3",
             endpoint_url=config.CLOUDFLARE.R2.ENDPOINT,
