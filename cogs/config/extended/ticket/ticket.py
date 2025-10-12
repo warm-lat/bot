@@ -124,7 +124,7 @@ class Ticket(MixinMeta, metaclass=CompositeMetaClass):
             aws_access_key_id=config.CLOUDFLARE.R2.ACCESS_KEY,
             aws_secret_access_key=config.CLOUDFLARE.R2.ACCESS_SECRET,
         )
-        await s3.put_object(
+        s3.put_object(
             Bucket=config.CLOUDFLARE.R2.BUCKET,
             Key=file_name,
             Body=json.dumps(data, indent=4).encode("utf-8"),
