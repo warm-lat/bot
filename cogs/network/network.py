@@ -15,7 +15,6 @@ from Crypto.Cipher import AES
 from Crypto.Util.Padding import unpad
 
 from main import Evict
-from cogs.config.extended.ticket import upload_to_r2
 from aiohttp import web, WSMsgType
 from aiohttp.abc import AbstractAccessLogger
 from aiohttp_cors import setup as cors_setup, ResourceOptions
@@ -728,6 +727,22 @@ class Network(Cog):
         self.app.router.add_get("/ws/music/{guild_id}", self.music_websocket)
 
         self.failed_payment_notifications = defaultdict(list)
+        
+    async def upload_to_r2(self, file_name: str, data: dict):
+        """Uploads a file to Cloudflare R2 Storage."""
+        session = aiobotocore.get_session()
+        async with session.create_client(
+            "s3",
+            endpoint_url=config.CLOUDFLARE.R2.ENDPOINT,
+            aws_access_key_id=config.CLOUDFLARE.R2.ACCESS_KEY,
+            aws_secret_access_key=config.CLOUDFLARE.R2.ACCESS_SECRET,
+        ) as client:
+            await client.put_object(
+                Bucket=config.CLOUDFLARE.R2.BUCKET,
+                Key=file_name,
+                Body=json.dumps(data, indent=4).encode("utf-8"),
+                ContentType="application/json",
+            )
     async def download_from_r2(self, file_name: str):
         """Downloads a file from Cloudflare R2 Storage."""
         session = aiobotocore.get_session()
