@@ -748,13 +748,13 @@ class Network(Cog):
         session = aiobotocore.get_session()
         async with session.create_client(
             "s3",
-            endpoint_url=config.CLOUDFLARE.ENDPOINT_URL,
-            aws_access_key_id=config.CLOUDFLARE.ACCESS_KEY_ID,
-            aws_secret_access_key=config.CLOUDFLARE.SECRET_ACCESS_KEY,
+            endpoint_url=config.CLOUDFLARE.R2.ENDPOINT,
+            aws_access_key_id=config.CLOUDFLARE.R2.ACCESS_KEY,
+            aws_secret_access_key=config.CLOUDFLARE.R2.ACCESS_SECRET,
         ) as client:
             try:
                 response = await client.get_object(
-                    Bucket=config.CLOUDFLARE.BUCKET_NAME, Key=file_name
+                    Bucket=config.CLOUDFLARE.R2.BUCKET, Key=file_name
                 )
                 async with response["Body"] as stream:
                     content = await stream.read()
