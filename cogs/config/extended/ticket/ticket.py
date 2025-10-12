@@ -94,22 +94,6 @@ def in_ticket():
 
     return check(predicate)
 
-async def upload_to_r2(file_name: str, data: dict):
-        """Uploads a file to Cloudflare R2 Storage."""
-        s3 = boto3.client(
-            's3',
-            endpoint_url=config.CLOUDFLARE.R2.ENDPOINT,
-            aws_access_key_id=config.CLOUDFLARE.R2.ACCESS_KEY,
-            aws_secret_access_key=config.CLOUDFLARE.R2.ACCESS_SECRET,
-        )
-        with s3:
-            await s3.put_object(
-                Bucket=config.CLOUDFLARE.R2.BUCKET,
-                Key=file_name,
-                Body=json.dumps(data, indent=4).encode("utf-8"),
-                ContentType="application/json",
-            )
-
 
 class DeleteTicket(View):
     def __init__(self):
@@ -131,6 +115,22 @@ class Ticket(MixinMeta, metaclass=CompositeMetaClass):
     """
     Create tickets for users to contact the staff.
     """
+
+    async def upload_to_r2(self, file_name: str, data: dict):
+        """Uploads a file to Cloudflare R2 Storage."""
+        s3 = boto3.client(
+            's3',
+            endpoint_url=config.CLOUDFLARE.R2.ENDPOINT,
+            aws_access_key_id=config.CLOUDFLARE.R2.ACCESS_KEY,
+            aws_secret_access_key=config.CLOUDFLARE.R2.ACCESS_SECRET,
+        )
+        with s3:
+            await s3.put_object(
+                Bucket=config.CLOUDFLARE.R2.BUCKET,
+                Key=file_name,
+                Body=json.dumps(data, indent=4).encode("utf-8"),
+                ContentType="application/json",
+            )
 
     @staticmethod
     def sanitize_data(data):
