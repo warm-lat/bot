@@ -1,4 +1,4 @@
-import os, json, secrets, discord, datetime, asyncio, discord, config, aiobotocore
+import os, json, secrets, discord, datetime, asyncio, discord, config, boto3
 from contextlib import suppress
 from secrets import token_urlsafe
 from typing import Annotated, Dict, Literal, Optional, TypedDict, cast, overload, Union
@@ -96,15 +96,15 @@ def in_ticket():
 
 async def upload_to_r2(file_name: str, data: dict):
         """Uploads a file to Cloudflare R2 Storage."""
-        session = aiobotocore.get_session()
-        async with session.create_client(
-            "s3",
-            endpoint_url=config.CLOUDFLARE.ENDPOINT_URL,
-            aws_access_key_id=config.CLOUDFLARE.ACCESS_KEY_ID,
-            aws_secret_access_key=config.CLOUDFLARE.SECRET_ACCESS_KEY,
-        ) as client:
-            await client.put_object(
-                Bucket=config.CLOUDFLARE.BUCKET_NAME,
+        s3 = boto3.client(
+            's3',
+            endpoint_url=config.CLOUDFLARE.R2.ENDPOINT,
+            aws_access_key_id=config.CLOUDFLARE.R2.ACCESS_KEY,
+            aws_secret_access_key=config.CLOUDFLARE.R2.ACCESS_SECRET,
+        )
+        with s3:
+            await s3.put_object(
+                Bucket=config.CLOUDFLARE.R2.BUCKET,
                 Key=file_name,
                 Body=json.dumps(data, indent=4).encode("utf-8"),
                 ContentType="application/json",

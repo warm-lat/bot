@@ -231,13 +231,13 @@ class Premium(Cog):
             log.info(f"[R2] Uploading reskin avatar for {ctx.author} ({ctx.author.id})")
             s3 = boto3.client(
                 's3',
-                endpoint_url='https://72517b1ad2f1c7ffb8488e7ae9b1e317.r2.cloudflarestorage.com',
-                aws_access_key_id='05b1a9daca6f61fc7910b1f7b94dbbe4',
-                aws_secret_access_key='39e2455d5c7b63e0d9243209d86c9e20baf862b7607ad869a43ee74104461212'
+                endpoint_url=config.CLOUDFLARE.R2.ENDPOINT_URL,
+                aws_access_key_id=config.CLOUDFLARE.R2.ACCESS_KEY,
+                aws_secret_access_key=config.CLOUDFLARE.R2.ACCESS_SECRET,
             )
 
             s3.put_object(
-                Bucket='warm',
+                Bucket=config.CLOUDFLARE.R2.BUCKET,
                 Key=filename,
                 Body=image_data,
                 ContentType=f'image/{file_ext}'
