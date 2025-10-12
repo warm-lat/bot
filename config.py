@@ -147,6 +147,12 @@ class RATELIMITS:
     PER_1M: int = 75
 
 class CLOUDFLARE:
+    class R2:
+        ENDPOINT: str = "https://accountid.r2.cloudflarestorage.com"
+        ACCESS_KEY: str = "your_access_key"
+        ACCESS_SECRET: str = "your_secret_key"
+        BUCKET: str = "your_bucket_name"
+    
     class SAAS:
         TOKEN: str = "bjx2pf443xBAEaA6IfQ2XeKPwu4YSeE1YVHz2zbC"
         ZONE: str = "8bd322a1c8ed171d1d4462f471735b2d"

@@ -1,18 +1,7 @@
-import chat_exporter
-import secrets
-import os
-import json
-
-import discord
-import config
-import datetime
-import asyncio
-import logging
-from typing import Union
-
+import os, json, secrets, discord, datetime, asyncio, discord, config, aiobotocore
 from contextlib import suppress
 from secrets import token_urlsafe
-from typing import Annotated, Dict, List, Literal, Optional, TypedDict, cast, overload
+from typing import Annotated, Dict, Literal, Optional, TypedDict, cast, overload, Union
 from logging import getLogger
 
 from discord import (
@@ -20,7 +9,6 @@ from discord import (
     AllowedMentions,
     ButtonStyle,
     CategoryChannel,
-    Color,
     Embed,
     Guild,
     HTTPException,
@@ -35,7 +23,7 @@ from discord import (
 from core.client import FlagConverter, Context as OriginalContext
 
 from discord.ui import View, Button, button
-from discord import Emoji, ComponentType
+from discord import ComponentType
 from discord.utils import find
 from discord.components import Button as ButtonComponent
 from discord.ext.commands import group, has_permissions, Cog, flag, check, Range
@@ -49,10 +37,8 @@ from managers.paginator import Paginator
 
 log = getLogger("warm/ticket")
 
-
 class Context(OriginalContext):
     channel: TextChannel
-
 
 class TicketConfig(TypedDict):
     guild_id: int
@@ -62,14 +48,12 @@ class TicketConfig(TypedDict):
     blacklisted_ids: list[int]
     channel_name: Optional[str]
 
-
 class TicketButton(TypedDict):
     identifier: str
     guild_id: int
     template: Optional[str]
     category_id: Optional[int]
     topic: Optional[str]
-
 
 class TicketChannel(TypedDict):
     identifier: str
@@ -109,6 +93,22 @@ def in_ticket():
         return bool(record)
 
     return check(predicate)
+
+async def upload_to_r2(file_name: str, data: dict):
+        """Uploads a file to Cloudflare R2 Storage."""
+        session = aiobotocore.get_session()
+        async with session.create_client(
+            "s3",
+            endpoint_url=config.CLOUDFLARE.ENDPOINT_URL,
+            aws_access_key_id=config.CLOUDFLARE.ACCESS_KEY_ID,
+            aws_secret_access_key=config.CLOUDFLARE.SECRET_ACCESS_KEY,
+        ) as client:
+            await client.put_object(
+                Bucket=config.CLOUDFLARE.BUCKET_NAME,
+                Key=file_name,
+                Body=json.dumps(data, indent=4).encode("utf-8"),
+                ContentType="application/json",
+            )
 
 
 class DeleteTicket(View):
@@ -179,14 +179,10 @@ class Ticket(MixinMeta, metaclass=CompositeMetaClass):
     async def export_transcript(self, ctx, channel: TextChannel):
         channel = channel or ctx.channel
         log_id = secrets.token_hex(8)
-        logs_directory = "/root/tickets"
-        file_path = f"{logs_directory}/{log_id}.json"
-        os.makedirs(logs_directory, exist_ok=True)
+        file_path = f"tickets/{log_id}.json"
 
         transcript_data = await self.generate_transcript(channel)
-
-        with open(file_path, "w", encoding="utf-8") as f:
-            json.dump(transcript_data, f, indent=4, ensure_ascii=False)
+        await self.upload_to_r2(file_path, transcript_data)
 
         await ctx.send(f"Transcript saved: https://warm.lat/tickets/{log_id}")
 
@@ -1584,22 +1580,19 @@ class Ticket(MixinMeta, metaclass=CompositeMetaClass):
             return await ctx.warn(f"Ticket logs haven't been set, run ``{ctx.clean_prefix}ticket logs`` to set it.")
 
         log_id = secrets.token_hex(8)
-        logs_directory = "/root/tickets"
-        file_path = f"{logs_directory}/{log_id}.json"
-        member_ids_file_path = f"{logs_directory}/{log_id}_ids.json"
+        ticket_path = f"tickets/{log_id}.json"
+        member_ids_path = f"tickets/{log_id}_ids.json"
 
-        logging_channel_id = channel_config["channel_id"]
-        logging_channel = self.bot.get_channel(logging_channel_id)
-
-        os.makedirs(logs_directory, exist_ok=True)
+        log_channel_id = channel_config["channel_id"]
+        log_channel = self.bot.get_channel(log_channel_id)
 
         await asyncio.gather(
-            self.write_json(file_path, transcript),
-            self.write_json(member_ids_file_path, member_ids)
+            self.upload_to_r2(ticket_path, transcript),
+            self.upload_to_r2(member_ids_path, member_ids)
         )
 
         await ctx.approve(
-            f"Your logs can be found here: https://warm.lat/tickets/{log_id}"
+            f"You can look at the ticket transcript URL in {log_channel.mention}."
         )
         await asyncio.sleep(5)
         await self.bot.db.execute(
@@ -1622,11 +1615,7 @@ class Ticket(MixinMeta, metaclass=CompositeMetaClass):
         await ctx.channel.delete(
             reason=f"Closed by {ctx.author} ({ctx.author.id}) - {reason}"
         )
-        await logging_channel.send(embed=embed)
-
-    async def write_json(self, path, data):
-        with open(path, "w", encoding="utf-8") as f:
-            json.dump(data, f, indent=4, ensure_ascii=False)
+        await log_channel.send(embed=embed)
 
     @ticket.command(name="setup")
     @has_permissions(manage_channels=True)
@@ -1635,7 +1624,7 @@ class Ticket(MixinMeta, metaclass=CompositeMetaClass):
         Automatically create a panel, ticket message, and category channel for your tickets.
         """
 
-        identifier = token_urlsafe(13)
+        identifier = token_urlsafe(12)
 
         embed = Embed(
             description="Click on the button below this message to create a ticket.",
@@ -1647,7 +1636,7 @@ class Ticket(MixinMeta, metaclass=CompositeMetaClass):
         )
 
         category = await ctx.guild.create_category(name="Tickets")
-        channel = await category.create_text_channel(name="tickets")
+        channel = await category.create_text_channel(name="create")
 
         view = View()
         create_ticket_button = Button(

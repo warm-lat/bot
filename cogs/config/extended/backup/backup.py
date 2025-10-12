@@ -85,13 +85,13 @@ class Backup(MixinMeta, metaclass=CompositeMetaClass):
             await self.bot.db.fetchval(
                 """
                 SELECT COUNT(*)
-                FROM backup
+                FROM public.backup
                 WHERE user_id = $1
                 """,
                 ctx.author.id,
             ),
         )
-        if backup_count >= 10:
+        if backup_count >= 5:
             return await ctx.warn(
                 "You have reached the maximum amount of backups!",
                 f"Use `{ctx.prefix}backup remove` to remove a backup",
@@ -103,7 +103,7 @@ class Backup(MixinMeta, metaclass=CompositeMetaClass):
 
             await self.bot.db.execute(
                 """
-                INSERT INTO backup (key, guild_id, user_id, data)
+                INSERT INTO public.backup (key, guild_id, user_id, data)
                 VALUES ($1, $2, $3, $4)
                 ON CONFLICT (key, guild_id) DO UPDATE
                 SET data = EXCLUDED.data
@@ -132,7 +132,7 @@ class Backup(MixinMeta, metaclass=CompositeMetaClass):
         record = await self.bot.db.fetchrow(
             """
             SELECT *
-            FROM backup
+            FROM public.backup
             WHERE key = $1
             AND user_id = $2
             """,
@@ -167,7 +167,7 @@ class Backup(MixinMeta, metaclass=CompositeMetaClass):
         record = await self.bot.db.fetchrow(
             """
             SELECT *
-            FROM backup
+            FROM public.backup
             WHERE key = $1
             AND user_id = $2
             """,
@@ -177,11 +177,11 @@ class Backup(MixinMeta, metaclass=CompositeMetaClass):
         if not record:
             return await ctx.warn("You don't have a backup with that identifier!")
 
-        # if (
+        #if (
         #     len(ctx.guild.roles) > 3
         #     and (role := ctx.guild.me.top_role)
         #     and ctx.guild.me.top_role.position > len(ctx.guild.roles) - 3
-        # ):
+        #):
         #     return await ctx.warn(
         #         "My role isn't high enough to continue with the backup!",
         #         f"Please place {role.mention} in the top 3 of the hierarchy",
@@ -236,7 +236,7 @@ class Backup(MixinMeta, metaclass=CompositeMetaClass):
 
         result = await self.bot.db.execute(
             """
-            DELETE FROM backup
+            DELETE FROM public.backup
             WHERE key = $1
             AND user_id = $2
             """,
@@ -264,7 +264,7 @@ class Backup(MixinMeta, metaclass=CompositeMetaClass):
             for record in await self.bot.db.fetch(
                 """
                 SELECT key, data, created_at
-                FROM backup
+                FROM public.backup
                 WHERE user_id = $1
                 """,
                 ctx.author.id,
