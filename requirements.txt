@@ -66,3 +66,4 @@ plotly
 moviepy
 dnspython
 unidecode
+aiobotcore
