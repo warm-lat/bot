@@ -103,8 +103,12 @@ class AUTHORIZATION:
     KRAKEN: str = "MWEzMmE1YjJlNDQ0YjFjMRfCh9dBng0CbbxTTVG-KsbYhsMtiWD6lucki4tbq3L2"
     FERNET_KEY: str = "Ye0cdyst0iGNFo7vlvfyjZx7fBsNnzu0Xc7m5wHIavo="
     WEATHER: str = "6a3ab4420afb487794d171848253009"
-    WOLFRAM: str = ""
+    WOLFRAM: str = "29HHK82X4Q"
     FNBR: str = "f6cb0c25-d707-42a4-b1e2-e0df4bed159e"
+    PIPED_API: str = "pipedapi.adminforge.de"
+    SOUNDCLOUD: str = ""
+    OSU: str = "a64dd995fcfb3754bb734f7a80fe13168be51879"
+    TOPGG: str = ""
     AVH_ACCESS_KEY: str = "bc5e2ae5-5433-4030-bbaaf49ef043-9766-4d31"
     
     class REDDIT:
@@ -114,7 +118,10 @@ class AUTHORIZATION:
     class LASTFM: 
         KEY: str = "4b25716d870cfa49dce73170b5d67439"
         SECRET: str = "f3384c0ce4269dd575ac597347747b3c"
-    
+    class TWITCH:
+        CLIENT_ID: str = "jzkbprff40iqj646a697cyrvl0zt2m3"
+        CLIENT_SECRET: str = "zj8b3n1t9m6b4g4f6vd5p3l4w1x9y0"
+        
 class LASTFM:
     API_KEY: str = "4b25716d870cfa49dce73170b5d67439"
     API_SECRET: str = "f3384c0ce4269dd575ac597347747b3c"
@@ -152,10 +159,6 @@ class CLOUDFLARE:
         ACCESS_KEY: str = "05b1a9daca6f61fc7910b1f7b94dbbe4"
         ACCESS_SECRET: str = "8658e134fde10e369290bacce548c8c377b87da3a399bacb7158f92c07b116ac"
         BUCKET: str = "warm"
-    
-    class SAAS:
-        TOKEN: str = "bjx2pf443xBAEaA6IfQ2XeKPwu4YSeE1YVHz2zbC"
-        ZONE: str = "8bd322a1c8ed171d1d4462f471735b2d"
 
 class DATABASE:
     DSN: str = "postgresql://evictskid:qq3gpcgksmtj9ckg@warm-db-70f72q:5432/warm"

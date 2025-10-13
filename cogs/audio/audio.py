@@ -1509,8 +1509,8 @@ class Audio(Cog):
         async with aiohttp.ClientSession() as session:
             if percentage == 0:
                 async with session.patch(
-                    f"http://localhost:2333/v4/sessions/pomice/players/{ctx.guild.id}",
-                    headers={"Authorization": "youshallnotpass"},
+                    f"https://lavalink.expel.best/v4/sessions/pomice/players/{ctx.guild.id}",
+                    headers={"Authorization": "youwillnotpass"},
                     json={"filters": {}}
                 ) as response:
                     await response.read()
@@ -1520,8 +1520,8 @@ class Audio(Cog):
             bands = [{"band": i, "gain": gain} for i in range(2)]
             
             async with session.patch(
-                f"http://localhost:2333/v4/sessions/pomice/players/{ctx.guild.id}",
-                headers={"Authorization": "youshallnotpass"},
+                f"https://lavalink.expel.best/v4/sessions/pomice/players/{ctx.guild.id}",
+                headers={"Authorization": "youwillnotpass"},
                 json={"filters": {"equalizer": bands}}
             ) as response:
                 await response.read()
@@ -1540,7 +1540,7 @@ class Audio(Cog):
             if percentage == 0:
                 async with session.patch(
                     f"http://localhost:2333/v4/sessions/pomice/players/{ctx.guild.id}",
-                    headers={"Authorization": "youshallnotpass"},
+                    headers={"Authorization": "youwillnotpass"},
                     json={"filters": {}}
                 ) as response:
                     await response.read()
@@ -1551,7 +1551,7 @@ class Audio(Cog):
             
             async with session.patch(
                 f"http://localhost:2333/v4/sessions/pomice/players/{ctx.guild.id}",
-                headers={"Authorization": "youshallnotpass"},
+                headers={"Authorization": "youwillnotpass"},
                 json={"filters": {"timescale": {"speed": speed, "pitch": pitch}}}
             ) as response:
                 await response.read()
@@ -1570,7 +1570,7 @@ class Audio(Cog):
             if percentage == 0:
                 async with session.patch(
                     f"http://localhost:2333/v4/sessions/pomice/players/{ctx.guild.id}",
-                    headers={"Authorization": "youshallnotpass"},
+                    headers={"Authorization": "youwillnotpass"},
                     json={"filters": {}}
                 ) as response:
                     await response.read()
@@ -1579,7 +1579,7 @@ class Audio(Cog):
             level = percentage / 100
             async with session.patch(
                 f"http://localhost:2333/v4/sessions/pomice/players/{ctx.guild.id}",
-                headers={"Authorization": "youshallnotpass"},
+                headers={"Authorization": "youwillnotpass"},
                 json={"filters": {
                     "equalizer": [
                         {"band": 0, "gain": level * 0.6},
@@ -1598,7 +1598,7 @@ class Audio(Cog):
         async with aiohttp.ClientSession() as session:
             async with session.patch(
                 f"http://localhost:2333/v4/sessions/pomice/players/{ctx.guild.id}",
-                headers={"Authorization": "youshallnotpass"},
+                headers={"Authorization": "youwillnotpass"},
                 json={"filters": {}}
             ) as response:
                 await response.read()
@@ -1615,7 +1615,7 @@ class Audio(Cog):
             if percentage == 0:
                 async with session.patch(
                     f"http://localhost:2333/v4/sessions/pomice/players/{ctx.guild.id}",
-                    headers={"Authorization": "youshallnotpass"},
+                    headers={"Authorization": "youwillnotpass"},
                     json={"filters": {}}
                 ) as response:
                     await response.read()
@@ -1626,7 +1626,7 @@ class Audio(Cog):
             
             async with session.patch(
                 f"http://localhost:2333/v4/sessions/pomice/players/{ctx.guild.id}",
-                headers={"Authorization": "youshallnotpass"},
+                headers={"Authorization": "youwillnotpass"},
                 json={"filters": {"vibrato": {"frequency": frequency, "depth": depth}}}
             ) as response:
                 await response.read()
@@ -1643,7 +1643,7 @@ class Audio(Cog):
             if percentage == 0:
                 async with session.patch(
                     f"http://localhost:2333/v4/sessions/pomice/players/{ctx.guild.id}",
-                    headers={"Authorization": "youshallnotpass"},
+                    headers={"Authorization": "youwillnotpass"},
                     json={"filters": {}}
                 ) as response:
                     await response.read()
@@ -1654,7 +1654,7 @@ class Audio(Cog):
             
             async with session.patch(
                 f"http://localhost:2333/v4/sessions/pomice/players/{ctx.guild.id}",
-                headers={"Authorization": "youshallnotpass"},
+                headers={"Authorization": "youwillnotpass"},
                 json={"filters": {"tremolo": {"frequency": frequency, "depth": depth}}}
             ) as response:
                 await response.read()
@@ -1671,7 +1671,7 @@ class Audio(Cog):
             if percentage == 0:
                 async with session.patch(
                     f"http://localhost:2333/v4/sessions/pomice/players/{ctx.guild.id}",
-                    headers={"Authorization": "youshallnotpass"},
+                    headers={"Authorization": "youwillnotpass"},
                     json={"filters": {}}
                 ) as response:
                     await response.read()
@@ -1680,7 +1680,7 @@ class Audio(Cog):
             scale = percentage / 100
             async with session.patch(
                 f"http://localhost:2333/v4/sessions/pomice/players/{ctx.guild.id}",
-                headers={"Authorization": "youshallnotpass"},
+                headers={"Authorization": "youwillnotpass"},
                 json={"filters": {"distortion": {
                     "sinOffset": scale * 0.5,
                     "sinScale": scale * 0.5,
@@ -1706,7 +1706,7 @@ class Audio(Cog):
             if percentage == 0:
                 async with session.patch(
                     f"http://localhost:2333/v4/sessions/pomice/players/{ctx.guild.id}",
-                    headers={"Authorization": "youshallnotpass"},
+                    headers={"Authorization": "youwillnotpass"},
                     json={"filters": {}}
                 ) as response:
                     await response.read()
@@ -1715,7 +1715,7 @@ class Audio(Cog):
             speed = (percentage / 100) * 0.5 
             async with session.patch(
                 f"http://localhost:2333/v4/sessions/pomice/players/{ctx.guild.id}",
-                headers={"Authorization": "youshallnotpass"},
+                headers={"Authorization": "youwillnotpass"},
                 json={"filters": {"rotation": {"rotationHz": speed}}}
             ) as response:
                 await response.read()

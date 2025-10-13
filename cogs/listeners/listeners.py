@@ -32,7 +32,7 @@ class Listeners(Cog):
         self.cleanup_interval = 3600
         self.clear_old_stats.start()
         self.update_topgg_stats.start()
-        self.topgg_auth = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEyMDM1MTQ2ODQzMjY4MDU1MjQiLCJib3QiOnRydWUsImlhdCI6MTczNjE4MTU1OH0.KJfJoppRkU9SPTflDlgijj1GAGSBEOrHfPRMNc3M6tc"
+        self.topgg_auth = config.AUTHORIZATION.TOPGG
 
     async def upload_to_bunny(self, file_data: bytes, user_id: int, avatar_hash: str, file_extension: str) -> str:
         """

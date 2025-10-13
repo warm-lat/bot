@@ -344,13 +344,14 @@ class GithubPushEvent(BaseModel):
             return
         log.info(f"Received embed: {embed}")
         channel_id = CONFIG["updates_channel_id"]
+        token = CONFIG["token"]
         for _ in range(5):
             try:
                 async with aiohttp.ClientSession() as session:
                     async with session.post(
                         f"https://discord.com/api/v10/channels/{channel_id}/messages",
                         headers={
-                            "Authorization": f"Bot {CONFIG['token']}",
+                            "Authorization": f"Bot {token}",
                             "Content-Type": "application/json"
                         },
                         json={"embeds": [embed.to_dict()]}
