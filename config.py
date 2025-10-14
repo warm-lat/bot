@@ -42,7 +42,7 @@ class EMOJIS:
         RESUME: str = ""
         QUEUE: str = ""
     class CONTEXT:
-        APPROVE: str = ""
+        APPROVE: str = "<:approve:1427496487927021631>"
         DENY: str = ""
         WARN: str = ""
         LEFT: str = "<:previous:1427025073587355768>"
