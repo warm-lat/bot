@@ -162,7 +162,7 @@ class CLOUDFLARE:
 
 class DATABASE:
     DSN: str = "postgresql://evictskid:qq3gpcgksmtj9ckg@warm-db-70f72q:5432/warm"
-    REDIS: str = "redis://default:jqcnpzlwlpqll4do@warm-cache-lihrnx:6379"
+    REDIS: str = "redis://default:i14hzjpg9vuod6mu@warm-cache-qjtelm:6379"
 
 class POSTHOG:
     TRACK_SELF: bool = False
