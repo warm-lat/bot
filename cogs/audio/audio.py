@@ -203,7 +203,7 @@ class Audio(Cog):
                         track.title,
                         track.uri,
                         track.author,
-                        track.artwork_url or None,
+                        getattr(track, 'artwork_url', None),
                         getattr(track, 'playlist_name', track_info.get('playlist_name')),
                         getattr(track, 'playlist_url', track_info.get('playlist_url'))
                     )
