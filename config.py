@@ -161,7 +161,7 @@ class CLOUDFLARE:
         BUCKET: str = "warm"
 
 class DATABASE:
-    DSN: str = "postgresql://evictskid:qq3gpcgksmtj9ckg@warm-db-70f72q:5432/warm"
+    DSN: str = "postgresql://skiddedevict:yterbevnhmgsaiup@warm-db-ebldud:5432/warm"
     REDIS: str = "redis://default:i14hzjpg9vuod6mu@warm-cache-qjtelm:6379"
 
 class POSTHOG:
