@@ -282,7 +282,7 @@ class Audio(Cog):
                         "method": "track.search",
                         "track": title,
                         "artist": artist,
-                        "api_key": config.AUTHENICATION.LASTFM.KEY,
+                        "api_key": config.AUTHORIZATION.LASTFM.KEY,
                         "format": "json"
                     }
                         
