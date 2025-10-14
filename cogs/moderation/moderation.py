@@ -4857,7 +4857,7 @@ class Moderation(Cog):
         check = await self.bot.db.fetchrow(
             f"""
             SELECT permission 
-            FROM {FAKE_PERMISSIONS_TABLE} 
+            FROM public.{FAKE_PERMISSIONS_TABLE} 
             WHERE guild_id = $1 AND role_id = $2
             """,
             ctx.guild.id,
@@ -4877,7 +4877,7 @@ class Moderation(Cog):
 
             await self.bot.db.execute(
                 f"""
-                UPDATE {FAKE_PERMISSIONS_TABLE} 
+                UPDATE public.{FAKE_PERMISSIONS_TABLE} 
                 SET permission = $1 
                 WHERE guild_id = $2 
                 AND role_id = $3
@@ -4889,7 +4889,7 @@ class Moderation(Cog):
         else:
             await self.bot.db.execute(
                 f"""
-                INSERT INTO {FAKE_PERMISSIONS_TABLE} 
+                INSERT INTO public.{FAKE_PERMISSIONS_TABLE} 
                 (guild_id, role_id, permission) 
                 VALUES ($1, $2, $3)
                 """,
@@ -4936,7 +4936,7 @@ class Moderation(Cog):
         check = await self.bot.db.fetchrow(
             f"""
             SELECT permission 
-            FROM {FAKE_PERMISSIONS_TABLE} 
+            FROM public.{FAKE_PERMISSIONS_TABLE} 
             WHERE guild_id = $1 
             AND role_id = $2""",
             ctx.guild.id,
@@ -4964,7 +4964,7 @@ class Moderation(Cog):
         if perms:
             await self.bot.db.execute(
                 f"""
-                UPDATE {FAKE_PERMISSIONS_TABLE} 
+                UPDATE public.{FAKE_PERMISSIONS_TABLE} 
                 SET permission = $1 
                 WHERE guild_id = $2 
                 AND role_id = $3""",
@@ -4974,7 +4974,7 @@ class Moderation(Cog):
             )
         else:
             await self.bot.db.execute(
-                f"DELETE FROM {FAKE_PERMISSIONS_TABLE} WHERE guild_id = $1 AND role_id = $2",
+                f"DELETE FROM public.{FAKE_PERMISSIONS_TABLE} WHERE guild_id = $1 AND role_id = $2",
                 ctx.guild.id,
                 role.id,
             )
@@ -4997,7 +4997,7 @@ class Moderation(Cog):
         records = await self.bot.db.fetch(
             """
                 SELECT role_id, permission
-                FROM fake_permissions
+                FROM public.fake_permissions
                 WHERE guild_id = $1
                 """,
             ctx.guild.id,
@@ -5193,7 +5193,7 @@ class Moderation(Cog):
         action = await self.bot.db.fetchrow(
             """
             SELECT action, threshold, duration 
-            FROM warn_actions 
+            FROM public.warn_actions 
             WHERE guild_id = $1 AND threshold = $2
             """,
             ctx.guild.id, warn_count + 1
@@ -5264,7 +5264,7 @@ class Moderation(Cog):
         
         await self.bot.db.execute(
             """
-            INSERT INTO warn_actions (guild_id, threshold, action, duration)
+            INSERT INTO public.warn_actions (guild_id, threshold, action, duration)
             VALUES ($1, $2, $3, $4)
             ON CONFLICT (guild_id, threshold) 
             DO UPDATE SET action = $3, duration = $4
@@ -5289,7 +5289,7 @@ class Moderation(Cog):
         
         deleted = await self.bot.db.execute(
             """
-            DELETE FROM warn_actions 
+            DELETE FROM public.warn_actions 
             WHERE guild_id = $1 AND threshold = $2
             """,
             ctx.guild.id, threshold
@@ -5308,7 +5308,7 @@ class Moderation(Cog):
         actions = await self.bot.db.fetch(
             """
             SELECT threshold, action, duration 
-            FROM warn_actions 
+            FROM public.warn_actions 
             WHERE guild_id = $1 
             ORDER BY threshold
             """,
@@ -5491,7 +5491,7 @@ class Moderation(Cog):
         """
         immune = await self.bot.db.fetchrow(
             """
-            SELECT * FROM immune 
+            SELECT * FROM public.immune 
             WHERE guild_id = $1 
             AND entity_id = $2 
             AND type = 'user'
@@ -5505,7 +5505,7 @@ class Moderation(Cog):
         
         await self.bot.db.execute(
             """
-            INSERT INTO immune 
+            INSERT INTO public.immune 
             (guild_id, entity_id, type)
             VALUES 
             ($1, $2, 'user')
@@ -5524,7 +5524,7 @@ class Moderation(Cog):
         """
         immune = await self.bot.db.fetchrow(
             """
-            SELECT * FROM immune 
+            SELECT * FROM public.immune 
             WHERE guild_id = $1 
             AND role_id = $2 
             AND type = 'role'
@@ -5538,7 +5538,7 @@ class Moderation(Cog):
 
         await self.bot.db.execute(
             """
-            INSERT INTO immune 
+            INSERT INTO public.immune 
             (guild_id, entity_id, role_id, type)
             VALUES 
             ($1, $2, $2, 'role')
@@ -5564,7 +5564,7 @@ class Moderation(Cog):
         """
         immune = await self.bot.db.fetchrow(
             """
-            SELECT * FROM immune 
+            SELECT * FROM public.immune 
             WHERE guild_id = $1 
             AND entity_id = $2 
             AND type = 'user'
@@ -5578,7 +5578,7 @@ class Moderation(Cog):
 
         await self.bot.db.execute(
             """
-            DELETE FROM immune 
+            DELETE FROM public.immune 
             WHERE guild_id = $1 
             AND entity_id = $2 
             AND type = 'user'
@@ -5597,7 +5597,7 @@ class Moderation(Cog):
         """
         immune = await self.bot.db.fetchrow(
             """
-            SELECT * FROM immune 
+            SELECT * FROM public.immune 
             WHERE guild_id = $1 
             AND role_id = $2 
             AND type = 'role'
@@ -5611,7 +5611,7 @@ class Moderation(Cog):
 
         await self.bot.db.execute(
             """
-            DELETE FROM immune 
+            DELETE FROM public.immune 
             WHERE guild_id = $1 
             AND role_id = $2 
             AND type = 'role'
@@ -5631,7 +5631,7 @@ class Moderation(Cog):
         immune = await self.bot.db.fetch(
             """
             SELECT entity_id, role_id, type 
-            FROM immune 
+            FROM public.immune 
             WHERE guild_id = $1
             """,
             ctx.guild.id

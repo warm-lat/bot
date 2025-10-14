@@ -48,7 +48,7 @@ class InfoButton(Button):
             value="- Never share your account token or password\n"
                   "- Be cautious of links from unknown users\n"
                   "- Enable 2FA for extra security\n"
-                  "- Report suspicious DMs to [warm's team](https://discord.gg/warm)\n"
+                  "- Report suspicious DMs to [warm's team](https://discord.gg/apply)\n"
                   "- Don't download files you don't trust\n"
                   "More info on staying safe on Discord: [Discord Safety Center](https://discord.com/safety)",
             inline=False

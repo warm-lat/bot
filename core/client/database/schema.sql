@@ -2553,7 +2553,6 @@ ALTER TABLE ONLY fun.wyr_channels
 ALTER TABLE ONLY history.moderation
     ADD CONSTRAINT moderation_pkey PRIMARY KEY (id);
 
-
 ALTER TABLE ONLY invoke_history.commands
     ADD CONSTRAINT commands_pkey PRIMARY KEY (id);
 

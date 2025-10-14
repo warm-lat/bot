@@ -9,6 +9,9 @@ class COLORS:
     SPOTIFY = 0x1DB954
 
 class EMOJIS:
+    class ANTINUKE:
+        ENABLED: str = ""
+        DISABLe: str = ""
     class BADGES:
         SERVER_OWNER: str = "<:server_owner:1423366267573637302>"
     class TICKETS:
@@ -20,6 +23,13 @@ class EMOJIS:
         ETHEREUM: str = "<:ethereum:1423749684194705520>"
         LITECOIN: str = "<:litecoin:1423750291429527734>"
         XRP: str = "<:xrp:1423750848873496618>"
+        AI: str = ""
+        EXTRA_SUPPORT: str = ""
+        ANAYLTICS: str = ""
+        SECURITY: str = ""
+        REDUCED_COOLDOWNS: str = ""
+        MODERATION: str = ""
+        COMMANDS: str = ""
     class FUN:
         GAY: str = ""
         LESBIAN: str = ""

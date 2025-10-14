@@ -131,7 +131,7 @@ class AntiRaid(MixinMeta, metaclass=CompositeMetaClass):
         if status is False:
             await self.bot.db.execute(
                 """
-                UPDATE antiraid
+                UPDATE public.antiraid
                 SET joins = NULL
                 WHERE guild_id = $1
                 """,
@@ -141,7 +141,7 @@ class AntiRaid(MixinMeta, metaclass=CompositeMetaClass):
 
         await self.bot.db.execute(
             """
-            INSERT INTO antiraid (guild_id, joins)
+            INSERT INTO public.antiraid (guild_id, joins)
             VALUES ($1, $2)
             ON CONFLICT (guild_id)
             DO UPDATE
@@ -182,7 +182,7 @@ class AntiRaid(MixinMeta, metaclass=CompositeMetaClass):
         if status is False:
             await self.bot.db.execute(
                 """
-                UPDATE antiraid
+                UPDATE public.antiraid
                 SET mentions = NULL
                 WHERE guild_id = $1
                 """,
@@ -192,7 +192,7 @@ class AntiRaid(MixinMeta, metaclass=CompositeMetaClass):
 
         await self.bot.db.execute(
             """
-            INSERT INTO antiraid (guild_id, mentions)
+            INSERT INTO public.antiraid (guild_id, mentions)
             VALUES ($1, $2)
             ON CONFLICT (guild_id)
             DO UPDATE
@@ -226,7 +226,7 @@ class AntiRaid(MixinMeta, metaclass=CompositeMetaClass):
         if status is False:
             await self.bot.db.execute(
                 """
-                UPDATE antiraid
+                UPDATE public.antiraid
                 SET avatar = NULL
                 WHERE guild_id = $1
                 """,
@@ -236,7 +236,7 @@ class AntiRaid(MixinMeta, metaclass=CompositeMetaClass):
 
         await self.bot.db.execute(
             """
-            INSERT INTO antiraid (guild_id, avatar)
+            INSERT INTO public.antiraid (guild_id, avatar)
             VALUES ($1, $2)
             ON CONFLICT (guild_id)
             DO UPDATE
@@ -279,7 +279,7 @@ class AntiRaid(MixinMeta, metaclass=CompositeMetaClass):
         if status is False:
             await self.bot.db.execute(
                 """
-                UPDATE antiraid
+                UPDATE public.antiraid
                 SET browser = NULL
                 WHERE guild_id = $1
                 """,
@@ -319,7 +319,7 @@ class AntiRaid(MixinMeta, metaclass=CompositeMetaClass):
 
         await self.bot.db.execute(
             """
-            INSERT INTO antiraid (guild_id, browser)
+            INSERT INTO public.antiraid (guild_id, browser)
             VALUES ($1, $2)
             ON CONFLICT (guild_id)
             DO UPDATE
@@ -389,7 +389,7 @@ class AntiRaid(MixinMeta, metaclass=CompositeMetaClass):
 
         await self.bot.db.execute(
             """
-            UPDATE antiraid
+            UPDATE public.antiraid
             SET locked = TRUE
             WHERE guild_id = $1
             """,
@@ -435,7 +435,7 @@ class AntiRaid(MixinMeta, metaclass=CompositeMetaClass):
         await sleep(5)
         await self.bot.db.execute(
             """
-            UPDATE antiraid
+            UPDATE public.antiraid
             SET locked = FALSE
             WHERE guild_id = $1
             """,
@@ -443,7 +443,7 @@ class AntiRaid(MixinMeta, metaclass=CompositeMetaClass):
         )
 
         settings = await self.bot.db.fetchrow(
-            "SELECT * FROM mod WHERE guild_id = $1",
+            "SELECT * FROM public.mod WHERE guild_id = $1",
             guild.id
         )
         
@@ -535,7 +535,7 @@ class AntiRaid(MixinMeta, metaclass=CompositeMetaClass):
         )
 
         settings = await self.bot.db.fetchrow(
-            "SELECT * FROM mod WHERE guild_id = $1",
+            "SELECT * FROM public.mod WHERE guild_id = $1",
             guild.id
         )
         
@@ -662,7 +662,7 @@ class AntiRaid(MixinMeta, metaclass=CompositeMetaClass):
             await self.bot.db.fetchrow(
                 """
                 SELECT *
-                FROM antiraid
+                FROM public.antiraid
                 WHERE guild_id = $1
                 """,
                 member.guild.id,
@@ -809,7 +809,7 @@ class AntiRaid(MixinMeta, metaclass=CompositeMetaClass):
             await self.bot.db.fetchval(
                 """
                 SELECT mentions
-                FROM antiraid
+                FROM public.antiraid
                 WHERE guild_id = $1
                 """,
                 message.guild.id,

@@ -1,20 +1,10 @@
-import asyncio
+import asyncio, discord, io, re, psutil, hashlib, time, config, aiohttp, validators, wavelink
 from contextlib import suppress
 from logging import getLogger
 from typing import Annotated, List, Literal, Optional, cast
 from colorama import Fore, Style
-import discord 
-import io
-import re
 from urllib.parse import urlencode
-import psutil
-import hashlib
-import time
-import config
 # from posthog import Posthog
-
-import aiohttp
-import validators
 from aiohttp import ClientSession
 from discord import Embed, HTTPException, Member, Message
 from discord.ext.commands import (
@@ -37,8 +27,6 @@ from core.client import Context as DefaultContext
 from tools.formatter import duration, plural, shorten
 from managers.paginator import Paginator
 from processors.audio import process_track_data, process_playlist_data
-
-import wavelink
 
 BASE_URL = "http://ws.audioscrobbler.com"
 
@@ -1049,7 +1037,7 @@ class Audio(Cog):
                 try:
                     invite = await ctx.author.voice.channel.create_invite(
                         target_type=discord.InviteTarget.embedded_application,
-                        target_application_id=1323720110787268768
+                        target_application_id=1420609343283531776
                     )
                     embed = Embed(
                         title="Discord Activity",
@@ -1093,7 +1081,7 @@ class Audio(Cog):
         try:
                     invite = await ctx.author.voice.channel.create_invite(
                         target_type=discord.InviteTarget.embedded_application,
-                        target_application_id=1323720110787268768
+                        target_application_id=1420609343283531776
                     )
                     embed = Embed(
                         title="Discord Activity",
@@ -1327,7 +1315,7 @@ class Audio(Cog):
         try:
                     invite = await ctx.author.voice.channel.create_invite(
                         target_type=discord.InviteTarget.embedded_application,
-                        target_application_id=1323720110787268768
+                        target_application_id=1420609343283531776
                     )
                     embed = Embed(
                         title="Discord Activity",
@@ -1407,9 +1395,8 @@ class Audio(Cog):
 
     async def generate_api_signature(self, params: dict) -> str:
         """Generate Last.fm API call signature"""
-        import hashlib
         
-        API_SECRET = "87ee1fd771e030357630388312d28c12"
+        API_SECRET = config.AUTHORIZATION.LASTFM.SECRET
         
         sorted_keys = sorted(params.keys())
         
@@ -1539,7 +1526,7 @@ class Audio(Cog):
         async with aiohttp.ClientSession() as session:
             if percentage == 0:
                 async with session.patch(
-                    f"http://localhost:2333/v4/sessions/pomice/players/{ctx.guild.id}",
+                    f"https://lavalink.expel.best/v4/sessions/pomice/players/{ctx.guild.id}",
                     headers={"Authorization": "youwillnotpass"},
                     json={"filters": {}}
                 ) as response:
@@ -1550,7 +1537,7 @@ class Audio(Cog):
             pitch = 1 + (percentage / 100) * 0.5
             
             async with session.patch(
-                f"http://localhost:2333/v4/sessions/pomice/players/{ctx.guild.id}",
+                f"https://lavalink.expel.best/v4/sessions/pomice/players/{ctx.guild.id}",
                 headers={"Authorization": "youwillnotpass"},
                 json={"filters": {"timescale": {"speed": speed, "pitch": pitch}}}
             ) as response:
@@ -1569,7 +1556,7 @@ class Audio(Cog):
         async with aiohttp.ClientSession() as session:
             if percentage == 0:
                 async with session.patch(
-                    f"http://localhost:2333/v4/sessions/pomice/players/{ctx.guild.id}",
+                    f"https://lavalink.expel.best/v4/sessions/pomice/players/{ctx.guild.id}",
                     headers={"Authorization": "youwillnotpass"},
                     json={"filters": {}}
                 ) as response:
@@ -1578,7 +1565,7 @@ class Audio(Cog):
 
             level = percentage / 100
             async with session.patch(
-                f"http://localhost:2333/v4/sessions/pomice/players/{ctx.guild.id}",
+                f"https://lavalink.expel.best/v4/sessions/pomice/players/{ctx.guild.id}",
                 headers={"Authorization": "youwillnotpass"},
                 json={"filters": {
                     "equalizer": [
@@ -1597,7 +1584,7 @@ class Audio(Cog):
         """
         async with aiohttp.ClientSession() as session:
             async with session.patch(
-                f"http://localhost:2333/v4/sessions/pomice/players/{ctx.guild.id}",
+                f"https://lavalink.expel.best/v4/sessions/pomice/players/{ctx.guild.id}",
                 headers={"Authorization": "youwillnotpass"},
                 json={"filters": {}}
             ) as response:
@@ -1614,7 +1601,7 @@ class Audio(Cog):
         async with aiohttp.ClientSession() as session:
             if percentage == 0:
                 async with session.patch(
-                    f"http://localhost:2333/v4/sessions/pomice/players/{ctx.guild.id}",
+                    f"https://lavalink.expel.best/v4/sessions/pomice/players/{ctx.guild.id}",
                     headers={"Authorization": "youwillnotpass"},
                     json={"filters": {}}
                 ) as response:
@@ -1625,7 +1612,7 @@ class Audio(Cog):
             depth = 0.2 + (percentage / 100) * 0.5   
             
             async with session.patch(
-                f"http://localhost:2333/v4/sessions/pomice/players/{ctx.guild.id}",
+                f"https://lavalink.expel.best/v4/sessions/pomice/players/{ctx.guild.id}",
                 headers={"Authorization": "youwillnotpass"},
                 json={"filters": {"vibrato": {"frequency": frequency, "depth": depth}}}
             ) as response:
@@ -1642,7 +1629,7 @@ class Audio(Cog):
         async with aiohttp.ClientSession() as session:
             if percentage == 0:
                 async with session.patch(
-                    f"http://localhost:2333/v4/sessions/pomice/players/{ctx.guild.id}",
+                    f"https://lavalink.expel.best/v4/sessions/pomice/players/{ctx.guild.id}",
                     headers={"Authorization": "youwillnotpass"},
                     json={"filters": {}}
                 ) as response:
@@ -1653,7 +1640,7 @@ class Audio(Cog):
             depth = 0.2 + (percentage / 100) * 0.5
             
             async with session.patch(
-                f"http://localhost:2333/v4/sessions/pomice/players/{ctx.guild.id}",
+                f"https://lavalink.expel.best/v4/sessions/pomice/players/{ctx.guild.id}",
                 headers={"Authorization": "youwillnotpass"},
                 json={"filters": {"tremolo": {"frequency": frequency, "depth": depth}}}
             ) as response:
@@ -1670,7 +1657,7 @@ class Audio(Cog):
         async with aiohttp.ClientSession() as session:
             if percentage == 0:
                 async with session.patch(
-                    f"http://localhost:2333/v4/sessions/pomice/players/{ctx.guild.id}",
+                    f"https://lavalink.expel.best/v4/sessions/pomice/players/{ctx.guild.id}",
                     headers={"Authorization": "youwillnotpass"},
                     json={"filters": {}}
                 ) as response:
@@ -1679,7 +1666,7 @@ class Audio(Cog):
 
             scale = percentage / 100
             async with session.patch(
-                f"http://localhost:2333/v4/sessions/pomice/players/{ctx.guild.id}",
+                f"https://lavalink.expel.best/v4/sessions/pomice/players/{ctx.guild.id}",
                 headers={"Authorization": "youwillnotpass"},
                 json={"filters": {"distortion": {
                     "sinOffset": scale * 0.5,
@@ -1705,7 +1692,7 @@ class Audio(Cog):
         async with aiohttp.ClientSession() as session:
             if percentage == 0:
                 async with session.patch(
-                    f"http://localhost:2333/v4/sessions/pomice/players/{ctx.guild.id}",
+                    f"https://lavalink.expel.best/v4/sessions/pomice/players/{ctx.guild.id}",
                     headers={"Authorization": "youwillnotpass"},
                     json={"filters": {}}
                 ) as response:
@@ -1714,7 +1701,7 @@ class Audio(Cog):
 
             speed = (percentage / 100) * 0.5 
             async with session.patch(
-                f"http://localhost:2333/v4/sessions/pomice/players/{ctx.guild.id}",
+                f"https://lavalink.expel.best/v4/sessions/pomice/players/{ctx.guild.id}",
                 headers={"Authorization": "youwillnotpass"},
                 json={"filters": {"rotation": {"rotationHz": speed}}}
             ) as response:
@@ -1830,10 +1817,14 @@ class Audio(Cog):
                             client._scrobble_users.add(member.display_name)
                             
                             if not hasattr(client, '_scrobble_notified'):
-                                await client.channel.send(
-                                    f"{', '.join(client._scrobble_users)} your music is being scrobbled to Last.fm",
-                                    delete_after=10
+                                mentions = ', '.join(member.mention for member in client.channel.members if member.display_name in client._scrobble_users)
+                                embed = Embed(
+                                    title="Last.fm Scrobbling",
+                                    description=f"{mentions}, The music you're listening to is being scrobbled to [Last.FM](https://www.last.fm)!",
+                                    color=0x1DB954,
+                                    timestamp=discord.utils.utcnow()
                                 )
+                                await client.channel.send(embed=embed, delete_after=10)
                                 client._scrobble_notified = True
                     else:
                         log.error(f"{Fore.RED}Failed to scrobble track: {await response.text()}")

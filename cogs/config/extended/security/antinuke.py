@@ -260,7 +260,7 @@ class Settings(BaseModel):
         record = await bot.db.fetchrow(
             """
             SELECT *
-            FROM antinuke
+            FROM public.antinuke
             WHERE guild_id = $1
             """,
             guild.id,
@@ -289,7 +289,7 @@ class Settings(BaseModel):
 
         record = await bot.db.fetchrow(
             """
-            SELECT * FROM antinuke 
+            SELECT * FROM public.antinuke 
             WHERE guild_id = $1
             """,
             guild.id,
@@ -298,7 +298,7 @@ class Settings(BaseModel):
         if not record:
             record = await bot.db.fetchrow(
                 """
-                INSERT INTO antinuke (guild_id)
+                INSERT INTO public.antinuke (guild_id)
                 VALUES ($1)
                 RETURNING *
                 """,
@@ -475,7 +475,7 @@ class AntiNuke(MixinMeta, metaclass=CompositeMetaClass):
 
         await self.bot.db.execute(
             """
-            UPDATE antinuke
+            UPDATE public.antinuke
             SET whitelist = $2
             WHERE guild_id = $1
             """,
@@ -540,7 +540,7 @@ class AntiNuke(MixinMeta, metaclass=CompositeMetaClass):
 
         await self.bot.db.execute(
             """
-            UPDATE antinuke
+            UPDATE public.antinuke
             SET trusted_admins = $2
             WHERE guild_id = $1
             """,
@@ -612,7 +612,7 @@ class AntiNuke(MixinMeta, metaclass=CompositeMetaClass):
 
         await self.bot.db.execute(
             """
-            UPDATE antinuke
+            UPDATE public.antinuke
             SET bot = $2
             WHERE guild_id = $1
             """,
@@ -665,7 +665,7 @@ class AntiNuke(MixinMeta, metaclass=CompositeMetaClass):
 
         await self.bot.db.execute(
             """
-            UPDATE antinuke
+            UPDATE public.antinuke
             SET ban = $2
             WHERE guild_id = $1
             """,
@@ -717,7 +717,7 @@ class AntiNuke(MixinMeta, metaclass=CompositeMetaClass):
 
         await self.bot.db.execute(
             """
-            UPDATE antinuke
+            UPDATE public.antinuke
             SET kick = $2
             WHERE guild_id = $1
             """,
@@ -769,7 +769,7 @@ class AntiNuke(MixinMeta, metaclass=CompositeMetaClass):
 
         await self.bot.db.execute(
             """
-            UPDATE antinuke
+            UPDATE public.antinuke
             SET role = $2
             WHERE guild_id = $1
             """,
@@ -821,7 +821,7 @@ class AntiNuke(MixinMeta, metaclass=CompositeMetaClass):
 
         await self.bot.db.execute(
             """
-            UPDATE antinuke
+            UPDATE public.antinuke
             SET channel = $2
             WHERE guild_id = $1
             """,
@@ -878,7 +878,7 @@ class AntiNuke(MixinMeta, metaclass=CompositeMetaClass):
 
         await self.bot.db.execute(
             """
-            UPDATE antinuke
+            UPDATE public.antinuke
             SET webhook = $2
             WHERE guild_id = $1
             """,
@@ -935,7 +935,7 @@ class AntiNuke(MixinMeta, metaclass=CompositeMetaClass):
 
         await self.bot.db.execute(
             """
-            UPDATE antinuke
+            UPDATE public.antinuke
             SET emoji = $2
             WHERE guild_id = $1
             """,

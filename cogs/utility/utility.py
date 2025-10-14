@@ -1,24 +1,4 @@
-import re
-import textwrap
-import unicodedata
-import time
-import math
-import json
-import hashlib
-import hmac
-import random
-import base64
-import dateparser
-import cv2
-import numpy
-import urllib.parse
-import os
-import config
-import discord
-import io
-import aiohttp
-import decimal
-import asyncio
+import re, os, io, cv2, time, math, json, hmac, numpy, config, random, base64, discord, aiohttp, decimal, asyncio, hashlib, textwrap, dateparser, unicodedata, urllib.parse
 from pathlib import Path
 
 from config import AUTHORIZATION
@@ -179,30 +159,30 @@ class CryptoButton(discord.ui.Button):
         embed = Embed(
             title="Crypto Donation Addresses",
             description=(
-                f"{config.EMOJIS.MISC.BITCOIN} **Bitcoin (BTC): **`3C3LrLwRGLkkwVMdSRhEAqKdHY9zNzDgNx`\n"
-                f"{config.EMOJIS.MISC.ETHEREUM} **Ethereum (ETH): **`0xEc65518168b3d5A4032CfC244C5EE3c368700FBE`\n"
-                f"{config.EMOJIS.MISC.XRP} **XRP (XRP): **`rw2ciyaNshpHe7bCHo4bRWq6pqqynnWKQg`\n"
-                f"{config.EMOJIS.MISC.LITECOIN}**LTC (Litecoin): **`ltc1qfl5pg0ds68p9fm8h4tez8qm87xdhl64n3xrttv`\n"
+                f"{config.EMOJIS.MISC.BITCOIN} **Bitcoin (BTC): **`bc1q7wqs9srr0u4vvmrnx8yqpyxtkhmj7yhrawxjt9`\n"
+                f"{config.EMOJIS.MISC.ETHEREUM} **Ethereum (ETH): **`0xC1B9DB86715FD1f7DFFF639E99511F3a496657F5`\n"
+                f"{config.EMOJIS.MISC.XRP} **XRP (XRP): **`rh8EEFB3nfA7StoM4nFUWJqNQYwkdnG1zb` Destination Tag: `180374467`\n"
+                f"{config.EMOJIS.MISC.LITECOIN}**LTC (Litecoin): **`ltc1qxdfqggrmydrc9v4fcy0nyyhtdhdrv66mqdynn9`\n"
                 "\nWe also accept donations via the tip.cc Discord bot, please use `$tip @_mism. <amount> <currency>`. Currency **must be** one of the listed above.\n"
                 "\nAfter sending, please open a ticket in our [Discord server](https://discord.gg/apply) with your transaction hash. Payment via Crypto is not automated."
             ),
             color=discord.Color.gold()
         )
         embed.set_footer(text="Thank you for supporting Warm! ❤️")
-        await interaction.response.edit_message(embed=embed, view=CryptoView())
+        await interaction.response.edit_message(embed=embed)
 
 class DonateView(discord.ui.View):
     def __init__(self, ctx: Context):
         super().__init__()
         self.ctx = ctx
-        self.add_item(
-            discord.ui.Button(
-                label="Card & Cashapp Payment",
-                url="https://donate.stripe.com/",
-                style=discord.ButtonStyle.url,
-                emoji=config.EMOJIS.SOCIAL.WEBSITE
-            )
-        )
+        #self.add_item(
+        #    discord.ui.Button(
+        #        label="Card & Cashapp Payment",
+        #        url="https://donate.stripe.com/",
+        #        style=discord.ButtonStyle.url,
+        #        emoji=config.EMOJIS.SOCIAL.WEBSITE
+        #    )
+        #)
         self.add_item(CryptoButton())
 
 
@@ -280,7 +260,7 @@ class Utility(Extended, Cog):
                             pass 
 
                     await self.bot.db.execute(
-                        "DELETE FROM reminders WHERE user_id = $1 AND remind_at = $2 AND reminder = $3",
+                        "DELETE FROM public.reminders WHERE user_id = $1 AND remind_at = $2 AND reminder = $3",
                         reminder['user_id'],
                         reminder['remind_at'],
                         reminder['reminder']
@@ -340,7 +320,7 @@ class Utility(Extended, Cog):
                 if category != "random":
                     base_url = f"{base_url}/{category}"
 
-                async with self.bot.session.get(f"{base_url}?token=01k6qYnoSwTG552I") as resp:
+                async with self.bot.session.get(f"{base_url}?token=aS7kACJiHfh8") as resp:
                     if resp.status != 200:
                         continue
                     
@@ -4013,7 +3993,7 @@ class Utility(Extended, Cog):
         if ctx.invoked_subcommand is None:
             await ctx.send_help(ctx.command)
 
-    @instance.command(name="setup", example="xxx ,")
+    @instance.command(name="setup", example="warm ,")
     async def instance_setup(self, ctx: Context, name: str, prefix: str) -> Message:
         """Setup and deploy your instance"""
         if len(prefix) > 3:
@@ -4132,7 +4112,7 @@ class Utility(Extended, Cog):
                             f"`{prefix}activity` - Set bot status/activity\n\n"
                             f"**[Click here to invite your bot]({invite_link})**\n\n"
                             f"Need custom commands? Create a ticket in our "
-                            f"[support server](https://discord.gg/warm)!"
+                            f"[support server](https://discord.gg/apply)!"
                         ),
                         color=0x2ecc71
                     )
@@ -4530,7 +4510,7 @@ class Utility(Extended, Cog):
         type : The type of link (instagram/youtube/github/website/discord)
         url : The URL to set
         """
-        allowed_role_ids = (1265473601755414528, 1264110559989862406)
+        allowed_role_ids = (1367503266145112125, 1427724752554033353)
         if not any(role.id in allowed_role_ids for role in ctx.author.roles):
             return await ctx.warn("You need the Developer or Staff role to use this command!")
         
@@ -4579,7 +4559,7 @@ class Utility(Extended, Cog):
         type : The type of link to remove (instagram/youtube/github/website/discord)
         """
 
-        allowed_role_ids = (1265473601755414528, 1264110559989862406)
+        allowed_role_ids = (1367503266145112125, 1427724752554033353)
         if not any(role.id in allowed_role_ids for role in ctx.author.roles):
             return await ctx.warn("You need the Developer or Staff role to use this command!")
         
@@ -4608,7 +4588,7 @@ class Utility(Extended, Cog):
         user: Optional[Member | User] = None
     ) -> Message:
         """View someone's social media links"""
-        allowed_role_ids = (1265473601755414528, 1264110559989862406)
+        allowed_role_ids = (1367503266145112125, 1427724752554033353)
         if not any(role.id in allowed_role_ids for role in ctx.author.roles):
             return await ctx.warn("You need the Developer or Staff role to use this command!")
         
@@ -4703,7 +4683,7 @@ class Utility(Extended, Cog):
             buffer.seek(0)
 
             total_count = await self.bot.db.fetchval(
-                "SELECT COUNT(*) FROM avatar_history WHERE user_id = $1 AND deleted_at IS NULL",
+                "SELECT COUNT(*) FROM public.avatar_history WHERE user_id = $1 AND deleted_at IS NULL",
                 user.id
             )
 
@@ -5126,7 +5106,7 @@ class Utility(Extended, Cog):
                     f"{config.EMOJIS.MISC.SECURITY} Increased Security",
                     f"{config.EMOJIS.MISC.ANAYLTICS} Detailed Analytics"
                 ],
-                "sku": "1331278051551612948"  
+                "sku": ""  
             },
             {
                 "name": "Premium, Tier II",
@@ -5139,7 +5119,7 @@ class Utility(Extended, Cog):
                     f"{config.EMOJIS.MISC.AI} Advanced AI",
                     f"{config.EMOJIS.MISC.MODERATION} Additional Commands across Moderation, Utility & more",
                 ],
-                "sku": "1331278101346517014" 
+                "sku": "" 
             },
             {
                 "name": "Premium, Tier I",
@@ -5152,7 +5132,7 @@ class Utility(Extended, Cog):
                     f"{config.EMOJIS.MISC.MODERATION} Additional Commands across Moderation, Utility & more",
                     f"{config.EMOJIS.MISC.COMMANDS} Custom Commands"
                 ],
-                "sku": "1331278011412254792"  
+                "sku": ""  
             }
         ]
         

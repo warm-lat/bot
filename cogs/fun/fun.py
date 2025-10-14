@@ -4826,7 +4826,7 @@ class Fun(Cog):
         uwulock_check = await self.bot.db.fetchrow(
             """
             SELECT user_id 
-            FROM uwulock 
+            FROM public.uwulock 
             WHERE user_id = $1 
             AND guild_id = $2
             """,
@@ -4837,7 +4837,7 @@ class Fun(Cog):
         shutup_check = await self.bot.db.fetchrow(
             """
             SELECT user_id 
-            FROM shutup 
+            FROM public.shutup 
             WHERE user_id = $1 
             AND guild_id = $2
             """,

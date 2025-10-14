@@ -2008,7 +2008,7 @@ class Network(Cog):
                                     "- `[prefix]customize` - Change bot appearance\n"
                                     "- `[prefix]activity` - Set bot status/activity\n\n"
                                     "Want custom commands? Create a ticket in our "
-                                    "[support server](https://discord.gg/warm)\n\n"
+                                    "[support server](https://discord.gg/apply)\n\n"
                                     "If you need any assistance, our support team is ready to help!"
                                 ),
                                 color=0x2ecc71
