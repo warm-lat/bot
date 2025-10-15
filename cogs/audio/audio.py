@@ -1824,7 +1824,7 @@ class Audio(Cog):
                                     color=0x1DB954,
                                     timestamp=discord.utils.utcnow()
                                 )
-                                await client.channel.send(embed=embed, delete_after=10)
+                                await client.channel.send(embed=embed, delete_after=60)
                                 client._scrobble_notified = True
                     else:
                         log.error(f"{Fore.RED}Failed to scrobble track: {await response.text()}")

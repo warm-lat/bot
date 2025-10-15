@@ -96,9 +96,9 @@ class EMOJIS:
     class INTERFACE:
         LOCK: str = "<:vm_lock:1423361217891799140>"
         UNLOCK: str = "<:vm_unlock:1423361237516947556>"
-        GHOST: str = ""
-        REVEAL: str = ""
-        CLAIM: str = ""
+        GHOST: str = "<:vm_ghost:1427839064064786487>"
+        REVEAL: str = "<:vm_reveal:1427840174607433880>"
+        CLAIM: str = "<:vc_claim:1427840707716059176>"
         DISCONNECT: str = "<:vm_disconnect:1427013718679621733>"
         ACTIVITY: str = "<:vm_activities:1423374608987455548>"
         INFORMATION: str = "<:vm_info:1427011288575246367>"
