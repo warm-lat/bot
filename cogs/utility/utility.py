@@ -1337,7 +1337,7 @@ class Utility(Extended, Cog):
 
     @hybrid_group()
     async def variables(self, ctx: Context):
-        await ctx.neutral("Variables are not currently up, see temporary variables: https://docs.greed.best/overview/variables")
+        await ctx.neutral("Variables here: https://docs.warm.lat/overview/variables")
 
     @command(aliases=["parse", "ce"], example="{embed}$v{description: @x}")
     @has_permissions(manage_messages=True)

@@ -273,14 +273,14 @@ class Moderation(Cog):
                 reconfigured.append(name)
 
         for table in (
-            "logging",
-            "gallery",
+            "public.logging",
+            "public.gallery",
             "timer.message",
             "timer.purge",
-            "sticky_message",
-            "welcome_message",
-            "goodbye_message",
-            "boost_message",
+            "public.sticky_message",
+            "public.welcome_message",
+            "public.goodbye_message",
+            "public.boost_message",
             ("disboard.config", "last_channel_id"),
             "level.notification",
             "commands.disabled",
@@ -2671,7 +2671,7 @@ class Moderation(Cog):
         hardban = await self.bot.db.fetchrow(
             """
             SELECT * FROM 
-            hardban WHERE 
+            public.hardban WHERE 
             guild_id = $1 
             AND user_id = $2
             """,
@@ -2682,7 +2682,7 @@ class Moderation(Cog):
         if hardban:
             await self.bot.db.execute(
                 """
-                DELETE FROM hardban 
+                DELETE FROM public.hardban 
                 WHERE guild_id = $1 
                 AND user_id = $2
                 """,
@@ -2702,7 +2702,7 @@ class Moderation(Cog):
 
         await self.bot.db.execute(
             """
-            INSERT INTO hardban 
+            INSERT INTO public.hardban 
             (guild_id, user_id) 
             VALUES ($1, $2)
             """,
@@ -2737,7 +2737,7 @@ class Moderation(Cog):
         """
         View all hard banned users.
         """
-        hardban = await self.bot.db.fetch("SELECT user_id FROM hardban WHERE guild_id = $1", ctx.guild.id)
+        hardban = await self.bot.db.fetch("SELECT user_id FROM public.hardban WHERE guild_id = $1", ctx.guild.id)
 
         config = await Settings.fetch(self.bot, ctx.guild)
         if not config.is_trusted(ctx.author):
@@ -2838,7 +2838,7 @@ class Moderation(Cog):
         
         await self.bot.db.execute(
             """
-            INSERT INTO forcenick (guild_id, user_id, nickname)
+            INSERT INTO public.forcenick (guild_id, user_id, nickname)
             VALUES ($1, $2, $3)
             ON CONFLICT (guild_id, user_id)
             DO UPDATE SET nickname = $3
@@ -3015,7 +3015,7 @@ class Moderation(Cog):
         hardban = await self.bot.db.fetchrow(
             """
             SELECT * FROM 
-            hardban WHERE 
+            public.hardban WHERE 
             guild_id = $1 
             AND user_id = $2
             """,
@@ -3063,7 +3063,7 @@ class Moderation(Cog):
         hardban_ids = await self.bot.db.fetch(
             """
             SELECT user_id FROM 
-            hardban WHERE 
+            public.hardban WHERE 
             guild_id = $1
             """,
             ctx.guild.id,
@@ -3119,7 +3119,7 @@ class Moderation(Cog):
         forcenick = await self.bot.db.fetchval(
             """
             SELECT EXISTS(
-                SELECT 1 FROM forcenick 
+                SELECT 1 FROM public.forcenick 
                 WHERE guild_id = $1 
                 AND user_id = $2
             )
@@ -3165,7 +3165,7 @@ class Moderation(Cog):
 
         await self.bot.db.execute(
             """
-            DELETE FROM forcenick 
+            DELETE FROM public.forcenick 
             WHERE guild_id = $1 
             AND user_id = $2
             """,
@@ -3209,7 +3209,7 @@ class Moderation(Cog):
         
         await self.bot.db.execute(
             """
-            INSERT INTO forcenick (guild_id, user_id, nickname)
+            INSERT INTO public.forcenick (guild_id, user_id, nickname)
             VALUES ($1, $2, $3)
             ON CONFLICT (guild_id, user_id)
             DO UPDATE SET nickname = $3
@@ -3249,7 +3249,7 @@ class Moderation(Cog):
         """
         await self.bot.db.execute(
             """
-            DELETE FROM forcenick 
+            DELETE FROM public.forcenick 
             WHERE guild_id = $1 
             AND user_id = $2
             """,
@@ -4566,7 +4566,7 @@ class Moderation(Cog):
 
         check = await self.bot.db.fetchrow(
             """
-            SELECT * FROM jail 
+            SELECT * FROM public.jail 
             WHERE guild_id = $1 
             AND user_id = $2
             """,
@@ -4589,7 +4589,7 @@ class Moderation(Cog):
 
         await self.bot.db.execute(
             """
-            INSERT INTO jail 
+            INSERT INTO public.jail 
             (guild_id, user_id, roles) 
             VALUES ($1, $2, $3)
             """,
@@ -4600,7 +4600,7 @@ class Moderation(Cog):
 
         chec = await self.bot.db.fetchrow(
             """
-            SELECT * FROM mod 
+            SELECT * FROM public.mod 
             WHERE guild_id = $1
             """,
             ctx.guild.id,
@@ -4625,7 +4625,7 @@ class Moderation(Cog):
             c = ctx.guild.get_channel(int(chec["jail_id"]))
             if c:
                 await c.send(
-                    f"{user.mention}, you have been jailed! Wait for a staff member to unjail you and check direct messages if you have received one!"
+                    f"{user.mention}, you have been jailed! Wait for a staff member to unjail you, and check your Direct Messages if you have been sent one."
                 )
         except Exception as e:
             return await ctx.warn(f"There was a problem jailing **{user.mention}**: {str(e)}")
@@ -4639,7 +4639,7 @@ class Moderation(Cog):
         """
         jail_entry = await self.bot.db.fetchrow(
             """
-            SELECT * FROM jail 
+            SELECT * FROM public.jail 
             WHERE guild_id = $1 
             AND user_id = $2
             """,
@@ -4652,7 +4652,7 @@ class Moderation(Cog):
 
         mod_config = await self.bot.db.fetchrow(
             """
-            SELECT * FROM mod 
+            SELECT * FROM public.mod 
             WHERE guild_id = $1
             """,
             ctx.guild.id
@@ -4688,7 +4688,7 @@ class Moderation(Cog):
 
         await self.bot.db.execute(
             """
-            DELETE FROM jail 
+            DELETE FROM public.jail 
             WHERE user_id = $1 
             AND guild_id = $2
             """,
@@ -4724,7 +4724,7 @@ class Moderation(Cog):
         
         check = await self.bot.db.fetchrow(
             """
-            SELECT * FROM mod 
+            SELECT * FROM public.mod 
             WHERE guild_id = $1
             """,
             ctx.guild.id,
@@ -4737,7 +4737,7 @@ class Moderation(Cog):
 
         try:
             try:
-                category = await ctx.guild.create_category(name="warm mod")
+                category = await ctx.guild.create_category(name="warm modd")
                 role = await ctx.guild.create_role(name="warm-jail")
 
                 for channel in ctx.guild.channels:
@@ -4770,7 +4770,7 @@ class Moderation(Cog):
 
             await self.bot.db.execute(
                 """
-                INSERT INTO mod 
+                INSERT INTO public.mod 
                 VALUES ($1,$2,$3,$4)
                 """,
                 ctx.guild.id,
@@ -4778,7 +4778,7 @@ class Moderation(Cog):
                 jai.id,
                 role.id,
             )
-            await self.bot.db.execute("INSERT INTO cases VALUES ($1,$2)", ctx.guild.id, 0)
+            await self.bot.db.execute("INSERT INTO public.cases VALUES ($1,$2)", ctx.guild.id, 0)
             
             return await ctx.approve("I have **enabled** the jail system!")
             
@@ -4795,7 +4795,7 @@ class Moderation(Cog):
 
         check = await self.bot.db.fetchrow(
             """
-            SELECT * FROM mod 
+            SELECT * FROM public.mod 
             WHERE guild_id = $1
             """,
             ctx.guild.id,
@@ -4816,7 +4816,7 @@ class Moderation(Cog):
     @group(invoke_without_command=True, aliases=["fp"])
     async def fakepermissions(self, ctx: Context) -> Message:
         """
-        Restrict moderators to only use Evict for moderation.
+        Restrict moderators to only use Warm for moderation.
         """
         return await ctx.send_help(ctx.command)
 
