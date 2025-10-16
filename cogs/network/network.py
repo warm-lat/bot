@@ -468,6 +468,16 @@ def requires_not_auth(func: Callable) -> Callable:
 
     return wrapper
 
+def requires_music_auth(func: Callable) -> Callable:
+    @wraps(func)
+    async def wrapper(self: "Network", request: Request) -> Response:
+        auth_header = request.headers.get("Authorization")
+        if auth_header != "canister-dipped-expletive-dab-slug-lustiness":
+            return web.json_response({"error": "Unauthorized"}, status=401)
+        return await func(self, request)
+
+    return wrapper
+
 def ratelimit(requests: int, window: int):
     def decorator(func):
         async def wrapper(self, request: Request, *args, **kwargs):
@@ -2527,6 +2537,7 @@ class Network(Cog):
 
     @route("/playing/{user_id}")
     @ratelimit(30, 60)
+    @requires_music_auth
     async def currently_playing(self, request: Request) -> Response:
         """Get currently playing track info for a specific user"""
         try:
@@ -2794,7 +2805,7 @@ class Network(Cog):
             try:
                 if "prefix" in data:
                     await self.bot.db.execute(
-                        "UPDATE prefix SET prefix = $1 WHERE guild_id = $2",
+                        "UPDATE public.prefix SET prefix = $1 WHERE guild_id = $2",
                         data["prefix"],
                         int(guild_id)
                     )
@@ -3375,7 +3386,7 @@ class Network(Cog):
             instance = await self.bot.db.fetchrow(
                 """
                 SELECT id, status, expires_at, purchased_at, email
-                FROM instances 
+                FROM public.instances 
                 WHERE user_id = $1 
                 AND status != 'cancelled'
                 ORDER BY purchased_at DESC 
@@ -3387,7 +3398,7 @@ class Network(Cog):
             is_donator = await self.bot.db.fetchrow(
                 """
                 SELECT user_id 
-                FROM donators 
+                FROM public.donators 
                 WHERE user_id = $1
                 """,
                 user_data['user_id']
@@ -4247,7 +4258,7 @@ class Network(Cog):
             confessions_blacklist = await self.bot.db.fetch(
                 """
                 SELECT word 
-                FROM confess_blacklist 
+                FROM public.confess_blacklist 
                 WHERE guild_id = $1
                 ORDER BY word
                 """,
@@ -4257,7 +4268,7 @@ class Network(Cog):
             confessions_muted = await self.bot.db.fetch(
                 """
                 SELECT user_id 
-                FROM confess_mute 
+                FROM public.confess_mute 
                 WHERE guild_id = $1
                 """,
                 int(guild_id)
@@ -4266,7 +4277,7 @@ class Network(Cog):
             confessions_config = await self.bot.db.fetchrow(
                 """
                 SELECT channel_id, upvote, downvote, confession
-                FROM confess 
+                FROM public.confess 
                 WHERE guild_id = $1
                 """,
                 int(guild_id)
@@ -4707,7 +4718,7 @@ class Network(Cog):
                     )
 
                 current_settings = await self.bot.db.fetchrow(
-                    "SELECT whitelist FROM antinuke WHERE guild_id = $1",
+                    "SELECT whitelist FROM public.antinuke WHERE guild_id = $1",
                     int(guild_id)
                 )
                 current_whitelist = current_settings['whitelist'] if current_settings else []
@@ -4783,11 +4794,11 @@ class Network(Cog):
                     "owner": member.id == guild.owner_id
                 },
                 "antiraid": dict(await self.bot.db.fetchrow(
-                    "SELECT guild_id, locked, joins, mentions, avatar, browser FROM antiraid WHERE guild_id = $1",
+                    "SELECT guild_id, locked, joins, mentions, avatar, browser FROM public.antiraid WHERE guild_id = $1",
                     int(guild_id)
                 )) if has_manage_guild else None,
                 "antinuke": dict(await self.bot.db.fetchrow(
-                    "SELECT guild_id, whitelist, trusted_admins, bot, ban, kick, role, channel, webhook, emoji FROM antinuke WHERE guild_id = $1",
+                    "SELECT guild_id, whitelist, trusted_admins, bot, ban, kick, role, channel, webhook, emoji FROM public.antinuke WHERE guild_id = $1",
                     int(guild_id)
                 )) if is_trusted else None
             })
