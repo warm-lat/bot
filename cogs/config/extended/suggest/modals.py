@@ -10,7 +10,7 @@ class SuggestionView(View):
 
     async def get_votes(self, message_id):
         votes = await self.bot.db.fetch(
-            """SELECT vote_type FROM suggestion_votes 
+            """SELECT vote_type FROM public.suggestion_votes 
             WHERE message_id = $1""",
             message_id
         )
@@ -36,7 +36,7 @@ class SuggestionView(View):
 
     async def handle_vote(self, interaction: Interaction, vote_type: int):
         current_vote = await self.bot.db.fetchval(
-            """SELECT vote_type FROM suggestion_votes 
+            """SELECT vote_type FROM public.suggestion_votes 
             WHERE message_id = $1 AND user_id = $2""",
             interaction.message.id,
             interaction.user.id
@@ -46,7 +46,7 @@ class SuggestionView(View):
 
         if current_vote == vote_type:  
             await self.bot.db.execute(
-                """DELETE FROM suggestion_votes 
+                """DELETE FROM public.suggestion_votes 
                 WHERE message_id = $1 AND user_id = $2""",
                 interaction.message.id,
                 interaction.user.id
@@ -54,7 +54,7 @@ class SuggestionView(View):
             embed.description = "Your vote has been removed!"
         else:  
             await self.bot.db.execute(
-                """INSERT INTO suggestion_votes (guild_id, message_id, user_id, vote_type)
+                """INSERT INTO public.suggestion_votes (guild_id, message_id, user_id, vote_type)
                 VALUES ($1, $2, $3, $4)
                 ON CONFLICT (message_id, user_id) 
                 DO UPDATE SET vote_type = $4""",
@@ -94,7 +94,7 @@ class SuggestionView(View):
     )
     async def create_suggestion(self, interaction: Interaction, button: Button):
         settings = await self.bot.db.fetchrow(
-            "SELECT anonymous_allowed FROM suggestion WHERE guild_id = $1",
+            "SELECT anonymous_allowed FROM public.suggestion WHERE guild_id = $1",
             interaction.guild.id
         )
         await interaction.response.send_modal(SuggestModal(
@@ -140,7 +140,7 @@ class SuggestModal(Modal, title="Create a Suggestion"):
 
             suggestion_data = await interaction.client.db.fetchrow(
                 """
-                UPDATE suggestion 
+                UPDATE public.suggestion 
                 SET suggestion_id = COALESCE(suggestion_id, 0) + 1 
                 WHERE guild_id = $1 
                 RETURNING *
@@ -213,7 +213,7 @@ class SuggestModal(Modal, title="Create a Suggestion"):
                     )
 
             await interaction.client.db.execute(
-                """UPDATE suggestion 
+                """UPDATE public.suggestion 
                 SET suggestion_id = $1 
                 WHERE guild_id = $2""",
                 count,
@@ -221,7 +221,7 @@ class SuggestModal(Modal, title="Create a Suggestion"):
             )
 
             await interaction.client.db.execute(
-                """INSERT INTO suggestion_entries 
+                """INSERT INTO public.suggestion_entries 
                 (guild_id, message_id, author_id, suggestion_id, is_anonymous)
                 VALUES ($1, $2, $3, $4, $5)""",
                 interaction.guild.id,

@@ -157,7 +157,7 @@ class AutoRoles(MixinMeta, metaclass=CompositeMetaClass):
 
         await self.bot.db.execute(
             """
-            INSERT INTO auto_role (
+            INSERT INTO public.auto_role (
                 guild_id,
                 role_id,
                 action,
@@ -207,7 +207,7 @@ class AutoRoles(MixinMeta, metaclass=CompositeMetaClass):
 
         result = await self.bot.db.execute(
             """
-            DELETE FROM auto_role
+            DELETE FROM public.auto_role
             WHERE guild_id = $1
             AND role_id = $2
             """,
@@ -235,7 +235,7 @@ class AutoRoles(MixinMeta, metaclass=CompositeMetaClass):
 
         result = await self.bot.db.execute(
             """
-            DELETE FROM auto_role
+            DELETE FROM public.auto_role
             WHERE guild_id = $1
             """,
             ctx.guild.id,
@@ -267,7 +267,7 @@ class AutoRoles(MixinMeta, metaclass=CompositeMetaClass):
             for record in await self.bot.db.fetch(
                 """
                 SELECT role_id, action, delay
-                FROM auto_role
+                FROM public.auto_role
                 WHERE guild_id = $1
                 """,
                 ctx.guild.id,
@@ -336,7 +336,7 @@ class AutoRoles(MixinMeta, metaclass=CompositeMetaClass):
         records = await self.bot.db.fetch(
             """
             SELECT role_id, action, delay
-            FROM auto_role
+            FROM public.auto_role
             WHERE guild_id = $1
             """,
             member.guild.id,
@@ -363,7 +363,7 @@ class AutoRoles(MixinMeta, metaclass=CompositeMetaClass):
         if scheduled_deletion:
             await self.bot.db.execute(
                 """
-                DELETE FROM auto_role
+                DELETE FROM public.auto_role
                 WHERE guild_id = $1
                 AND role_id = ANY($2::BIGINT[])
                 """,

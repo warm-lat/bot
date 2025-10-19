@@ -140,7 +140,7 @@ class LOGGER:
     USER_BLACKLIST_LOGGER: int = 1421686092394135562
 
 class CLIENT:
-    TOKEN: str = "MTQyMDYwOTM0MzI4MzUzMTc3Ng.G7Mk1E.nwns-aEzbAQFYK7UXCDpz2L3peMfYhroxYgujU"
+    TOKEN: str = "MTQyMDYwOTM0MzI4MzUzMTc3Ng.GojHru.nd14DWESAfe8Nvqneqy7EKRy4TcyI_yWs6yS1c"
     PREFIX: str = ","
     INVITE_URL: str = "https://discord.com/api/oauth2/authorize?client_id=1420609343283531776&permissions=8&scope=bot%20applications.commands"
     SUPPORT_URL: str = "https://discord.gg/apply"

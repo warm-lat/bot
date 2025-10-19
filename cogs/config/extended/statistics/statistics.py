@@ -55,7 +55,7 @@ class Statistics(MixinMeta, metaclass=CompositeMetaClass):
         records = await self.bot.db.fetch(
             """
             SELECT channel_id, option
-            FROM counter
+            FROM public.counter
             WHERE last_update < NOW() - INTERVAL '10 minutes'
             AND (rate_limited_until IS NULL OR rate_limited_until < NOW())
             """
@@ -112,7 +112,7 @@ class Statistics(MixinMeta, metaclass=CompositeMetaClass):
                 )
                 await self.bot.db.execute(
                     """
-                    UPDATE counter
+                    UPDATE public.counter
                     SET rate_limited_until = $2
                     WHERE channel_id = $1
                     """,
@@ -132,7 +132,7 @@ class Statistics(MixinMeta, metaclass=CompositeMetaClass):
             else:
                 await self.bot.db.execute(
                     """
-                    UPDATE counter
+                    UPDATE public.counter
                     SET last_update = NOW()
                     WHERE channel_id = $1
                     """,
@@ -142,7 +142,7 @@ class Statistics(MixinMeta, metaclass=CompositeMetaClass):
         if scheduled_deletion:
             await self.bot.db.execute(
                 """
-                DELETE FROM counter
+                DELETE FROM public.counter
                 WHERE channel_id = ANY($1::BIGINT[])
                 """,
                 scheduled_deletion,
@@ -182,7 +182,7 @@ class Statistics(MixinMeta, metaclass=CompositeMetaClass):
             await self.bot.db.fetchval(
                 """
                 SELECT channel_id
-                FROM counter
+                FROM public.counter
                 WHERE guild_id = $1
                 AND option = $2
                 """,
@@ -199,7 +199,7 @@ class Statistics(MixinMeta, metaclass=CompositeMetaClass):
 
             await self.bot.db.execute(
                 """
-                DELETE FROM counter
+                DELETE FROM public.counter
                 WHERE guild_id = $1
                 AND option = $2
                 """,
@@ -220,7 +220,7 @@ class Statistics(MixinMeta, metaclass=CompositeMetaClass):
 
         await self.bot.db.execute(
             """
-            INSERT INTO counter (guild_id, channel_id, option)
+            INSERT INTO public.counter (guild_id, channel_id, option)
             VALUES ($1, $2, $3)
             ON CONFLICT (guild_id, channel_id)
             DO UPDATE SET option = EXCLUDED.option
@@ -252,7 +252,7 @@ class Statistics(MixinMeta, metaclass=CompositeMetaClass):
 
         result = await self.bot.db.execute(
             """
-            DELETE FROM counter
+            DELETE FROM public.counter
             WHERE guild_id = $1
             AND channel_id = $2
             """,
@@ -284,7 +284,7 @@ class Statistics(MixinMeta, metaclass=CompositeMetaClass):
 
         result = await self.bot.db.execute(
             """
-            DELETE FROM counter
+            DELETE FROM public.counter
             WHERE guild_id = $1
             """,
             ctx.guild.id,
@@ -311,7 +311,7 @@ class Statistics(MixinMeta, metaclass=CompositeMetaClass):
             for record in await self.bot.db.fetch(
                 """
                 SELECT channel_id, option
-                FROM counter
+                FROM public.counter
                 WHERE guild_id = $1
                 """,
                 ctx.guild.id,

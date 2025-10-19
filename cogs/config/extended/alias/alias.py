@@ -94,7 +94,7 @@ class Alias(MixinMeta, metaclass=CompositeMetaClass):
         try:
             await self.bot.db.execute(
                 """
-                INSERT INTO aliases (
+                INSERT INTO public.aliases (
                     guild_id,
                     name,
                     invoke,
@@ -126,7 +126,7 @@ class Alias(MixinMeta, metaclass=CompositeMetaClass):
         invoke = await self.bot.db.fetchval(
             """
             SELECT invoke
-            FROM aliases
+            FROM public.aliases
             WHERE guild_id = $1
             AND name = $2
             """,
@@ -151,7 +151,7 @@ class Alias(MixinMeta, metaclass=CompositeMetaClass):
 
         result = await self.bot.db.execute(
             """
-            DELETE FROM aliases
+            DELETE FROM public.aliases
             WHERE guild_id = $1
             AND name = $2
             """,
@@ -179,7 +179,7 @@ class Alias(MixinMeta, metaclass=CompositeMetaClass):
 
         result = await self.bot.db.execute(
             """
-            DELETE FROM aliases
+            DELETE FROM public.aliases
             WHERE guild_id = $1
             """,
             ctx.guild.id,
@@ -206,7 +206,7 @@ class Alias(MixinMeta, metaclass=CompositeMetaClass):
             for record in await self.bot.db.fetch(
                 """
                 SELECT name, invoke, command
-                FROM aliases
+                FROM public.aliases
                 WHERE guild_id = $1
                 """,
                 ctx.guild.id,

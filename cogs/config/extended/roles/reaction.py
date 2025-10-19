@@ -64,7 +64,7 @@ class ReactionRoles(MixinMeta, metaclass=CompositeMetaClass):
         try:
             await self.bot.db.execute(
                 """
-                INSERT INTO reaction_role (
+                INSERT INTO public.reaction_role (
                     guild_id,
                     channel_id,
                     message_id,
@@ -112,7 +112,7 @@ class ReactionRoles(MixinMeta, metaclass=CompositeMetaClass):
 
         result = await self.bot.db.execute(
             """
-            DELETE FROM reaction_role
+            DELETE FROM public.reaction_role
             WHERE guild_id = $1
             AND message_id = $2
             AND emoji = $3
@@ -149,7 +149,7 @@ class ReactionRoles(MixinMeta, metaclass=CompositeMetaClass):
 
             result = await self.bot.db.execute(
                 """
-                DELETE FROM reaction_role
+                DELETE FROM public.reaction_role
                 WHERE guild_id = $1
                 """,
                 ctx.guild.id,
@@ -164,7 +164,7 @@ class ReactionRoles(MixinMeta, metaclass=CompositeMetaClass):
 
         result = await self.bot.db.execute(
             """
-            DELETE FROM reaction_role
+            DELETE FROM public.reaction_role
             WHERE guild_id = $1
             AND message_id = $2
             """,
@@ -202,7 +202,7 @@ class ReactionRoles(MixinMeta, metaclass=CompositeMetaClass):
                     message_id,
                     role_id,
                     emoji
-                FROM reaction_role
+                FROM public.reaction_role
                 WHERE guild_id = $1
                 """,
                 ctx.guild.id,
@@ -239,7 +239,7 @@ class ReactionRoles(MixinMeta, metaclass=CompositeMetaClass):
             await self.bot.db.fetchval(
                 """
                 SELECT role_id
-                FROM reaction_role
+                FROM public.reaction_role
                 WHERE guild_id = $1
                 AND message_id = $2
                 AND emoji = $3
@@ -277,7 +277,7 @@ class ReactionRoles(MixinMeta, metaclass=CompositeMetaClass):
             await self.bot.db.fetchval(
                 """
                 SELECT role_id
-                FROM reaction_role
+                FROM public.reaction_role
                 WHERE guild_id = $1
                 AND message_id = $2
                 AND emoji = $3

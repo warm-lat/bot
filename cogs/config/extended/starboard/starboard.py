@@ -163,7 +163,7 @@ class StarboardConfig:
             await self.bot.db.fetchval(
                 """
                 SELECT star_id
-                FROM starboard_entry
+                FROM public.starboard_entry
                 WHERE guild_id = $1
                 AND channel_id = $2
                 AND message_id = $3
@@ -205,7 +205,7 @@ class StarboardConfig:
 
         await self.bot.db.execute(
             """
-            INSERT INTO starboard_entry (
+            INSERT INTO public.starboard_entry (
                 guild_id,
                 star_id,
                 channel_id,
@@ -302,7 +302,7 @@ class Starboard(Cog):
 
         await self.bot.db.execute(
             """
-                INSERT INTO starboard (guild_id, channel_id, self_star, threshold, emoji)
+                INSERT INTO public.starboard (guild_id, channel_id, self_star, threshold, emoji)
                 VALUES ($1, $2, $3, $4, $5)
                 ON CONFLICT (guild_id, emoji) DO UPDATE
                 SET
@@ -337,7 +337,7 @@ class Starboard(Cog):
 
         result = await self.bot.db.execute(
             """
-            DELETE FROM starboard
+            DELETE FROM public.starboard
             WHERE guild_id = $1
             AND channel_id = $2
             AND emoji = $3
@@ -371,7 +371,7 @@ class Starboard(Cog):
 
         result = await self.bot.db.execute(
             """
-            DELETE FROM starboard
+            DELETE FROM public.starboard
             WHERE guild_id = $1
             """,
             ctx.guild.id,
@@ -398,7 +398,7 @@ class Starboard(Cog):
             for record in await self.bot.db.fetch(
                 """
                 SELECT channel_id, emoji, threshold, self_star
-                FROM starboard
+                FROM public.starboard
                 WHERE guild_id = $1
                 """,
                 ctx.guild.id,
@@ -424,7 +424,7 @@ class Starboard(Cog):
     ) -> Optional[StarboardConfig]:
         record = await self.bot.db.fetchrow(
             """
-            SELECT * FROM starboard
+            SELECT * FROM public.starboard
             WHERE guild_id = $1
             AND emoji = $2
             """,
@@ -526,7 +526,7 @@ class Starboard(Cog):
 
             await self.bot.db.execute(
                 """
-                DELETE FROM starboard_entry
+                DELETE FROM public.starboard_entry
                 WHERE star_id = $1
                 """,
                 star_message.id,
@@ -542,7 +542,7 @@ class Starboard(Cog):
     async def starboard_channel_delete(self, channel: GuildChannel):
         await self.bot.db.execute(
             """
-            DELETE FROM starboard
+            DELETE FROM public.starboard
             WHERE guild_id = $1
             AND channel_id = $2
             """,
@@ -551,7 +551,7 @@ class Starboard(Cog):
         )
         await self.bot.db.execute(
             """
-            DELETE FROM starboard_entry
+            DELETE FROM public.starboard_entry
             WHERE guild_id = $1
             AND channel_id = $2
             """,
@@ -563,7 +563,7 @@ class Starboard(Cog):
     async def starboard_reaction_clear(self, payload: RawReactionClearEmojiEvent):
         entries = await self.bot.db.fetch(
             """
-            DELETE FROM starboard_entry
+            DELETE FROM public.starboard_entry
             WHERE guild_id = $1
             AND channel_id = $2
             AND message_id = $3

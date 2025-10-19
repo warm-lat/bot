@@ -37,7 +37,7 @@ class Confess(MixinMeta, metaclass=CompositeMetaClass):
         check = await self.bot.db.fetchrow(
             """
             SELECT channel_id 
-            FROM confess 
+            FROM public.confess 
             WHERE guild_id = {}
             """
             .format
@@ -49,7 +49,7 @@ class Confess(MixinMeta, metaclass=CompositeMetaClass):
 
         re = await self.bot.db.fetchrow(
             """
-            SELECT * FROM confess_members 
+            SELECT * FROM public.confess_members 
             WHERE guild_id = $1 AND 
             confession = $2
             """,
@@ -64,7 +64,7 @@ class Confess(MixinMeta, metaclass=CompositeMetaClass):
 
         r = await self.bot.db.fetchrow(
             """
-            SELECT * FROM confess_mute 
+            SELECT * FROM public.confess_mute 
             WHERE guild_id = $1 
             AND user_id = $2
             """,
@@ -77,7 +77,7 @@ class Confess(MixinMeta, metaclass=CompositeMetaClass):
 
         await self.bot.db.execute(
             """
-            INSERT INTO confess_mute 
+            INSERT INTO public.confess_mute 
             VALUES ($1,$2)
             """, 
             ctx.guild.id, 
@@ -98,7 +98,7 @@ class Confess(MixinMeta, metaclass=CompositeMetaClass):
         check = await self.bot.db.fetchrow(
             """
             SELECT channel_id 
-            FROM confess 
+            FROM public.confess 
             WHERE guild_id = {}
             """
             .format
@@ -112,7 +112,7 @@ class Confess(MixinMeta, metaclass=CompositeMetaClass):
             await ctx.prompt("Are you sure you want to unmute **everyone** in confession mute?")
             await self.bot.db.execute(
                 """
-                DELETE FROM confess_mute 
+                DELETE FROM public.confess_mute 
                 WHERE guild_id = $1
                 """, 
                 ctx.guild.id
@@ -124,7 +124,7 @@ class Confess(MixinMeta, metaclass=CompositeMetaClass):
         
         re = await self.bot.db.fetchrow(
             """
-            SELECT * FROM confess_members 
+            SELECT * FROM public.confess_members 
             WHERE guild_id = $1 
             AND confession = $2
             """,
@@ -139,7 +139,7 @@ class Confess(MixinMeta, metaclass=CompositeMetaClass):
 
         r = await self.bot.db.fetchrow(
             """
-            SELECT * FROM confess_mute 
+            SELECT * FROM public.confess_mute 
             WHERE guild_id = $1 
             AND user_id = $2
             """,
@@ -152,7 +152,7 @@ class Confess(MixinMeta, metaclass=CompositeMetaClass):
 
         await self.bot.db.execute(
             """
-            DELETE FROM confess_mute 
+            DELETE FROM public.confess_mute 
             WHERE guild_id = $1 
             AND user_id = $2
             """,
@@ -173,7 +173,7 @@ class Confess(MixinMeta, metaclass=CompositeMetaClass):
         """
         check = await self.bot.db.fetchrow(
             """
-            SELECT * FROM confess 
+            SELECT * FROM public.confess 
             WHERE guild_id = {}
             """
             .format
@@ -183,7 +183,7 @@ class Confess(MixinMeta, metaclass=CompositeMetaClass):
         if check is not None:
             await self.bot.db.execute(
                 """
-                UPDATE confess 
+                UPDATE public.confess 
                 SET channel_id = $1 
                 WHERE guild_id = $2
                 """,
@@ -194,7 +194,7 @@ class Confess(MixinMeta, metaclass=CompositeMetaClass):
         elif check is None:
             await self.bot.db.execute(
                 """
-                INSERT INTO confess 
+                INSERT INTO public.confess 
                 VALUES ($1,$2,$3)
                 """, 
                 ctx.guild.id, 
@@ -215,7 +215,7 @@ class Confess(MixinMeta, metaclass=CompositeMetaClass):
         check = await self.bot.db.fetchrow(
             """
             SELECT channel_id 
-            FROM confess 
+            FROM public.confess 
             WHERE guild_id = {}
             """
             .format
@@ -226,7 +226,7 @@ class Confess(MixinMeta, metaclass=CompositeMetaClass):
 
         await self.bot.db.execute(
             """
-            DELETE FROM confess 
+            DELETE FROM public.confess 
             WHERE guild_id = {}
             """
             .format
@@ -234,7 +234,7 @@ class Confess(MixinMeta, metaclass=CompositeMetaClass):
         
         await self.bot.db.execute(
             """
-            DELETE FROM confess_members 
+            DELETE FROM public.confess_members 
             WHERE guild_id = {}
             """
             .format
@@ -242,7 +242,7 @@ class Confess(MixinMeta, metaclass=CompositeMetaClass):
         
         await self.bot.db.execute(
             """
-            DELETE FROM confess_mute 
+            DELETE FROM public.confess_mute 
             WHERE guild_id = {}
             """
             .format
@@ -257,7 +257,7 @@ class Confess(MixinMeta, metaclass=CompositeMetaClass):
         """
         check = await self.bot.db.fetchrow(
             """
-            SELECT * FROM confess 
+            SELECT * FROM public.confess 
             WHERE guild_id = {}
             """
             .format
@@ -279,7 +279,7 @@ class Confess(MixinMeta, metaclass=CompositeMetaClass):
         """
         re = await ctx.client.db.fetchrow(
             """
-            SELECT * FROM confess_mute 
+            SELECT * FROM public.confess_mute 
             WHERE guild_id = $1 
             AND user_id = $2
             """,
@@ -297,7 +297,7 @@ class Confess(MixinMeta, metaclass=CompositeMetaClass):
         check = await ctx.client.db.fetchrow(
             """
             SELECT channel_id 
-            FROM confess 
+            FROM public.confess 
             WHERE guild_id = {}
             """
             .format
@@ -326,7 +326,7 @@ class Confess(MixinMeta, metaclass=CompositeMetaClass):
         try:
             await self.bot.db.execute(
                 """
-                INSERT INTO confess_blacklist 
+                INSERT INTO public.confess_blacklist 
                 (guild_id, word)
                 VALUES ($1, $2)
                 """,
@@ -346,7 +346,7 @@ class Confess(MixinMeta, metaclass=CompositeMetaClass):
         """
         result = await self.bot.db.execute(
             """
-            DELETE FROM confess_blacklist 
+            DELETE FROM public.confess_blacklist 
             WHERE guild_id = $1 
             AND word = $2
             """,
@@ -365,7 +365,7 @@ class Confess(MixinMeta, metaclass=CompositeMetaClass):
         """
         words = await self.bot.db.fetch(
             """
-            SELECT word FROM confess_blacklist 
+            SELECT word FROM public.confess_blacklist 
             WHERE guild_id = $1
             ORDER BY word
             """,
@@ -393,7 +393,7 @@ class Confess(MixinMeta, metaclass=CompositeMetaClass):
         """
         await self.bot.db.execute(
             """
-            DELETE FROM confess_blacklist 
+            DELETE FROM public.confess_blacklist 
             WHERE guild_id = $1
             """,
             ctx.guild.id
@@ -405,7 +405,7 @@ class Confess(MixinMeta, metaclass=CompositeMetaClass):
         """
         Report a confession or reply.
         """
-        report_channel = self.bot.get_channel(1333340804067889235)
+        report_channel = self.bot.get_channel(1429324799737335899)
         if not report_channel:
             return await ctx.warn("Report channel not found. Please contact staff.")
 
@@ -416,7 +416,7 @@ class Confess(MixinMeta, metaclass=CompositeMetaClass):
                     check = await self.bot.db.fetchrow(
                         """
                         SELECT channel_id 
-                        FROM confess 
+                        FROM public.confess 
                         WHERE guild_id = $1
                         """,
                         ctx.guild.id
@@ -452,7 +452,7 @@ class Confess(MixinMeta, metaclass=CompositeMetaClass):
                     reply_author = await self.bot.db.fetchrow(
                         """
                         SELECT user_id 
-                        FROM confess_replies 
+                        FROM public.confess_replies 
                         WHERE message_id = $1
                         """,
                         message_id
@@ -481,8 +481,8 @@ class Confess(MixinMeta, metaclass=CompositeMetaClass):
                 confession_data = await self.bot.db.fetchrow(
                     """
                     SELECT cm.user_id, cm.guild_id, c.channel_id, c.confession 
-                    FROM confess_members cm
-                    JOIN confess c ON c.guild_id = cm.guild_id
+                    FROM public.confess_members cm
+                    JOIN public.confess c ON c.guild_id = cm.guild_id
                     WHERE cm.guild_id = $1 AND cm.confession = $2
                     """,
                     ctx.guild.id, confession_num
@@ -547,7 +547,7 @@ class Confess(MixinMeta, metaclass=CompositeMetaClass):
 
         await self.bot.db.execute(
             """
-            UPDATE confess 
+            UPDATE public.confess 
             SET upvote = $1, downvote = $2 
             WHERE guild_id = $3
             """,
@@ -568,7 +568,7 @@ class Confess(MixinMeta, metaclass=CompositeMetaClass):
         """
         await self.bot.db.execute(
             """
-            UPDATE confess 
+            UPDATE public.confess 
             SET upvote = $1, downvote = $2 
             WHERE guild_id = $3
             """,
@@ -585,7 +585,7 @@ class Confess(MixinMeta, metaclass=CompositeMetaClass):
         data = await self.bot.db.fetchrow(
             """
             SELECT upvote, downvote 
-            FROM confess 
+            FROM public.confess 
             WHERE guild_id = $1
             """,
             ctx.guild.id

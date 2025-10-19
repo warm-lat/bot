@@ -44,7 +44,7 @@ class Gallery(MixinMeta, metaclass=CompositeMetaClass):
         try:
             await self.bot.db.execute(
                 """
-                INSERT INTO gallery (guild_id, channel_id)
+                INSERT INTO public.gallery (guild_id, channel_id)
                 VALUES ($1, $2)
                 """,
                 ctx.guild.id,
@@ -70,7 +70,7 @@ class Gallery(MixinMeta, metaclass=CompositeMetaClass):
 
         result = await self.bot.db.execute(
             """
-            DELETE FROM gallery
+            DELETE FROM public.gallery
             WHERE guild_id = $1
             AND channel_id = $2
             """,
@@ -96,7 +96,7 @@ class Gallery(MixinMeta, metaclass=CompositeMetaClass):
 
         result = await self.bot.db.execute(
             """
-            DELETE FROM gallery
+            DELETE FROM public.gallery
             WHERE guild_id = $1
             """,
             ctx.guild.id,
@@ -104,7 +104,7 @@ class Gallery(MixinMeta, metaclass=CompositeMetaClass):
         if result == "DELETE 0":
             return await ctx.warn("No gallery channels exist for this server!")
 
-        return await ctx.approve("Successfully  removed all gallery channels")
+        return await ctx.approve("Successfully removed all gallery channels")
 
     @gallery.command(
         name="list",
@@ -121,7 +121,7 @@ class Gallery(MixinMeta, metaclass=CompositeMetaClass):
             for record in await self.bot.db.fetch(
                 """
                 SELECT channel_id
-                FROM gallery
+                FROM public.gallery
                 WHERE guild_id = $1
                 """,
                 ctx.guild.id,
@@ -157,7 +157,7 @@ class Gallery(MixinMeta, metaclass=CompositeMetaClass):
         if not await self.bot.db.fetchrow(
             """
             SELECT channel_id
-            FROM gallery
+            FROM public.gallery
             WHERE guild_id = $1
             AND channel_id = $2
             """,

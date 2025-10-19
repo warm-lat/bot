@@ -108,7 +108,7 @@ class AliasEntry:
         record = await bot.db.fetchrow(
             """
             SELECT *
-            FROM aliases
+            FROM public.aliases
             WHERE guild_id = $1
             AND name = $2
             """,

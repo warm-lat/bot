@@ -57,7 +57,7 @@ class BoosterRole(MixinMeta, metaclass=CompositeMetaClass):
             Optional[int],
             await self.bot.db.fetchval(
                 """
-                DELETE FROM booster_role
+                DELETE FROM public.booster_role
                 WHERE guild_id = $1
                 AND user_id = $2
                 RETURNING role_id
@@ -88,7 +88,7 @@ class BoosterRole(MixinMeta, metaclass=CompositeMetaClass):
             Optional[int],
             await self.bot.db.fetchval(
                 """
-                DELETE FROM booster_role
+                DELETE FROM public.booster_role
                 WHERE guild_id = $1
                 AND user_id = $2
                 RETURNING role_id
@@ -176,7 +176,7 @@ class BoosterRole(MixinMeta, metaclass=CompositeMetaClass):
         multi_enabled = await self.bot.db.fetchval(
             """
             SELECT multi_boost_enabled
-            FROM booster_role
+            FROM public.booster_role
             WHERE guild_id = $1
             """,
             ctx.guild.id
@@ -189,7 +189,7 @@ class BoosterRole(MixinMeta, metaclass=CompositeMetaClass):
         role_ids = await self.bot.db.fetch(
             """
             SELECT role_id
-            FROM booster_role
+            FROM public.booster_role
             WHERE guild_id = $1
             AND user_id = $2
             """,
@@ -209,7 +209,7 @@ class BoosterRole(MixinMeta, metaclass=CompositeMetaClass):
             boost_count = await self.bot.db.fetchval(
                 """
                 SELECT boost_count
-                FROM boost_history
+                FROM public.boost_history
                 WHERE guild_id = $1 AND user_id = $2
                 """,
                 ctx.guild.id,
@@ -231,7 +231,7 @@ class BoosterRole(MixinMeta, metaclass=CompositeMetaClass):
 
         await self.bot.db.execute(
             """
-            INSERT INTO booster_role
+            INSERT INTO public.booster_role
             VALUES ($1, $2, $3)
             ON CONFLICT (guild_id, user_id)
             DO UPDATE SET role_id = EXCLUDED.role_id
@@ -260,7 +260,7 @@ class BoosterRole(MixinMeta, metaclass=CompositeMetaClass):
         role_ids = await self.bot.db.fetch(
             """
             SELECT role_id
-            FROM booster_role
+            FROM public.booster_role
             WHERE guild_id = $1
             AND user_id = $2
             """,
@@ -294,7 +294,7 @@ class BoosterRole(MixinMeta, metaclass=CompositeMetaClass):
             return await ctx.send_help(ctx.command)
 
         # settings = await self.bot.db.fetchrow(
-        #     f"SELECT shared FROM booster_role WHERE guild_id = $1", 
+        #     f"SELECT shared FROM public.booster_role WHERE guild_id = $1", 
         #     ctx.guild.id
         # )
 
@@ -306,7 +306,7 @@ class BoosterRole(MixinMeta, metaclass=CompositeMetaClass):
             await self.bot.db.fetchval(
                 """
                 SELECT role_id
-                FROM booster_role
+                FROM public.booster_role
                 WHERE guild_id = $1
                 AND user_id = $2
                 """,
@@ -350,11 +350,11 @@ class BoosterRole(MixinMeta, metaclass=CompositeMetaClass):
         if role not in ctx.author.roles:
             return await ctx.warn("You don't have this role!")
         
-        check = await self.bot.db.fetchrow("SELECT role_id FROM booster_role WHERE role_id = $1", role.id)
+        check = await self.bot.db.fetchrow("SELECT role_id FROM public.booster_role WHERE role_id = $1", role.id)
         if not check:
             return await ctx.warn("This role is not a booster role!")
         
-        check1 = await self.bot.db.fetchrow("SELECT * FROM booster_role WHERE role_id = $1 AND user_id = $2", role.id, ctx.author.id)
+        check1 = await self.bot.db.fetchrow("SELECT * FROM public.booster_role WHERE role_id = $1 AND user_id = $2", role.id, ctx.author.id)
         if check1:
             return await ctx.warn(f"You cannot remove a shared booster role you own! Run ``{ctx.clean_prefix}boosterrole delete`` instead.")
         
@@ -374,7 +374,7 @@ class BoosterRole(MixinMeta, metaclass=CompositeMetaClass):
 
     #     shared = await self.bot.db.execute(
     #         """
-    #         UPDATE booster_role
+    #         UPDATE public.booster_role
     #         SET shared = TRUE
     #         WHERE guild_id = $1
     #         """,
@@ -395,7 +395,7 @@ class BoosterRole(MixinMeta, metaclass=CompositeMetaClass):
 
     #     shared = await self.bot.db.execute(
     #         """
-    #         DELETE FROM booster_role
+    #         DELETE FROM public.booster_role
     #         WHERE guild_id = $1
     #         AND shared = TRUE
     #         """,
@@ -421,7 +421,7 @@ class BoosterRole(MixinMeta, metaclass=CompositeMetaClass):
             await self.bot.db.fetchval(
                 """
                 SELECT role_id
-                FROM booster_role
+                FROM public.booster_role
                 WHERE guild_id = $1
                 AND user_id = $2
                 """,
@@ -438,7 +438,7 @@ class BoosterRole(MixinMeta, metaclass=CompositeMetaClass):
 
         await self.bot.db.execute(
             """
-            DELETE FROM booster_role
+            DELETE FROM public.booster_role
             WHERE guild_id = $1
             AND user_id = $2
             """,
@@ -493,7 +493,7 @@ class BoosterRole(MixinMeta, metaclass=CompositeMetaClass):
             await self.bot.db.fetchval(
                 """
                 SELECT role_id
-                FROM booster_role
+                FROM public.booster_role
                 WHERE guild_id = $1
                 AND user_id = $2
                 """,
@@ -534,7 +534,7 @@ class BoosterRole(MixinMeta, metaclass=CompositeMetaClass):
             await self.bot.db.fetchval(
                 """
                 SELECT role_id
-                FROM booster_role
+                FROM public.booster_role
                 WHERE guild_id = $1
                 AND user_id = $2
                 """,
@@ -611,7 +611,7 @@ class BoosterRole(MixinMeta, metaclass=CompositeMetaClass):
             for record in await self.bot.db.fetch(
                 """
                 SELECT user_id, role_id
-                FROM booster_role
+                FROM public.booster_role
                 WHERE guild_id = $1
                 """,
                 ctx.guild.id,
@@ -651,7 +651,7 @@ class BoosterRole(MixinMeta, metaclass=CompositeMetaClass):
                 role
                 for record in await self.bot.db.fetch(
                     """
-                    DELETE FROM booster_role
+                    DELETE FROM public.booster_role
                     WHERE guild_id = $1
                     RETURNING role_id
                     """,
@@ -791,7 +791,7 @@ class BoosterRole(MixinMeta, metaclass=CompositeMetaClass):
         if after.premium_since and (not before.premium_since):  
             await self.bot.db.execute(
                 """
-                INSERT INTO boost_history (guild_id, user_id, boost_count)
+                INSERT INTO public.boost_history (guild_id, user_id, boost_count)
                 VALUES ($1, $2, 1)
                 ON CONFLICT (guild_id, user_id) 
                 DO UPDATE SET 
@@ -813,7 +813,7 @@ class BoosterRole(MixinMeta, metaclass=CompositeMetaClass):
         current = await self.bot.db.fetchval(
             """
             SELECT multi_boost_enabled
-            FROM booster_role
+            FROM public.booster_role
             WHERE guild_id = $1
             """,
             ctx.guild.id
@@ -822,7 +822,7 @@ class BoosterRole(MixinMeta, metaclass=CompositeMetaClass):
         new_state = not current if current is not None else True
         await self.bot.db.execute(
             """
-            UPDATE booster_role
+            UPDATE public.booster_role
             SET multi_boost_enabled = $1
             WHERE guild_id = $2
             """,

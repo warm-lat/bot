@@ -33,16 +33,16 @@ class Suggest(MixinMeta, metaclass=CompositeMetaClass):
         check = await self.bot.db.fetchrow(
             """
             SELECT * 
-            FROM suggestion 
+            FROM public.suggestion 
             WHERE guild_id = {}
             """
             .format(ctx.guild.id)
         )
-       
+    
         if check is not None:
             await self.bot.db.execute(
                 """
-                UPDATE suggestion 
+                UPDATE public.suggestion 
                 SET channel_id = $1 
                 WHERE guild_id = $2
                 """,
@@ -54,7 +54,7 @@ class Suggest(MixinMeta, metaclass=CompositeMetaClass):
             await self.bot.db.execute(
                 """
                 INSERT INTO 
-                suggestion 
+                public.suggestion 
                 (channel_id, guild_id)
                 VALUES($1, $2)
                 """, 
@@ -70,7 +70,7 @@ class Suggest(MixinMeta, metaclass=CompositeMetaClass):
         """
         Remove the suggestions config.
         """
-        check = await self.bot.db.fetchrow("SELECT * FROM suggestion WHERE guild_id = $1", ctx.guild.id)
+        check = await self.bot.db.fetchrow("SELECT * FROM public.suggestion WHERE guild_id = $1", ctx.guild.id)
         if check is None:
             return await ctx.warn("Suggestions are already disabled.")
         
@@ -85,14 +85,14 @@ class Suggest(MixinMeta, metaclass=CompositeMetaClass):
         Mute a member that send a specific suggestion.
         """
         check = await self.bot.db.fetchrow(
-            "SELECT channel_id FROM suggestion WHERE guild_id = {}".format(ctx.guild.id)
+            "SELECT channel_id FROM public.suggestion WHERE guild_id = {}".format(ctx.guild.id)
         )
         if check is None:
             return await ctx.warn("Suggestions aren't **enabled** in this server.")
 
         re = await self.bot.db.fetchrow(
             """
-            SELECT * FROM suggestion 
+            SELECT * FROM public.suggestion 
             WHERE guild_id = $1 
             AND suggestion_id = $2""",
             ctx.guild.id,
@@ -105,7 +105,7 @@ class Suggest(MixinMeta, metaclass=CompositeMetaClass):
 
         r = await self.bot.db.fetchrow(
             """
-            SELECT * FROM confess_mute 
+            SELECT * FROM public.confess_mute 
             WHERE guild_id = $1 
             AND user_id = $2
             """,
@@ -117,7 +117,7 @@ class Suggest(MixinMeta, metaclass=CompositeMetaClass):
 
         await self.bot.db.execute(
             """
-            INSERT INTO suggestion
+            INSERT INTO public.suggestion
             (guild_id, blacklisted_id)
             VALUES ($1,$2)
             """, 
@@ -143,7 +143,7 @@ class Suggest(MixinMeta, metaclass=CompositeMetaClass):
     ):
         suggestion_data = await self.bot.db.fetchrow(
             """
-            UPDATE suggestion 
+            UPDATE public.suggestion 
             SET suggestion_id = COALESCE(suggestion_id, 0) + 1 
             WHERE guild_id = $1 
             RETURNING *
@@ -220,7 +220,7 @@ class Suggest(MixinMeta, metaclass=CompositeMetaClass):
                 )
 
         # await self.bot.db.execute(
-        #     """UPDATE suggestion 
+        #     """UPDATE public.suggestion 
         #     SET suggestion_id = $1 
         #     WHERE guild_id = $2""",
         #     count,
@@ -228,7 +228,7 @@ class Suggest(MixinMeta, metaclass=CompositeMetaClass):
         # )
 
         await self.bot.db.execute(
-            """INSERT INTO suggestion_entries 
+            """INSERT INTO public.suggestion_entries 
             (guild_id, message_id, author_id, suggestion_id, is_anonymous)
             VALUES ($1, $2, $3, $4, $5)""",
             interaction.guild.id,
@@ -265,8 +265,8 @@ class Suggest(MixinMeta, metaclass=CompositeMetaClass):
         suggestion = await self.bot.db.fetchrow(
             """
             SELECT se.*, s.channel_id 
-            FROM suggestion_entries se
-            JOIN suggestion s ON s.guild_id = se.guild_id
+            FROM public.suggestion_entries se
+            JOIN public.suggestion s ON s.guild_id = se.guild_id
             WHERE se.guild_id = $1 
             AND se.suggestion_id = $2 
             AND se.author_id = $3
@@ -332,7 +332,7 @@ class Suggest(MixinMeta, metaclass=CompositeMetaClass):
     async def suggestion_settings(self, ctx: Context):
         """View and modify suggestion settings"""
         settings = await self.bot.db.fetchrow(
-            "SELECT * FROM suggestion WHERE guild_id = $1", ctx.guild.id
+            "SELECT * FROM public.suggestion WHERE guild_id = $1", ctx.guild.id
         )
         
         if not settings:
@@ -362,7 +362,7 @@ class Suggest(MixinMeta, metaclass=CompositeMetaClass):
     async def suggestion_threads(self, ctx: Context, enabled: bool):
         """Enable/disable automatic thread creation for suggestions"""
         await self.bot.db.execute(
-            """UPDATE suggestion 
+            """UPDATE public.suggestion 
             SET thread_enabled = $1 
             WHERE guild_id = $2""",
             enabled,
@@ -378,7 +378,7 @@ class Suggest(MixinMeta, metaclass=CompositeMetaClass):
     async def suggestion_anonymous(self, ctx: Context, enabled: bool):
         """Enable/disable anonymous suggestions"""
         await self.bot.db.execute(
-            """UPDATE suggestion 
+            """UPDATE public.suggestion 
             SET anonymous_allowed = $1 
             WHERE guild_id = $2""",
             enabled,

@@ -758,7 +758,7 @@ class System(MixinMeta, metaclass=CompositeMetaClass):
                 for record in await self.bot.db.fetch(
                     """
                     SELECT channel_id
-                    FROM boost_message
+                    FROM public.boost_message
                     WHERE guild_id = $1
                     """,
                     ctx.guild.id,
@@ -771,7 +771,7 @@ class System(MixinMeta, metaclass=CompositeMetaClass):
 
         await self.bot.db.execute(
             """
-            INSERT INTO boost_message (
+            INSERT INTO public.boost_message (
                 guild_id,
                 channel_id,
                 template,
@@ -813,7 +813,7 @@ class System(MixinMeta, metaclass=CompositeMetaClass):
 
         result = await self.bot.db.execute(
             """
-            DELETE FROM boost_message
+            DELETE FROM public.boost_message
             WHERE guild_id = $1
             AND channel_id = $2
             """,
@@ -845,7 +845,7 @@ class System(MixinMeta, metaclass=CompositeMetaClass):
             await self.bot.db.fetchval(
                 """
                 SELECT template
-                FROM boost_message
+                FROM public.boost_message
                 WHERE guild_id = $1
                 AND channel_id = $2
                 """,
@@ -885,7 +885,7 @@ class System(MixinMeta, metaclass=CompositeMetaClass):
 
         result = await self.bot.db.execute(
             """
-            DELETE FROM boost_message
+            DELETE FROM public.boost_message
             WHERE guild_id = $1
             """,
             ctx.guild.id,
@@ -912,7 +912,7 @@ class System(MixinMeta, metaclass=CompositeMetaClass):
             for record in await self.bot.db.fetch(
                 """
                 SELECT channel_id
-                FROM boost_message
+                FROM public.boost_message
                 WHERE guild_id = $1
                 """,
                 ctx.guild.id,

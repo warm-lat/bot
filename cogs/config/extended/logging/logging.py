@@ -448,7 +448,7 @@ class Logging(MixinMeta, metaclass=CompositeMetaClass):
 
             await self._safe_db_execute(
                 """
-                INSERT INTO logging_history 
+                INSERT INTO public.logging_history 
                 (guild_id, channel_id, event_type, content) 
                 VALUES ($1, $2, $3, $4)
                 """,
@@ -508,7 +508,7 @@ class Logging(MixinMeta, metaclass=CompositeMetaClass):
 
             await self._safe_db_execute(
                 """
-                INSERT INTO logging_history 
+                INSERT INTO public.logging_history 
                 (guild_id, channel_id, event_type, content) 
                 VALUES ($1, $2, $3, $4)
                 """,
