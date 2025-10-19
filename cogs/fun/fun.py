@@ -26,7 +26,7 @@ from typing_extensions import Self
 from xxhash import xxh64_hexdigest
 from yarl import URL
 from unidecode import unidecode
-
+from aiobotocore.session import get_session
 from PIL import (
     Image,
     ImageDraw,
@@ -502,33 +502,38 @@ class Fun(Cog):
         image.save(buffer, 'PNG')
         buffer.seek(0)
 
-        filename = f"profile_{user.id}_{int(time.time())}.png"
+        filename = f"socials/profile_{user.id}_{int(time.time())}.png"
+        session = get_session()
         headers = {"AccessKey": "bc5e2ae5-5433-4030-bbaaf49ef043-9766-4d31"}
         
-        async with aiohttp.ClientSession() as session:
-            async with session.put(
-                f"https://ny.storage.bunnycdn.com/warm2/socials/{filename}",
-                headers=headers,
-                data=buffer.read()
-            ) as upload:
-                if upload.status != 201:
-                    raise Exception("Failed to upload to CDN")
+        async with session.create_client(
+            's3',
+            endpoint_url=config.CLOUDFLARE.R2.ENDPOINT,
+            aws_access_key_id=config.CLOUDFLARE.R2.ACCESS_KEY,
+            aws_secret_access_key=config.CLOUDFLARE.R2.ACCESS_SECRET,
+        ) as s3:
+            await s3.put_object(
+                Bucket=config.CLOUDFLARE.R2.BUCKET,
+                Key=filename,
+                Body=buffer.read(),
+                ContentType=f"image/png"
+            )
 
-                new_url = f"https://bunny.warm.lat/socials/{filename}"
+            new_url = f"https://r2.warm.lat/{filename}"
 
-                if cached and cached['profile_image']:
+            if cached and cached['profile_image']:
                     old_filename = cached['profile_image'].split('/')[-1]
-                    await session.delete(
-                        f"https://ny.storage.bunnycdn.com/warm2/socials/{old_filename}",
-                        headers=headers
+                    await s3.delete_object(
+                        Bucket=config.CLOUDFLARE.R2.BUCKET,
+                        Key=old_filename
                     )
 
-                await self.bot.db.execute(
+            await self.bot.db.execute(
                     "INSERT INTO public.socials (user_id, profile_image, last_avatar, last_background) VALUES ($1, $2, $3, $4) ON CONFLICT (user_id) DO UPDATE SET profile_image = $2, last_avatar = $3, last_background = $4",
                     user.id, new_url, current_avatar, current_background
                 )
                 
-                return new_url
+            return new_url
 
     @command()  
     async def blacktea(self, ctx: Context) -> Optional[Message]:
@@ -5992,8 +5997,8 @@ class Fun(Cog):
                         return await ctx.warn("Invalid file format detected.")
                     
                     content_length = len(media_data)
-                    if content_length > 8 * 1024 * 1024: 
-                        return await ctx.warn("File must be under 8MB")
+                    if content_length > 10 * 1024 * 1024: 
+                        return await ctx.warn("File must be under 10MB")
 
                     if content_type.startswith('video/'):
                         video_buffer = io.BytesIO(media_data)
@@ -6032,7 +6037,7 @@ class Fun(Cog):
                         if upload.status != 201:
                             return await ctx.warn("Failed to upload media")
                         
-                        cdn_url = f"https://bunny.warm.lat/socials/{filename}"
+                        cdn_url = f"https://r2.warm.lat/socials/{filename}"
                         await self.bot.db.execute(
                             """
                             UPDATE public.socials 
@@ -6134,8 +6139,8 @@ class Fun(Cog):
                         return await ctx.warn("Invalid audio format detected.")
                     
                     content_length = len(media_data)
-                    if content_length > 7 * 1024 * 1024:
-                        return await ctx.warn("Audio file must be under 7MB")
+                    if content_length > 10 * 1024 * 1024:
+                        return await ctx.warn("Audio file must be under 10MB")
                     elif content_length < 1024:  
                         return await ctx.warn("File is too small to be a valid audio file")
 

@@ -114,7 +114,7 @@ class Recording(MixinMeta, metaclass=CompositeMetaClass):
                     if resp.status != 201:
                         raise Exception(f"Failed to upload: Status {resp.status}")
                     
-                    return f"https://warm-voice.b-cdn.net/recordings/{recording_id}.mp3"
+                    return f"https://r2.warm.lat/recordings/{recording_id}.mp3"
                 
         except Exception as e:
             log.error(f"Failed to upload to BunnyCDN: {e}")

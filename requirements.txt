@@ -60,7 +60,6 @@ chat_exporter
 matplotlib
 posthog
 scipy
-boto3
 stripe
 plotly
 moviepy

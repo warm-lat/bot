@@ -202,7 +202,7 @@ class Sticky(MixinMeta, metaclass=CompositeMetaClass):
             Optional[int],
             await self.bot.db.fetchval(
                 """
-                UPDATE sticky_message
+                UPDATE public.sticky_message
                 SET template = $3
                 WHERE guild_id = $1
                 AND channel_id = $2
@@ -228,7 +228,7 @@ class Sticky(MixinMeta, metaclass=CompositeMetaClass):
 
         await self.bot.db.execute(
             """
-            UPDATE sticky_message
+            UPDATE public.sticky_message
             SET message_id = $3
             WHERE guild_id = $1
             AND channel_id = $2
@@ -259,7 +259,7 @@ class Sticky(MixinMeta, metaclass=CompositeMetaClass):
             Optional[int],
             await self.bot.db.fetchval(
                 """
-                DELETE FROM sticky_message
+                DELETE FROM public.sticky_message
                 WHERE guild_id = $1
                 AND channel_id = $2
                 RETURNING message_id
@@ -296,7 +296,7 @@ class Sticky(MixinMeta, metaclass=CompositeMetaClass):
             await self.bot.db.fetchval(
                 """
                 SELECT template
-                FROM sticky_message
+                FROM public.sticky_message
                 WHERE guild_id = $1
                 AND channel_id = $2
                 """,
@@ -327,7 +327,7 @@ class Sticky(MixinMeta, metaclass=CompositeMetaClass):
             for record in await self.bot.db.fetch(
                 """
                 SELECT channel_id, message_id
-                FROM sticky_message
+                FROM public.sticky_message
                 WHERE guild_id = $1
                 """,
                 ctx.guild.id,

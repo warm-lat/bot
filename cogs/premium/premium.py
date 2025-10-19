@@ -1,14 +1,13 @@
 import config
 import re
 import time
-import boto3
 
 from main import Evict
 from managers.patches.permissions import donator
 from tools.handlers.reskin import create_reskin, ValidReskinName
 from core.client.context import Context
 from tools import quietly_delete
-
+from aiobotocore.session import get_session
 from logging import getLogger
 from typing import List, Optional, Callable
 from datetime import timedelta
@@ -229,19 +228,19 @@ class Premium(Cog):
             filename = f"reskins/{ctx.author.id}_{int(time.time())}.{file_ext}"
             
             log.info(f"[R2] Uploading reskin avatar for {ctx.author} ({ctx.author.id})")
-            s3 = boto3.client(
-                's3',
-                endpoint_url=config.CLOUDFLARE.R2.ENDPOINT_URL,
+            session = get_session()
+            async with session.create_client(
+                "s3",
+                endpoint_url=config.CLOUDFLARE.R2.ENDPOINT,
                 aws_access_key_id=config.CLOUDFLARE.R2.ACCESS_KEY,
                 aws_secret_access_key=config.CLOUDFLARE.R2.ACCESS_SECRET,
-            )
-
-            s3.put_object(
-                Bucket=config.CLOUDFLARE.R2.BUCKET,
-                Key=filename,
-                Body=image_data,
-                ContentType=f'image/{file_ext}'
-            )
+            ) as s3:
+                await s3.put_object(
+                    Bucket=config.CLOUDFLARE.R2.BUCKET,
+                    Key=filename,
+                    Body=image_data,
+                    ContentType=f'image/{file_ext}'
+                )
             log.info(f"[R2] Successfully uploaded {filename}")
 
             r2_url = f"https://r2.warm.lat/{filename}"

@@ -18,7 +18,7 @@ from discord import (
 )
 
 from discord.ui import View, Button
-
+from aiobotocore.session import get_session
 from aiohttp import ClientError
 from typing import cast
 from contextlib import suppress
@@ -34,21 +34,26 @@ class Listeners(Cog):
         self.update_topgg_stats.start()
         self.topgg_auth = config.AUTHORIZATION.TOPGG
 
-    async def upload_to_bunny(self, file_data: bytes, user_id: int, avatar_hash: str, file_extension: str) -> str:
+    async def upload_to_cfr2(self, file_data: bytes, user_id: int, avatar_hash: str, file_extension: str) -> str:
         """
-        Upload avatar data to BunnyCDN and return the URL.
+        Upload avatar data to Cloudflare R2 and return the URL.
         """
-        upload_url = f"https://ny.storage.bunnycdn.com/warm2/avh/{user_id}/{avatar_hash}.{file_extension}"
-        headers = {
-            "AccessKey": f"{config.AUTHORIZATION.AVH_ACCESS_KEY}",
-            "Content-Type": "application/octet-stream",
-        }
-        
-        async with self.bot.session.put(upload_url, data=file_data, headers=headers) as upload_response:
-            if upload_response.status != 201:
-                raise Exception(f"Failed to upload to BunnyCDN: {upload_response.status}")
+        session = get_session()
+        file_path = f"avh/{user_id}/{avatar_hash}.{file_extension}"
+        async with session.create_client(
+            's3',
+            endpoint_url=config.CLOUDFLARE.R2.ENDPOINT,
+            aws_access_key_id=config.CLOUDFLARE.R2.ACCESS_KEY,
+            aws_secret_access_key=config.CLOUDFLARE.R2.SECRET_KEY,
+        ) as client:
+            await client.put_object(
+                Bucket=config.CLOUDFLARE.R2.BUCKET,
+                Key=file_path,
+                Body=file_data,
+                ContentType=f"image/{file_extension}"
+            )
             
-        return f"https://bunny.warm.lat/avh/{user_id}/{avatar_hash}.{file_extension}"
+        return f"https://r2.warm.lat/avh/{user_id}/{avatar_hash}.{file_extension}"
 
     async def store_avatar_hash(self, user_id: int, avatar_hash: str, bunny_url: str) -> None:
         """
@@ -107,7 +112,7 @@ class Listeners(Cog):
                 file_extension = "gif" if after.avatar.is_animated() else "png"
                 avatar_hash = str(after.avatar.key)
                 
-                bunny_url = await self.upload_to_bunny(
+                bunny_url = await self.upload_to_cfr2(
                     avatar_bytes,
                     after.id,
                     avatar_hash,

@@ -10,7 +10,6 @@ import dns.resolver
 import secrets
 import random
 import string
-import aiobotocore
 from Crypto.Cipher import AES
 from Crypto.Util.Padding import unpad
 from aiobotocore.session import get_session

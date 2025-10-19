@@ -119,8 +119,6 @@ class AUTHORIZATION:
     SOUNDCLOUD: str = ""
     OSU: str = "a64dd995fcfb3754bb734f7a80fe13168be51879"
     TOPGG: str = ""
-    AVH_ACCESS_KEY: str = "bc5e2ae5-5433-4030-bbaaf49ef043-9766-4d31"
-    
     class REDDIT:
         CLIENT_ID: str = "7s2HJa0My0keJAiLvFhvZQ"
         CLIENT_SECRET: str = "C2oX-F-4uR6r4q_6RvUq8LRLrqsR8g"
@@ -147,7 +145,7 @@ class CLIENT:
     INVITE_URL: str = "https://discord.com/api/oauth2/authorize?client_id=1420609343283531776&permissions=8&scope=bot%20applications.commands"
     SUPPORT_URL: str = "https://discord.gg/apply"
     TWITCH_URL: str = "https://twitch.tv/nxyyontop"
-    OWNER_IDS: list = [1137513168965476352, 1076218266416054293]
+    OWNER_IDS: list = [1137513168965476352, 1076218266416054293, 1410395052529684602]
     DESCRIPTION: str = "A bot to manage your Discord server."
 
 class LAVALINK:
