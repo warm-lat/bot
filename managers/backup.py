@@ -48,36 +48,36 @@ class BackupManager:
             log.error(f"Bunny Storage upload failed: {e}")
             return False
 
-    async def _run_pg_dump(self, command: str) -> Optional[bytes]:
-        """
-        Execute pg_dump command and return output.
-        """
-        try:
-            process = await asyncio.create_subprocess_shell(
-                command,
-                stdout=asyncio.subprocess.PIPE,
-                stderr=asyncio.subprocess.PIPE
-            )
-            stdout, stderr = await process.communicate()
-            
-            if process.returncode != 0:
-                log.error(f"Backup failed: {stderr.decode()}")
-                return None
-            
-            try:
-                process.kill()
-            except ProcessLookupError:
-                pass
-                
-            return stdout
-        except Exception as e:
-            log.error(f"Backup error: {e}")
-            if 'process' in locals():
-                try:
-                    process.kill()
-                except ProcessLookupError:
-                    pass
-            return None
+    #async def _run_pg_dump(self, command: str) -> Optional[bytes]:
+    #    """
+    #    Execute pg_dump command and return output.
+    #    """
+    #    try:
+    #        process = await asyncio.create_subprocess_shell(
+    #            command,
+    #            stdout=asyncio.subprocess.PIPE,
+    #            stderr=asyncio.subprocess.PIPE
+    #        )
+    #        stdout, stderr = await process.communicate()
+    #        
+    #        if process.returncode != 0:
+    #            log.error(f"Backup failed: {stderr.decode()}")
+    #            return None
+    #        
+    #        try:
+    #            process.kill()
+    #        except ProcessLookupError:
+    #            pass
+    #            
+    #        return stdout
+    #    except Exception as e:
+    #        log.error(f"Backup error: {e}")
+    #        if 'process' in locals():
+    #            try:
+    #                process.kill()
+    #            except ProcessLookupError:
+    #                pass
+    #        return None
 
     #async def create_schema_backup(self, timestamp: datetime) -> bool:
     #    """
@@ -114,65 +114,65 @@ class BackupManager:
     #                local_path.unlink()
     #    return False
 
-    async def create_full_backup(self, timestamp: datetime) -> bool:
-        """
-        Create full backup of all databases.
-        """
-        date_folder = timestamp.strftime("%Y-%m-%d")
-        time_str = timestamp.strftime("%H%M%S")
-        filename = f"full_{time_str}.sql.gz"
-        
-        local_dir = self.full_dir / date_folder
-        local_dir.mkdir(exist_ok=True)
-        local_path = local_dir / filename
+    #async def create_full_backup(self, timestamp: datetime) -> bool:
+    #    """
+    #    Create full backup of all databases.
+    #    """
+    #    date_folder = timestamp.strftime("%Y-%m-%d")
+    #    time_str = timestamp.strftime("%H%M%S")
+    #    filename = f"full_{time_str}.sql.gz"
+    #    
+    #    local_dir = self.full_dir / date_folder
+    #    local_dir.mkdir(exist_ok=True)
+    #    local_path = local_dir / filename
 
-        command = (
-            "PGPASSWORD=admin pg_dumpall -h localhost -U postgres "
-            "--clean --if-exists"
-        )
+    #    command = (
+    #        "PGPASSWORD=admin pg_dumpall -h localhost -U postgres "
+    #        "--clean --if-exists"
+    #    )
 
-        try:
-            process = await asyncio.create_subprocess_shell(
-                command,
-                stdout=asyncio.subprocess.PIPE,
-                stderr=asyncio.subprocess.PIPE
-            )
-            
-            with gzip.open(local_path, 'wb') as gz_file:
-                while True:
-                    chunk = await process.stdout.read(8192)  
-                    if not chunk:
-                        break
-                    gz_file.write(chunk)
-            
-            stderr = await process.stderr.read()
-            if process.returncode != 0:
-                log.error(f"Backup failed: {stderr.decode()}")
-                local_path.unlink()
-                return False
-                
-            try:
-                process.kill()
-            except ProcessLookupError:
-                pass
-            
-            success = await asyncio.get_event_loop().run_in_executor(
-                None, 
-                self._upload_to_bunny, 
-                local_path, 
-                f"/full/{date_folder}/{filename}"
-            )
-            
-            if success:
-                log.info(f"Created full backup: {filename}")
-                return True
-                
-        except Exception as e:
-            log.error(f"Backup error: {e}")
-            if 'local_path' in locals() and local_path.exists():
-                local_path.unlink()
-            
-        return False
+    #    try:
+    #        process = await asyncio.create_subprocess_shell(
+    #            command,
+    #            stdout=asyncio.subprocess.PIPE,
+    #            stderr=asyncio.subprocess.PIPE
+    #        )
+    #        
+    #        with gzip.open(local_path, 'wb') as gz_file:
+    #            while True:
+    #                chunk = await process.stdout.read(8192)  
+    #                if not chunk:
+    #                    break
+    #                gz_file.write(chunk)
+    #        
+    #        stderr = await process.stderr.read()
+    #        if process.returncode != 0:
+    #            log.error(f"Backup failed: {stderr.decode()}")
+    #            local_path.unlink()
+    #            return False
+    #            
+    #        try:
+    #            process.kill()
+    #        except ProcessLookupError:
+    #            pass
+    #        
+    #        success = await asyncio.get_event_loop().run_in_executor(
+    #            None, 
+    #            self._upload_to_bunny, 
+    #            local_path, 
+    #            f"/full/{date_folder}/{filename}"
+    #        )
+    #        
+    #        if success:
+    #            log.info(f"Created full backup: {filename}")
+    #            return True
+    #            
+    #    except Exception as e:
+    #        log.error(f"Backup error: {e}")
+    #        if 'local_path' in locals() and local_path.exists():
+    #            local_path.unlink()
+    #        
+    #    return False
 
     def cleanup_old_backups(self):
         """
@@ -212,12 +212,12 @@ class BackupManager:
         """
         Run both schema and full backups.
         """
-        timestamp = datetime.now(timezone.utc)
+        #timestamp = datetime.now(timezone.utc)
         #schema_success = await self.create_schema_backup(timestamp)
-        full_success = await self.create_full_backup(timestamp)
+        #full_success = await self.create_full_backup(timestamp)
         
         #if schema_success and full_success:
-        if full_success:
-            self.cleanup_old_backups()
-            return True
+        #if full_success:
+        #    self.cleanup_old_backups()
+        #    return True
         return False 
