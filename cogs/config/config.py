@@ -429,7 +429,7 @@ class Config(Extended, Cog):
         else:
             await self.bot.db.execute(
                 f"""
-                INSERT INTO mod (guild_id, dm_{action}, dm_enabled) 
+                INSERT INTO public.mod (guild_id, dm_{action}, dm_enabled) 
                 VALUES ($1, $2, true)
                 """,
                 ctx.guild.id,
@@ -453,7 +453,7 @@ class Config(Extended, Cog):
         """
         check = await self.bot.db.fetchrow(
             """
-            SELECT * FROM pingonjoin 
+            SELECT * FROM public.pingonjoin 
             WHERE guild_id = $1 
             AND channel_id = $2
             """,
@@ -469,7 +469,7 @@ class Config(Extended, Cog):
         elif check is None:
             await self.bot.db.execute(
                 """
-                INSERT INTO pingonjoin 
+                INSERT INTO public.pingonjoin 
                 VALUES ($1,$2)
                 """, 
                 channel.id, 
@@ -487,7 +487,7 @@ class Config(Extended, Cog):
         if channel is not None:
             check = await self.bot.db.fetchrow(
                 """
-                SELECT * FROM pingonjoin 
+                SELECT * FROM public.pingonjoin 
                 WHERE guild_id = $1 
                 AND channel_id = $2
                 """,
@@ -503,7 +503,7 @@ class Config(Extended, Cog):
             elif check is not None:
                 await self.bot.db.execute(
                     """
-                    DELETE FROM pingonjoin 
+                    DELETE FROM public.pingonjoin 
                     WHERE guild_id = $1 
                     AND channel_id = $2
                     """,
@@ -517,7 +517,7 @@ class Config(Extended, Cog):
 
         check = await self.bot.db.fetch(
             """
-            SELECT * FROM pingonjoin 
+            SELECT * FROM public.pingonjoin 
             WHERE guild_id = $1
             """,
             ctx.guild.id
@@ -529,7 +529,7 @@ class Config(Extended, Cog):
         elif check is not None:
             await self.bot.db.execute(
                 """
-                DELETE FROM pingonjoin 
+                DELETE FROM public.pingonjoin 
                 WHERE guild_id = $1
                 """,
                 ctx.guild.id
@@ -549,7 +549,7 @@ class Config(Extended, Cog):
             records = await self.bot.db.fetch(
                 """
                 SELECT channel_id 
-                FROM pingonjoin 
+                FROM public.pingonjoin 
                 WHERE guild_id = $1
                 """,
                 member.guild.id
@@ -589,7 +589,7 @@ class Config(Extended, Cog):
         record = await self.bot.db.fetchrow(
             """
             SELECT original 
-            FROM tag_aliases 
+            FROM public.tag_aliases 
             WHERE guild_id = $1 
             AND LOWER(alias) = LOWER($2)
             """,
@@ -603,7 +603,7 @@ class Config(Extended, Cog):
         record = await self.bot.db.fetchrow(
             """
             SELECT template, owner_id, restricted_user, restricted_role
-            FROM tags 
+            FROM public.tags 
             WHERE guild_id = $1 
             AND LOWER(name) = LOWER($2)
             """,
@@ -617,7 +617,7 @@ class Config(Extended, Cog):
         restricted_user = await self.bot.db.fetchval(
             """
             SELECT restricted_user 
-            FROM tags 
+            FROM public.tags 
             WHERE guild_id = $1 
             AND LOWER(name) = LOWER($2)
             """,
@@ -628,7 +628,7 @@ class Config(Extended, Cog):
         restricted_role = await self.bot.db.fetchval(
             """
             SELECT restricted_role 
-            FROM tags 
+            FROM public.tags 
             WHERE guild_id = $1 
             AND LOWER(name) = LOWER($2)
             """,
@@ -649,7 +649,7 @@ class Config(Extended, Cog):
         
         await self.bot.db.execute(
             """
-            UPDATE tags 
+            UPDATE public.tags 
             SET uses = uses + 1 
             WHERE guild_id = $1 
             AND LOWER(name) = LOWER($2)
@@ -752,7 +752,7 @@ class Config(Extended, Cog):
 
         await self.bot.db.execute(
             """
-            DELETE FROM tags 
+            DELETE FROM public.tags 
             WHERE guild_id = $1 
             AND LOWER(name) = LOWER($2)
             """,
@@ -771,7 +771,7 @@ class Config(Extended, Cog):
         record = await self.bot.db.fetchrow(
             """
             SELECT name, owner_id, uses, created_at, template
-            FROM tags 
+            FROM public.tags 
             WHERE guild_id = $1 
             AND LOWER(name) = LOWER($2)
             """,
@@ -785,7 +785,7 @@ class Config(Extended, Cog):
         aliases = await self.bot.db.fetch(
             """
             SELECT alias 
-            FROM tag_aliases 
+            FROM public.tag_aliases 
             WHERE guild_id = $1 
             AND LOWER(original) = LOWER($2)
             """,

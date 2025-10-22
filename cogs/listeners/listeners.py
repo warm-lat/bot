@@ -234,22 +234,6 @@ class Listeners(Cog):
         return await channel.send(embed=embed, view=view, silent=True)
 
     @Cog.listener("on_guild_join")
-    async def join_message(self, guild: Guild) -> Message:
-        """
-        Set a custom join message upon bot join.
-        """
-        embed = Embed(
-            title="hey, thanks for adding warm",
-            description=(
-                "prefix is `,` and you can get started by running `,help`"
-            ),
-        )
-
-        embed.set_thumbnail(url=self.bot.user.display_avatar)
-
-        await self.bot.notify(guild, embed=embed)
-
-    @Cog.listener("on_guild_join")
     async def blacklist_check(self, guild: Guild) -> None:
         """
         Check if a server or server owner is blacklisted upon join.
@@ -381,7 +365,7 @@ class Listeners(Cog):
     async def on_ready(self):
         print(f"{self.__class__.__name__} cog has been loaded")
 
-    @tasks.loop(minutes=60)
+    @tasks.loop(minutes=90)
     async def update_topgg_stats(self):
         url = f"https://top.gg/api/bots/{self.bot.user.id}/stats"
         headers = {"Authorization": self.topgg_auth}

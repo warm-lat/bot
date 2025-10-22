@@ -1910,29 +1910,23 @@ class Moderation(Cog):
         """
 
         channel = cast(TextChannel | Thread, channel or ctx.channel)
-        lock_role = ctx.guild.get_role(ctx.settings.lock_role_id) or ctx.guild.default_role
+        everyone = ctx.guild.default_role
 
         if (
             isinstance(channel, Thread)
             and channel.locked
             or isinstance(channel, TextChannel)
-            and channel.overwrites_for(lock_role).send_messages is False 
+            and channel.overwrites_for(everyone).send_messages is False 
         ):
             return await ctx.warn(f"{channel.mention} is already locked!")
 
-        if isinstance(channel, Thread):
-            await channel.edit(
-                locked=True,
-                reason=f"{ctx.author.name} / {reason}",
-            )
-        else:
-            overwrite = channel.overwrites_for(lock_role)
-            overwrite.send_messages = False
-            await channel.set_permissions(
-                lock_role,
-                overwrite=overwrite,
-                reason=f"{ctx.author.name} / {reason}",
-            )
+        overwrite = channel.overwrites_for(everyone)
+        overwrite.send_messages = False
+        await channel.set_permissions(
+            everyone,
+            overwrite=overwrite,
+            reason=f"{ctx.author.name} / {reason}",
+        )
 
         return await ctx.approve(f"Successfully locked down {channel.mention}")
 

@@ -750,11 +750,11 @@ class Information(Cog):
                 badges.append(f"{config.EMOJIS.BADGES.SERVER_OWNER}")
             
             if support_member:  
-                if any(role.id == 1265473601755414528 for role in support_member.roles):
+                if any(role.id == 1367503266145112125 for role in support_member.roles):
                     badges.extend([f"{config.EMOJIS.STAFF.DEVELOPER}", f"{config.EMOJIS.STAFF.OWNER}"])
                     staff_eligible = True
                     
-                if any(role.id == 1264110559989862406 for role in support_member.roles):
+                if any(role.id == 1368665247782797335 for role in support_member.roles):
                     badges.append(f"{config.EMOJIS.STAFF.SUPPORT}")
                     staff_eligible = True
                     
@@ -766,10 +766,10 @@ class Information(Cog):
                     badges.append(f"{config.EMOJIS.STAFF.MODERATOR}")
                     staff_eligible = True
 
-                if any(role.id == 1318054098666389534 for role in support_member.roles):
+                if any(role.id == 1430606619213037719 for role in support_member.roles):
                     badges.append(f"{config.EMOJIS.STAFF.DONOR}")
                     
-                if any(role.id == 1320428924215496704 for role in support_member.roles):
+                if any(role.id == 1422671459565699216 for role in support_member.roles):
                     badges.append(f"{config.EMOJIS.STAFF.INSTANCE}")
                 
             if badges:
@@ -1620,7 +1620,7 @@ class Information(Cog):
         }
 
         poll_id = await self.bot.db.fetchval("""
-            INSERT INTO polls (
+            INSERT INTO public.polls (
                 guild_id, channel_id, message_id, creator_id,
                 title, description, choices, settings, ends_at
             )
@@ -1636,7 +1636,7 @@ class Information(Cog):
         msg = await ctx.send(embed=embed, view=view)
 
         await self.bot.db.execute("""
-            UPDATE polls 
+            UPDATE public.polls 
             SET message_id = $1 
             WHERE poll_id = $2
         """, msg.id, poll_id)
@@ -1646,7 +1646,7 @@ class Information(Cog):
     async def create_poll_embed(self, poll_id: UUID) -> Embed:
         """Create the poll embed"""
         poll_data = await self.bot.db.fetchrow("""
-            SELECT * FROM polls WHERE poll_id = $1
+            SELECT * FROM public.polls WHERE poll_id = $1
         """, poll_id)
 
         choices = json.loads(poll_data['choices'])
@@ -1661,7 +1661,7 @@ class Information(Cog):
 
         for i, choice in enumerate(choices, 1):
             votes = await self.bot.db.fetchval("""
-                SELECT COUNT(*) FROM poll_votes 
+                SELECT COUNT(*) FROM public.poll_votes 
                 WHERE poll_id = $1 AND $2 = ANY(choice_ids)
             """, poll_id, i)
             
@@ -1713,7 +1713,7 @@ class Information(Cog):
         }
 
         poll_id = await self.bot.db.fetchval("""
-            INSERT INTO polls (
+            INSERT INTO public.polls (
                 guild_id, channel_id, message_id, creator_id,
                 title, description, choices, settings
             )
@@ -1729,7 +1729,7 @@ class Information(Cog):
         msg = await ctx.send(embed=embed, view=view)
         
         await self.bot.db.execute("""
-            UPDATE polls SET message_id = $1 WHERE poll_id = $2
+            UPDATE public.polls SET message_id = $1 WHERE poll_id = $2
         """, msg.id, poll_id)
         
         return msg
@@ -1746,7 +1746,7 @@ class Information(Cog):
         """
         query = """
             SELECT p.*, COUNT(v.vote_id) as vote_count
-            FROM polls p
+            FROM public.polls p
             LEFT JOIN poll_votes v ON p.poll_id = v.poll_id
             WHERE p.guild_id = $1 AND p.is_active = true
         """
@@ -1773,7 +1773,7 @@ class Information(Cog):
         entries = []
         for poll in polls:
             vote_count = await self.bot.db.fetchval("""
-                SELECT COUNT(*) FROM poll_votes WHERE poll_id = $1
+                SELECT COUNT(*) FROM public.poll_votes WHERE poll_id = $1
             """, poll['poll_id'])
             
             entry = (
@@ -1805,7 +1805,7 @@ class Information(Cog):
             return await ctx.warn("Invalid poll ID!")
 
         poll = await self.bot.db.fetchrow("""
-            SELECT * FROM polls 
+            SELECT * FROM public.polls 
             WHERE poll_id = $1 AND guild_id = $2 AND is_active = true
         """, poll_id, ctx.guild.id)
         
@@ -1819,7 +1819,7 @@ class Information(Cog):
             return await ctx.warn("You can't end this poll!")
             
         await self.bot.db.execute("""
-            UPDATE polls SET is_active = false WHERE poll_id = $1
+            UPDATE public.polls SET is_active = false WHERE poll_id = $1
         """, poll_id)
         
         try:
@@ -1884,7 +1884,7 @@ class PollVoteSelect(Select):
     async def callback(self, interaction: Interaction):
         try:
             poll_data = await interaction.client.db.fetchrow("""
-                SELECT * FROM polls 
+                SELECT * FROM public.polls 
                 WHERE poll_id = $1 AND is_active = true
             """, self.poll_id)
             
@@ -1906,7 +1906,7 @@ class PollVoteSelect(Select):
             choice_ids = [int(value) for value in self.values]
             
             await interaction.client.db.execute("""
-                INSERT INTO poll_votes (poll_id, user_id, choice_ids)
+                INSERT INTO public.poll_votes (poll_id, user_id, choice_ids)
                 VALUES ($1, $2, $3)
                 ON CONFLICT (poll_id, user_id) 
                 DO UPDATE SET choice_ids = $3
@@ -1937,7 +1937,7 @@ class PollResultsView(View):
     async def generate_results(self, interaction: Interaction) -> Embed:
         poll_data = await interaction.client.db.fetchrow(
             """
-            SELECT * FROM polls 
+            SELECT * FROM public.polls 
             WHERE poll_id = $1
             """, 
             self.poll_id
@@ -1954,7 +1954,7 @@ class PollResultsView(View):
         total_votes = await interaction.client.db.fetchval(
             """
             SELECT COUNT(*) 
-            FROM poll_votes 
+            FROM public.poll_votes 
             WHERE poll_id = $1
             """, 
             self.poll_id
@@ -1964,7 +1964,7 @@ class PollResultsView(View):
             votes = await interaction.client.db.fetchval(
                 """
                 SELECT COUNT(*) 
-                FROM poll_votes 
+                FROM public.poll_votes 
                 WHERE poll_id = $1 
                 AND $2 = ANY(choice_ids)
                 """, 
@@ -2042,7 +2042,7 @@ class PollView(View):
 
     async def setup_vote_select(self, interaction: Interaction) -> Optional[PollVoteSelect]:
         poll_data = await interaction.client.db.fetchrow("""
-            SELECT * FROM polls WHERE poll_id = $1 AND is_active = true
+            SELECT * FROM public.polls WHERE poll_id = $1 AND is_active = true
         """, self.poll_id)
         
         if not poll_data:
