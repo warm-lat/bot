@@ -479,7 +479,7 @@ class Owner(
 
         return await ctx.check()
 
-    @sudo.command(name="blacklist", aliases=["bl"], example="598125772754124823")
+    @sudo.command(name="blacklist", aliases=["bl"], example="1137513168965476352 reason")
     async def sudo_blacklist(
         self,
         ctx: Context,
@@ -524,7 +524,7 @@ class Owner(
 
     @sudo.command(
         name="check",
-        example="@x",
+        example="@warm",
         aliases=["note"],
     )
     async def sudo_check(self, ctx: Context, *, user: Member | User):
@@ -534,8 +534,8 @@ class Owner(
 
         note = await self.bot.db.fetchval(
             """
-            SELECT information 
-            FROM public.blacklist 
+            SELECT information
+            FROM public.blacklist
             WHERE user_id = $1
             """, user.id
         )
@@ -544,7 +544,7 @@ class Owner(
 
         await ctx.neutral(f"**{user}** is blacklisted for **{note}**")
 
-    @sudo.command(name="guildblacklist", aliases=["gb"], example="1349176135874908181")
+    @sudo.command(name="guildblacklist", aliases=["gb"], example="1349176135874908181 reason")
     async def sudo_guildblacklist(
         self,
         ctx: Context,
@@ -717,6 +717,7 @@ class Owner(
     async def unsync(self, ctx: Context):
         """
         Unsync all slash commands.
+        
         """
         await self.bot.tree.clear_commands()
         await ctx.approve("Successfully removed all slash commands.")
@@ -843,7 +844,7 @@ class Owner(
         current_earnings = await self.bot.db.fetchval(
             """
             SELECT earnings 
-            FROM economy 
+            FROM public.economy 
             WHERE user_id = $1
             """,
             member.id
@@ -853,7 +854,7 @@ class Owner(
         
         await self.bot.db.execute(
             """
-            UPDATE economy SET bank = $1, earnings = $2 
+            UPDATE public.economy SET bank = $1, earnings = $2 
             WHERE user_id = $3
             """,
             amount,
@@ -891,7 +892,7 @@ class Owner(
         Toggle a user's donator status.
         """
         guild = self.bot.get_guild(1349176135874908181)
-        role = guild.get_role(1318054098666389534)
+        role = guild.get_role(1430606619213037719)
         member = guild.get_member(user.id)
         
         check = await self.bot.db.fetchrow(
@@ -2315,7 +2316,7 @@ class Owner(
         return await ctx.approve(f"Deleted report #{report_id}")
 
     @command()
-    async def updatetopgg(self, ctx: Context):
+    async def utop(self, ctx: Context):
         """Force update Top.gg stats."""
         url = f"https://top.gg/api/bots/{self.bot.user.id}/stats"
         headers = {"Authorization": ""}

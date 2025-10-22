@@ -64,16 +64,13 @@ class BrowserHandler:
         try:
             await self.cleanup()
             
-            # Try to start playwright with error handling
             try:
                 self.playwright = await async_playwright().start()
                 log.info("Playwright started successfully")
             except NotImplementedError as e:
-                log.error(f"Playwright failed to start due to event loop policy: {e}")
-                # Try setting the event loop policy again
                 if sys.platform == "win32":
                     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
-                    log.info("Reset Windows event loop policy, retrying...")
+                    log.info("Reset Windows event loop policy, restarting...")
                     self.playwright = await async_playwright().start()
                 else:
                     raise
@@ -100,7 +97,6 @@ class BrowserHandler:
             )
             log.info("Browser context created successfully")
             
-            # Load cookies with error handling
             try:
                 await self.context.add_cookies(
                     [

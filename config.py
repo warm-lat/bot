@@ -58,6 +58,7 @@ class EMOJIS:
         LEFT: str = "<:previous:1427025073587355768>"
         RIGHT: str = "<:next:1427025026858749983>"
         FILTER: str = ""
+        JUUL: str = ""
     class POLL:
         WHITE: str = ""
         WLR: str = ""

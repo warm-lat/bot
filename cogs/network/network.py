@@ -6096,7 +6096,7 @@ class Network(Cog):
             try:
                 user = await self.bot.fetch_user(int(user_id))
                 if user:
-                    channel = self.bot.get_channel(1325865864834187334)
+                    channel = self.bot.get_channel(1430620347022970890)
                     if channel:
                         embed = discord.Embed(
                             title="New Vote",

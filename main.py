@@ -569,9 +569,9 @@ class Evict(commands.AutoShardedBot):
             self.voice_update_task = self.loop.create_task(self.update_voice_times())
             log.info("Started voice update task")
             
-            self.backup_manager = BackupManager(self)
-            self.backup_task = self.loop.create_task(self._backup_task())
-            log.info("Started backup manager")
+            #self.backup_manager = BackupManager(self)
+            #self.backup_task = self.loop.create_task(self._backup_task())
+            #log.info("Started backup manager")
 
             for guild in self.guilds:
                 for vc in guild.voice_channels:
