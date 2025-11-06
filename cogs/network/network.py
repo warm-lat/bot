@@ -864,13 +864,6 @@ class Network(Cog):
         await self.app.cleanup()
         log.info("Gracefully shutdown the API")
 
-    @route("/health")
-    async def health(self, request: Request) -> Response:
-        return web.json_response({
-            "status": "ok",
-            "timestamp": int(time.time()),
-            "uptime": int(self.bot.uptime2)
-        })
 
     @route("/commands")
     async def commands(self: "Network", request: Request) -> Response:
@@ -1283,8 +1276,7 @@ class Network(Cog):
     @route("/status")
     @ratelimit(5, 60)
     async def status(self, request: Request) -> Response:
-        return web.json_response(
-            {
+        return web.json_response({
                 "shards": [
                     {
                         "guilds": f"{len([guild for guild in self.bot.guilds if guild.shard_id == shard.id])}",
@@ -1293,10 +1285,9 @@ class Network(Cog):
                         "uptime": f"{int(self.bot.uptime2)}",
                         "users": f"{sum(guild.member_count for guild in self.bot.guilds if guild.shard_id == shard.id)}",
                     }
-                    for shard in self.bot.shards.values()
-                ]
-            }
-        )
+                for shard in self.bot.shards.values()
+            ]
+        })
 
     @route("/tickets")
     @ratelimit(5, 60)
@@ -2687,8 +2678,7 @@ class Network(Cog):
 
             timestamp = int(datetime.now(timezone.utc).timestamp())
             token_data = f"{user_id}-{timestamp}"
-            token = hashlib.sha256(
-                f"{token_data}-{os.getenv('TOKEN_SECRET') or 'verymuchasecretforwarmlatbotfr'}".encode()
+            token = hashlib.sha256(f"{token_data}-{os.getenv('TOKEN_SECRET') or 'verymuchasecretforwarmlatbotfr'}".encode()
             ).hexdigest()
 
             await self.bot.db.execute(

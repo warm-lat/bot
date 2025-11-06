@@ -9,13 +9,17 @@ class COLORS:
     SPOTIFY = 0x1DB954
 
 class EMOJIS:
+    
     class ANTINUKE:
         ENABLED: str = ""
-        DISABLe: str = ""
+        DISABLE: str = ""
+        
     class BADGES:
         SERVER_OWNER: str = "<:server_owner:1423366267573637302>"
+        
     class TICKETS:
         TRASH: str = "<:trash:1423751023842955385>"
+        
     class MISC:
         CONNECTION: str = "<:connection:1423366043958771922>"
         CRYPTO: str = "<:crypto:1423750202195705966>"
@@ -30,19 +34,23 @@ class EMOJIS:
         REDUCED_COOLDOWNS: str = ""
         MODERATION: str = ""
         COMMANDS: str = ""
+        
     class FUN:
         GAY: str = ""
         LESBIAN: str = ""
         DUMBASS: str = ""
+        
     class SOCIAL:
         DISCORD: str = "<:discord:1423443912793657344>"
         WEBSITE: str = "<:website:1423442144776949911>"
         GITHUB: str = "<:github:1423437308081733702>"
+        
     class ECONOMY:
         WELCOME: str = ""
         GEM: str = ""
         CROWN: str = ""
         INVIS: str = ""
+        
     class AUDIO:
         PREVIOUS: str = ""
         PAUSE: str = ""
@@ -51,6 +59,7 @@ class EMOJIS:
         REPEAT_TRACK: str = ""
         RESUME: str = ""
         QUEUE: str = ""
+        
     class CONTEXT:
         APPROVE: str = "<:approve:1427496487927021631>"
         DENY: str = ""
@@ -59,6 +68,7 @@ class EMOJIS:
         RIGHT: str = "<:next:1427025026858749983>"
         FILTER: str = ""
         JUUL: str = ""
+        
     class POLL:
         WHITE: str = ""
         WLR: str = ""
@@ -66,6 +76,7 @@ class EMOJIS:
         BLR: str = ""
         BRR: str = ""
         SQUARE: str = ""
+        
     class STAFF:
         DEVELOPER: str = ""
         OWNER: str = ""
@@ -75,6 +86,7 @@ class EMOJIS:
         DONOR: str = ""
         INSTANCE: str = ""
         STAFF: str = "<:staff:1423372682430251138>"
+        
     class SPOTIFY:
         ICON: str = "<:spotify:1423375028447215656>"
         LEFT: str = ""
@@ -94,6 +106,7 @@ class EMOJIS:
         NEXT: str = "<:sp_next:1424090799355986021>"
         VOLUME: str = "<:sp_volume:1424089962730754159>"
         PLAY: str = "<:sp_play:1424169876544819262>"
+        
     class INTERFACE:
         LOCK: str = "<:vm_lock:1423361217891799140>"
         UNLOCK: str = "<:vm_unlock:1423361237516947556>"
@@ -120,6 +133,7 @@ class AUTHORIZATION:
     SOUNDCLOUD: str = ""
     OSU: str = "a64dd995fcfb3754bb734f7a80fe13168be51879"
     TOPGG: str = ""
+    
     class REDDIT:
         CLIENT_ID: str = "7s2HJa0My0keJAiLvFhvZQ"
         CLIENT_SECRET: str = "C2oX-F-4uR6r4q_6RvUq8LRLrqsR8g"
@@ -127,6 +141,7 @@ class AUTHORIZATION:
     class LASTFM: 
         KEY: str = "4b25716d870cfa49dce73170b5d67439"
         SECRET: str = "f3384c0ce4269dd575ac597347747b3c"
+        
     class TWITCH:
         CLIENT_ID: str = "jzkbprff40iqj646a697cyrvl0zt2m3"
         CLIENT_SECRET: str = "zj8b3n1t9m6b4g4f6vd5p3l4w1x9y0"
@@ -163,6 +178,7 @@ class RATELIMITS:
     PER_1M: int = 75
 
 class CLOUDFLARE:
+    
     class R2:
         ENDPOINT: str = "https://72517b1ad2f1c7ffb8488e7ae9b1e317.r2.cloudflarestorage.com"
         ACCESS_KEY: str = "05b1a9daca6f61fc7910b1f7b94dbbe4"

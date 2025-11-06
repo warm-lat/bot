@@ -235,7 +235,7 @@ class Owner(
         channels = await self.bot.db.fetch(
             """
             SELECT guild_id, channel_id, message_id 
-            FROM docket_channels
+            FROM public.docket_channels
             """
         )
         
@@ -427,30 +427,30 @@ class Owner(
         await self.bot.user.edit(banner=attachment.buffer)
         return await ctx.check()
 
-    @sudo.command(name="emojis", aliases=["emotes"])
-    async def sudo_emojis(self, ctx: Context) -> Message:
-        """
-        Load all necessary emojis.
-        """
-        path = Path("assets")
-        result: Dict[str, List[str]] = {}
-        for category in ("badges", "paginator", "audio", "slugs"):
-            result[category] = []
-            for file in path.glob(f"{category}/*.jpg"):
-                emoji = await ctx.guild.create_custom_emoji(
-                    name=file.stem, image=file.read_bytes()
-                )
-                result[category].append(f'{file.stem.upper()}: str = "{emoji}"')
+    #@sudo.command(name="emojis", aliases=["emotes"])
+    #async def sudo_emojis(self, ctx: Context) -> Message:
+    #    """
+    #    Load all necessary emojis.
+    #    """
+    #    path = Path("assets")
+    #    result: Dict[str, List[str]] = {}
+    #    for category in ("badges", "paginator", "audio", "slugs"):
+    #        result[category] = []
+    #        for file in path.glob(f"{category}/*.jpg"):
+    #            emoji = await ctx.guild.create_custom_emoji(
+    #                name=file.stem, image=file.read_bytes()
+    #            )
+    #            result[category].append(f'{file.stem.upper()}: str = "{emoji}"')
 
-        return await ctx.send(
-            codeblock(
-                "\n".join(
-                    f"class {category.upper()}:\n"
-                    + "\n".join(f"    {name}" for name in names)
-                    for category, names in result.items()
-                )
-            )
-        )
+    #    return await ctx.send(
+    #        codeblock(
+    #            "\n".join(
+    #                f"class {category.upper()}:\n"
+    #                + "\n".join(f"    {name}" for name in names)
+    #                for category, names in result.items()
+    #            )
+    #        )
+    #    )
 
     @sudo.command(name="x", example="1349176135874908181")
     async def sudo_x(
