@@ -18,7 +18,7 @@ class Confess(MixinMeta, metaclass=CompositeMetaClass):
     Anoymous confession commands.
     """
 
-    @hybrid_group(invoke_without_command=True)
+    @hybrid_group(invoke_without_command=True, aliases=["confess", "confession"])
     async def confessions(self, ctx: Context):
         """
         Configure anonymous confessions.

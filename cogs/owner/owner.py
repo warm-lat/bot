@@ -168,7 +168,7 @@ class Owner(
                 f"{config.EMOJIS.DOCKET.YELLOW} In Progress - Currently being worked on\n"
                 f"{config.EMOJIS.DOCKET.BLACK} Pending - Awaiting additional information\n"
                 f"{config.EMOJIS.DOCKET.PURPLE} Review - Ready for final review\n"
-                f"{config.EMOJIS.DOCKET.RED}  Completed - Work has been finished"
+                f"{config.EMOJIS.DOCKET.GREEN}  Completed - Work has been finished"
             ),
             color=0x2b2d31,
             timestamp=discord.utils.utcnow()
@@ -179,7 +179,7 @@ class Owner(
                 "in_progress": f"{config.EMOJIS.DOCKET.YELLOW}", 
                 "pending": f"{config.EMOJIS.DOCKET.BLACK}",
                 "review": f"{config.EMOJIS.DOCKET.PURPLE}",
-                "completed": f"{config.EMOJIS.DOCKET.RED}"
+                "completed": f"{config.EMOJIS.DOCKET.GREEN}"
             }
             
             status_counts = {}
@@ -217,7 +217,7 @@ class Owner(
             completed_list = []
             for docket in recent_completed:
                 completed_list.append(
-                    f"{config.EMOJIS.DOCKET.RED}  {docket['title'][:50]}... "
+                    f"{config.EMOJIS.DOCKET.GREEN}  {docket['title'][:50]}... "
                     f"(Completed: {discord.utils.format_dt(docket['last_updated'])})"
                 )
             
@@ -1660,7 +1660,7 @@ class Owner(
             
         await ctx.send(embed=embed)
 
-        channels = await self.bot.db.fetch("SELECT * FROM docket_channels")
+        channels = await self.bot.db.fetch("SELECT * FROM public.docket_channels")
         thread_embed = Embed(
             title=f"New Docket #{docket_id}",
             description=(
@@ -1802,7 +1802,7 @@ class Owner(
             "in_progress": f"{config.EMOJIS.DOCKET.YELLOW}", 
             "pending": f"{config.EMOJIS.DOCKET.BLACK}",
             "review": f"{config.EMOJIS.DOCKET.PURPLE}",
-            "completed": f"{config.EMOJIS.DOCKET.RED}"
+            "completed": f"{config.EMOJIS.DOCKET.GREEN}"
         }
 
         if new_status:
@@ -1949,7 +1949,7 @@ class Owner(
             "in_progress": f"{config.EMOJIS.DOCKET.YELLOW}", 
             "pending": f"{config.EMOJIS.DOCKET.BLACK}",
             "review": f"{config.EMOJIS.DOCKET.PURPLE}",
-            "completed": f"{config.EMOJIS.DOCKET.RED}"
+            "completed": f"{config.EMOJIS.DOCKET.GREEN}"
         }
         
         old_emoji = status_emojis.get(old_status, f"{config.EMOJIS.DOCKET.CYAN}")

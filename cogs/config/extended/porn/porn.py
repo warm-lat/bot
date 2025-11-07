@@ -58,9 +58,9 @@ class Porn(MixinMeta, metaclass=CompositeMetaClass):
         except Exception as e:
             return
 
-    @tasks.loop(minutes=3)
+    @tasks.loop(minutes=5)
     async def send_content(self):
-        """Send content every minute to configured channels"""
+        """Send content every 5 minutes to configured channels"""
         try:
             configs = await self.bot.db.fetch(
                 """
@@ -121,7 +121,7 @@ class Porn(MixinMeta, metaclass=CompositeMetaClass):
                                 await webhook.edit(avatar=await guild.icon.read())
 
                             await webhook.send(file=discord.File(temp_path))
-                                                  #spoiler=config['spoiler']))
+                                                #spoiler=config['spoiler']))
                             await asyncio.sleep(2)
 
                         except Exception as e:

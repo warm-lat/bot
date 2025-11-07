@@ -66,7 +66,7 @@ class Extended(
     CommandManagement,
     Invites,
     JoinDM,
-    Porn,
+    #Porn,
     Confess,
     Recording,
     metaclass=CompositeMetaClass,

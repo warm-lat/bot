@@ -10,6 +10,14 @@ class COLORS:
 
 class EMOJIS:
     
+    class DOCKET:
+        INFO: str = ""
+        YELLOW: str = ""
+        BLACK: str = ""
+        PURPLE: str = ""
+        GREEN: str = ""
+        CYAN: str = ""
+    
     class ANTINUKE:
         ENABLED: str = ""
         DISABLE: str = ""
