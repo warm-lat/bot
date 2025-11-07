@@ -332,7 +332,7 @@ class Evict(commands.AutoShardedBot):
         self.system_stats = defaultdict(list)
         self.process = psutil.Process()
         self._last_system_check = 0
-        self.command_stats = defaultdict(lambda: {'calls': 0, 'total_time': 0})
+        self.api_stats = defaultdict(lambda: {'calls': 0, 'total_time': 0})
         self._is_ready = asyncio.Event()
 
     @property

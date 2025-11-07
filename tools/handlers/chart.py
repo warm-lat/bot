@@ -47,11 +47,11 @@ class EconomyCharts:
             SELECT 
                 e.balance, e.bank, e.wins, e.total, e.earnings,
                 (SELECT COALESCE(SUM(CASE WHEN action = 'Add' THEN amount ELSE -amount END), 0)
-                 FROM transactions 
+                 FROM public.transactions 
                  WHERE user_id = e.user_id 
                  AND timestamp >= NOW() - INTERVAL '24 hours') as daily_earnings,
                 (SELECT COALESCE(SUM(CASE WHEN action = 'Add' THEN amount ELSE -amount END), 0)
-                 FROM transactions 
+                 FROM public.transactions 
                  WHERE user_id = e.user_id 
                  AND timestamp >= NOW() - INTERVAL '1 hour') as hourly_earnings
             FROM public.economy e

@@ -2034,7 +2034,7 @@ class Economy(commands.Cog):
     async def business_hiring_stats(self, ctx: Context):
         """View hiring statistics for your business"""
         business = await self.bot.db.fetchrow(
-            """SELECT * FROM businesses WHERE owner_id = $1""",
+            """SELECT * FROM public.businesses WHERE owner_id = $1""",
             ctx.author.id
         )
         
@@ -2047,8 +2047,8 @@ class Economy(commands.Cog):
                 COUNT(*) FILTER (WHERE status = 'approved') as approved,
                 COUNT(*) FILTER (WHERE status = 'denied') as denied,
                 COUNT(*) FILTER (WHERE status = 'pending') as pending
-            FROM job_applications ja
-            JOIN business_jobs bj ON ja.job_id = bj.job_id
+            FROM public.job_applications ja
+            JOIN public.business_jobs bj ON ja.job_id = bj.job_id
             WHERE bj.business_id = $1""",
             business["business_id"]
         )
@@ -2086,7 +2086,7 @@ class Economy(commands.Cog):
     async def shop(self, ctx: Context):
         """View available items in the shop"""
         items = await self.bot.db.fetch(
-            """SELECT * FROM shop_items ORDER BY price"""
+            """SELECT * FROM public.shop_items ORDER BY price"""
         )
 
         embed = Embed(
@@ -2113,7 +2113,7 @@ class Economy(commands.Cog):
     async def shop_buy(self, ctx: Context, *, item_name: str):
         """Purchase an item from the shop"""
         item = await self.bot.db.fetchrow(
-            """SELECT * FROM shop_items WHERE name = $1""",
+            """SELECT * FROM public.shop_items WHERE name = $1""",
             item_name
         )
 
@@ -2140,7 +2140,7 @@ class Economy(commands.Cog):
             )
 
         await self.bot.db.execute(
-            """INSERT INTO user_items (user_id, item_id, expires_at)
+            """INSERT INTO public.user_items (user_id, item_id, expires_at)
             VALUES ($1, $2, $3)
             ON CONFLICT (user_id, item_id) 
             DO UPDATE SET 
@@ -2150,7 +2150,7 @@ class Economy(commands.Cog):
         )
 
         await self.bot.db.execute(
-            """UPDATE economy 
+            """UPDATE public.economy 
             SET wallet = wallet - $1 
             WHERE user_id = $2""",
             item["price"], ctx.author.id
@@ -2207,7 +2207,7 @@ class Economy(commands.Cog):
             return await ctx.warn( "Price must be positive!")
 
         await self.bot.db.execute(
-            """INSERT INTO role_shops (guild_id, role_id, price, description)
+            """INSERT INTO public.role_shops (guild_id, role_id, price, description)
             VALUES ($1, $2, $3, $4)
             ON CONFLICT (guild_id, role_id) DO UPDATE 
             SET price = $3, description = $4""",
@@ -2222,7 +2222,7 @@ class Economy(commands.Cog):
     async def role_shop_remove(self, ctx: Context, role: discord.Role):
         """Remove a role from the role shop"""
         result = await self.bot.db.execute(
-            """DELETE FROM role_shops 
+            """DELETE FROM public.role_shops 
             WHERE guild_id = $1 AND role_id = $2""",
             ctx.guild.id, role.id
         )
@@ -2244,12 +2244,12 @@ class Economy(commands.Cog):
         """Send role shop embed to specified channel"""
         channel = channel or ctx.channel
         roles = await self.bot.db.fetch(
-            """SELECT * FROM role_shops WHERE guild_id = $1""",
+            """SELECT * FROM public.role_shops WHERE guild_id = $1""",
             ctx.guild.id
         )
 
         if not roles:
-            return await ctx.warn( "No roles in the shop!")
+            return await ctx.warn("No roles in the shop!")
 
         embed = Embed(
             title="Server Role Shop",

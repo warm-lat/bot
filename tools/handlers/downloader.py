@@ -19,8 +19,11 @@ class Downloader:
     SUPPORTED_PLATFORMS = {
         "youtube.com": "YouTube",
         "youtu.be": "YouTube",
+        "yt.be": "YouTube",
         "instagram.com": "Instagram",
         "tiktok.com": "TikTok",
+        "vm.tiktok.com": "TikTok",
+        "tiktok.com/@": "TikTok",
         "twitter.com": "Twitter",
         "x.com": "Twitter",
         "facebook.com": "Facebook",
@@ -28,9 +31,9 @@ class Downloader:
         "reddit.com": "Reddit",
         "redd.it": "Reddit",
         "soundcloud.com": "SoundCloud",
+        "sndcdn.com": "SoundCloud",
         "vimeo.com": "Vimeo",
         "twitch.tv": "Twitch",
-        "vm.tiktok.com": "TikTok",
         "pinterest.com": "Pinterest",
         "pin.it": "Pinterest",
         "tumblr.com": "Tumblr",
@@ -40,7 +43,6 @@ class Downloader:
         "streamable.com": "Streamable",
         "liveleak.com": "LiveLeak",
         "bitchute.com": "BitChute",
-        "tiktok.com/@": "TikTok",
         "threads.net": "Threads",
     }
 

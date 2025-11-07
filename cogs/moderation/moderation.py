@@ -1279,7 +1279,6 @@ class Moderation(Cog):
         """
         # if await self.is_immune(ctx, member):
         #     return
-
         if role in member.roles:
             return await ctx.invoke(self.role_remove, member=member, role=role)
 
@@ -1307,6 +1306,9 @@ class Moderation(Cog):
         Add a role to a member.
         """
 
+        if not ctx.guild:
+            return await ctx.warn("Server is not recgonized by Warm.")
+        
         if role in member.roles:
             return await ctx.warn(f"{member.mention} already has {role.mention}!")
 
@@ -1345,6 +1347,9 @@ class Moderation(Cog):
         """
         Remove a role from a member.
         """
+        
+        if not ctx.guild:
+            return await ctx.warn("Server is not recgonized by Warm.")
 
         if role not in member.roles:
             return await ctx.warn(f"{member.mention} doesn't have {role.mention}!")

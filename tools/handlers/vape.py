@@ -10,4 +10,9 @@ valid_flavors = [
     "Apple",
     "Blueberry",
     "Tropical",
+    "Peach",
+    "Banana",
+    "Cherry",
+    "Coffee",
+    "Lemon",
 ]
