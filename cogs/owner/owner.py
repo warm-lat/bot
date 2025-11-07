@@ -1865,7 +1865,7 @@ class Owner(
             message = await channel.send(embed=embed, view=view)
             thread = await message.create_thread(
                 name="Docket Updates",
-                auto_archive_duration=10080  
+                auto_archive_duration=10080
             )
             
             await self.bot.db.execute(
@@ -1881,7 +1881,7 @@ class Owner(
             return await ctx.approve(f"Docket status channel set to {channel.mention}")
             
         except discord.Forbidden:
-            return await ctx.warn("I need permission to send messages and create threads in that channel")
+            return await ctx.warn("I need Send Messages & Create Threads permission.")
         except discord.HTTPException as e:
             return await ctx.warn(f"Failed to set up docket channel: {e}")
 

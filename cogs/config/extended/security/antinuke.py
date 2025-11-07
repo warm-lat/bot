@@ -1,12 +1,10 @@
-from contextlib import suppress
+import json
 from datetime import timedelta
 from logging import getLogger
 from time import time
 from typing import Annotated, List, Optional, cast
 from colorama import Fore
-
 from config import EMOJIS
-import discord
 
 from discord import (
     AuditLogEntry,
@@ -18,8 +16,7 @@ from discord import (
     Object,
     User,
 )
-from discord.ext.commands import Cog, Range, flag, group, hybrid_command, hybrid_group
-from discord.utils import utcnow
+from discord.ext.commands import Cog, Range, flag, hybrid_group
 from humanize import naturaldelta
 from pydantic import BaseConfig, BaseModel, validator
 from typing_extensions import Self
@@ -30,12 +27,10 @@ from main import Evict
 from tools import CompositeMetaClass, MixinMeta
 from core.client import Context, FlagConverter
 from tools.conversion import Duration, Status
-from tools.formatter import codeblock, plural
+from tools.formatter import plural
 from managers.paginator import Paginator
-from tools.conversion.embed1 import EmbedScript
 from cogs.moderation.classes import ModConfig
 from datetime import datetime, timezone
-import config
 # from posthog import Posthog
 from processors.antinuke import (
     process_audit_threshold,
@@ -267,6 +262,11 @@ class Settings(BaseModel):
         )
         if not record:
             return
+        
+        data = dict(record or {})
+        for module_name in ("ban", "kick", "role", "channel", "webhook", "emoji"):
+            if data.get(module_name) and isinstance(data[module_name], str):
+                data[module_name] = json.loads(data[module_name])
 
         settings = cls(**record, guild=guild)
         await bot.redis.set(key, settings.dict(exclude={"guild"}))
@@ -304,6 +304,10 @@ class Settings(BaseModel):
                 """,
                 guild.id,
             )
+        data = dict(record or {})
+        for module_name in ("ban", "kick", "role", "channel", "webhook", "emoji"):
+            if data.get(module_name) and isinstance(data[module_name], str):
+                data[module_name] = json.loads(data[module_name])
 
         settings = cls(**record or {}, guild=guild)
         await bot.redis.set(key, settings.dict(exclude={"guild"}))
