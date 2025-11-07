@@ -828,7 +828,7 @@ class Roleplay(Cog):
         """
         return await self.send(ctx, member, "smug")
     
-    @hybrid_command(example="@x")
+    @hybrid_command(example="@aadam")
     @roleplay_ratelimit()
     async def nutkick(self, ctx: Context, user: Member):
         """
@@ -867,7 +867,7 @@ class Roleplay(Cog):
         embed.set_image(url=images)
         await ctx.send(embed=embed)
 
-    @hybrid_command(example="@x")
+    @hybrid_command(example="@nxy")
     @roleplay_ratelimit()
     async def fuck(self, ctx: Context, user: Member):
         """
@@ -904,7 +904,7 @@ class Roleplay(Cog):
         embed.set_image(url=images)
         await ctx.send(embed=embed)
 
-    @hybrid_command(example="@x")
+    @hybrid_command(example="@harry")
     @roleplay_ratelimit()
     async def spank(self, ctx: Context, user: Member):
         """
@@ -966,7 +966,7 @@ class Roleplay(Cog):
                 ),
             )
 
-        images = f"https://r2.warm.lat/roleplay/kill/kill{random.randint(1, 13)}.gif"
+        images = f"https://r2.warm.lat/roleplay/kill/kill{random.randint(1, 8)}.gif"
         embed = Embed(
             description=f"**{ctx.author.mention}** just killed {f'**{str(user.mention)}**' if user else 'themselves'}"
             + (
