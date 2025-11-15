@@ -1,8 +1,59 @@
 import logging
 from fastapi import APIRouter, Request, Depends, Query, Header, HTTPException
 from ..middleware.auth import verify_auth
+
 log = logging.getLogger(__name__)
+
 router = APIRouter(prefix="/dash")
+
+
+@router.get("/beta", include_in_schema=False)
+async def beta(request: Request):
+    """
+    Check whether the bearer token corresponds to a user with beta dashboard access.
+    Expects Authorization: Bearer <token>
+    """
+    auth_header = request.headers.get("Authorization")
+    if not auth_header or not auth_header.startswith("Bearer "):
+        raise HTTPException(status_code=401, detail="Missing authorization")
+
+    token = auth_header.split(" ", 1)[1]
+
+    bot = getattr(request.app.state, "bot", None)
+    if not bot or not hasattr(bot, "db"):
+        log.error("Bot or database not available on app state")
+        raise HTTPException(status_code=503, detail="Service not ready")
+
+    try:
+        user_data = await bot.db.fetchrow(
+            """
+            SELECT user_id
+            FROM public.access_tokens
+            WHERE token = $1
+            AND expires_at > CURRENT_TIMESTAMP
+            """,
+            token,
+        )
+
+        if not user_data:
+            raise HTTPException(status_code=401, detail="Invalid or expired token")
+
+        beta_access = await bot.db.fetchrow(
+            """
+            SELECT user_id
+            FROM public.beta_dashboard
+            WHERE user_id = $1
+            """,
+            user_data["user_id"],
+        )
+
+        return {"has_access": bool(beta_access)}
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        log.error(f"Error checking beta access: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail="Internal server error")
 
 @router.get("/tickets", include_in_schema=False, dependencies=[Depends(verify_auth)])
 async def tickets(
