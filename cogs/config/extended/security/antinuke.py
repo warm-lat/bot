@@ -94,12 +94,30 @@ class Settings(BaseModel):
     whitelist: List[int] = []
     trusted_admins: List[int] = []
     bot: bool = False
-    ban: Optional[Module]
-    kick: Optional[Module]
-    role: Optional[Module]
-    channel: Optional[Module]
-    webhook: Optional[Module]
-    emoji: Optional[Module]
+    ban: Optional[Module] = None
+    kick: Optional[Module] = None
+    role: Optional[Module] = None
+    channel: Optional[Module] = None
+    webhook: Optional[Module] = None
+    emoji: Optional[Module] = None
+
+    @validator('ban', 'kick', 'role', 'channel', 'webhook', 'emoji', pre=True, allow_reuse=True)
+    def parse_module(cls, v):
+        """Parse module from database - can be None, dict, or Module instance."""
+        if v is None:
+            return None
+        if isinstance(v, Module):
+            return v
+        if isinstance(v, dict):
+            return Module(**v)
+        # If it's a string, try to parse as JSON
+        if isinstance(v, str):
+            try:
+                data = json.loads(v)
+                return Module(**data) if data else None
+            except (json.JSONDecodeError, TypeError):
+                return None
+        return None
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -262,11 +280,6 @@ class Settings(BaseModel):
         )
         if not record:
             return
-        
-        data = dict(record or {})
-        for module_name in ("ban", "kick", "role", "channel", "webhook", "emoji"):
-            if data.get(module_name) and isinstance(data[module_name], str):
-                data[module_name] = json.loads(data[module_name])
 
         settings = cls(**record, guild=guild)
         await bot.redis.set(key, settings.dict(exclude={"guild"}))
@@ -304,10 +317,6 @@ class Settings(BaseModel):
                 """,
                 guild.id,
             )
-        data = dict(record or {})
-        for module_name in ("ban", "kick", "role", "channel", "webhook", "emoji"):
-            if data.get(module_name) and isinstance(data[module_name], str):
-                data[module_name] = json.loads(data[module_name])
 
         settings = cls(**record or {}, guild=guild)
         await bot.redis.set(key, settings.dict(exclude={"guild"}))
