@@ -2333,7 +2333,7 @@ class Network(Cog):
                 return web.json_response({"success": False, "error": "Guild not found"}, status=404)
 
             tracked_roles = [
-                guild.get_role(1265473601755414528), 
+                guild.get_role(1367503266145112125), #dev
                 guild.get_role(1264110559989862406),
                 guild.get_role(1323255508609663098)
             ]
