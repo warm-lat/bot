@@ -39,26 +39,45 @@ class EvictHelp(MinimalHelpCommand):
         if not self.bot_user:
             self.bot_user = self.context.bot.user
 
+    def format_permissions(self, command: Command, brief: str = "") -> str:
+        """Format permissions for display in help embeds."""
+        try:
+            perms = command.permissions
+            if perms:
+                formatted_perms = ", ".join(
+                    perm.lower().replace("n/a", "None").replace("_", " ")
+                    for perm in perms
+                    if perm  # Filter out empty strings
+                )
+                if formatted_perms and brief:
+                    return f"{formatted_perms}\n{brief}"
+                elif formatted_perms:
+                    return formatted_perms
+        except (AttributeError, TypeError):
+            pass
+        
+        return brief if brief else "None"
+
     def create_main_help_embed(self, ctx):
 
         embed = Embed(
-            description="**information**\n> [ ] = optional, < > = required\n",
+            description="**Information**\n> Use `{prefix}help <command>` to get help on a specific command\n> Syntax: `[ ]` = optional, `< >` = required".format(prefix=ctx.clean_prefix),
         )
 
         embed.add_field(
-            name="Invite",
-            value="**[invite](https://discord.com/oauth2/authorize?client_id=1420609343283531776)**  • "
-            "**[support](https://discord.gg/apply)**  • "
-            "**[view on web](https://warm.lat)**",
+            name="Links",
+            value="**[Invite](https://discord.com/oauth2/authorize?client_id=1420609343283531776)** • "
+            "**[Support](https://discord.gg/apply)** • "
+            "**[Website](https://warm.lat)**",
             inline=False,
         )
 
         embed.set_author(
-            name=f"{ctx.bot.user.name}",
+            name=f"{ctx.bot.user.name} Help",
             icon_url=ctx.bot.user.display_avatar.url,
             url=config.CLIENT.SUPPORT_URL,
         )
-        embed.set_footer(text="Select a category from the dropdown menu below")
+        embed.set_footer(text="Select a category from the dropdown menu below to view commands")
 
         return embed
 
@@ -185,22 +204,8 @@ class EvictHelp(MinimalHelpCommand):
             except AttributeError:
                 syntax = f"{self.context.clean_prefix}{group.qualified_name}"
 
-            try:
-                permissions = ", ".join(
-                    [
-                        permission.lower().replace("n/a", "None").replace("_", " ")
-                        for permission in group.permissions
-                    ]
-                )
-            except AttributeError:
-                permissions = "None"
-
             brief = group.brief or ""
-
-            if permissions != "None" and brief:
-                permissions = f"{permissions}\n{brief}"
-            elif brief:
-                permissions = brief
+            permissions = self.format_permissions(group, brief)
 
             embed = Embed(
                 title=f"Group: {group.qualified_name} • {group.cog_name} module",
@@ -212,7 +217,7 @@ class EvictHelp(MinimalHelpCommand):
             )
 
             embed.add_field(
-                name="",
+                name="Usage",
                 value=f"```Ruby\nSyntax: {syntax}\nExample: {self.context.clean_prefix}{group.qualified_name} {group.example or ''}```",
                 inline=False,
             )
@@ -220,7 +225,7 @@ class EvictHelp(MinimalHelpCommand):
             embed.add_field(
                 name="Permissions",
                 value=f"{permissions}",
-                inline=True,
+                inline=False,
             )
 
             embed.set_footer(
@@ -236,22 +241,8 @@ class EvictHelp(MinimalHelpCommand):
             except AttributeError:
                 syntax = f"{self.context.clean_prefix}{command.qualified_name}"
 
-            try:
-                permissions = ", ".join(
-                    [
-                        permission.lower().replace("n/a", "None").replace("_", " ")
-                        for permission in command.permissions
-                    ]
-                )
-            except AttributeError:
-                permissions = "None"
-
             brief = command.brief or ""
-
-            if permissions != "None" and brief:
-                permissions = f"{permissions}\n{brief}"
-            elif brief:
-                permissions = brief
+            permissions = self.format_permissions(command, brief)
 
             embed = Embed(
                 title=f"Command: {command.qualified_name} • {command.cog_name} module",
@@ -263,7 +254,7 @@ class EvictHelp(MinimalHelpCommand):
             )
 
             embed.add_field(
-                name="",
+                name="Usage",
                 value=f"```Ruby\nSyntax: {syntax}\nExample: {self.context.clean_prefix}{command.qualified_name} {command.example or ''}```",
                 inline=False,
             )
@@ -271,7 +262,7 @@ class EvictHelp(MinimalHelpCommand):
             embed.add_field(
                 name="Permissions",
                 value=f"{permissions}",
-                inline=True,
+                inline=False,
             )
 
             for param in command.clean_params.values():
@@ -307,24 +298,8 @@ class EvictHelp(MinimalHelpCommand):
         except AttributeError:
             syntax = f"{self.context.clean_prefix}{command.qualified_name}"
 
-        try:
-            permissions = ", ".join(
-                [
-                    permission.lower().replace("n/a", "None").replace("_", " ")
-                    for permission in command.permissions
-                ]
-            )
-
-        except AttributeError:
-            permissions = "None"
-
         brief = command.brief or ""
-
-        if permissions != "None" and brief:
-            permissions = f"{permissions}\n{brief}"
-
-        elif brief:
-            permissions = brief
+        permissions = self.format_permissions(command, brief)
 
         embed = (
             Embed(
@@ -335,14 +310,14 @@ class EvictHelp(MinimalHelpCommand):
                 name=f"{bot.user.name} help", icon_url=bot.user.display_avatar.url
             )
             .add_field(
-                name="",
+                name="Usage",
                 value=f"```Ruby\nSyntax: {syntax}\nExample: {self.context.clean_prefix}{command.qualified_name} {command.example or ''}```",
                 inline=False,
             )
             .add_field(
                 name="Permissions",
                 value=f"{permissions}",
-                inline=True,
+                inline=False,
             )
         )
 

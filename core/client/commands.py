@@ -27,16 +27,17 @@ def parameters(self: Command) -> str:
 
 @property
 def permissions(self: Command) -> List[str]:
-    return [
+    perms = [
         perm.replace("_", " ")
         for check in self.checks
-        if hasattr(check, "__closure__")
+        if hasattr(check, "__closure__") and check.__closure__
         for cell in check.__closure__  # type: ignore
         for perm, val in (
             cell.cell_contents.items() if isinstance(cell.cell_contents, dict) else []
         )
         if val
-    ] or [""]
+    ]
+    return perms if perms else []
 
 
 Command.example = example  # type: ignore
