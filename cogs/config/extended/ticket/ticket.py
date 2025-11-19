@@ -1,8 +1,9 @@
-import os, json, secrets, discord, datetime, asyncio, discord, config, aiobotocore
+import os, json, secrets, discord, datetime, asyncio, discord, config
 from contextlib import suppress
 from secrets import token_urlsafe
 from typing import Annotated, Dict, Literal, Optional, TypedDict, cast, overload, Union
 from logging import getLogger
+from aiobotocore.session import get_session
 
 from discord import (
     ActionRow,
@@ -118,7 +119,7 @@ class Ticket(MixinMeta, metaclass=CompositeMetaClass):
 
     async def upload_to_r2(self, file_name: str, data: dict):
         """Uploads a file to Cloudflare R2 Storage."""
-        session = aiobotocore.get_session()
+        session = get_session()
         async with session.create_client(
             "s3",
             endpoint_url=config.CLOUDFLARE.R2.ENDPOINT,
