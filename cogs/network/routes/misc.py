@@ -4,6 +4,7 @@ from fastapi.responses import JSONResponse, Response
 from ..models.github import GithubPushEvent, CONFIG
 
 log = logging.getLogger(__name__)
+
 router = APIRouter(prefix="/misc")
 
 @router.post("/github", include_in_schema=False)

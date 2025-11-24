@@ -28,7 +28,6 @@ class Badge(BaseModel):
 class Presence(BaseModel):
     status: str
     location: Optional[str]
-    last_online: Optional[datetime]
 
 
 class Model(BaseModel):
@@ -83,7 +82,6 @@ class Model(BaseModel):
         return Presence(
             status=presence.user_presence_type.name,
             location=presence.last_location,
-            last_online=presence.last_online,
         )
 
     async def names(self) -> List[str]:

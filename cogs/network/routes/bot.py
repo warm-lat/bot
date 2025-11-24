@@ -5,6 +5,7 @@ from typing import List, Dict
 from discord.ext.commands import FlagConverter, Group
 
 log = logging.getLogger(__name__)
+
 router = APIRouter(prefix="/bot", tags=["bot"])
 
 @router.get("/status", response_model=StatusResponse)
@@ -56,7 +57,6 @@ async def status(request: Request) -> StatusResponse:
 
 @router.get("/commands", include_in_schema=False)
 async def commands(request: Request):
-
     bot = getattr(request.app.state, "bot", None)
     if bot is None:
         raise HTTPException(status_code=503, detail="Bot is not ready")

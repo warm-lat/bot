@@ -15,7 +15,7 @@ async def verify_auth(authorization: str = Security(Header(None, alias='Authoriz
     if authorization != os.getenv("INTERNAL_AUTH_KEY"):
         raise HTTPException(
             status_code=401, 
-            detail="Invalid Authorization token"
+            detail="Invalid Internal-API Key"
         )
 
 async def verify_special_auth(special_auth: str = Security(Header(None, alias='Authorization'))):
@@ -32,5 +32,5 @@ async def verify_special_auth(special_auth: str = Security(Header(None, alias='A
     if special_auth != os.getenv("CALLBACK_AUTH_KEY"):
         raise HTTPException(
             status_code=401, 
-            detail="Invalid Special Authorization token"
+            detail="Invalid Callback API Key"
         )

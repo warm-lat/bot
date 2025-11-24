@@ -562,18 +562,14 @@ class Config(Extended, Cog):
             if (datetime.datetime.now() - m.joined_at.replace(tzinfo=None)).total_seconds() < 180
         ]
 
+        seen = set()
         for channel_id in channels:
             if channel := member.guild.get_channel(int(channel_id)):
                 try:
-                    if len(recent_joins) < 10:
-                        await channel.send(member.mention, delete_after=6)
-                    else:
-                        if not poj_cache.get(str(channel.id)):
-                            poj_cache[str(channel.id)] = []
-                        poj_cache[str(channel.id)].append(member.mention)
-                        if len(poj_cache[str(channel.id)]) >= 10:
-                            await channel.send(" ".join(poj_cache[str(channel.id)]), delete_after=6)
-                            poj_cache[str(channel.id)] = []
+                    for m in recent_joins:
+                        if m.id not in seen:
+                            await channel.send(m.mention, delete_after=6)
+                            seen.add(m.id)
                 except:
                     continue
 
