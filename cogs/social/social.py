@@ -396,11 +396,6 @@ class Social(Alerts, Cog):
                         if presence.location
                         else ""
                     )
-                    + (
-                        f"\n> **Last Online:** {format_dt(presence.last_online, 'R')}"
-                        if presence.last_online
-                        else ""
-                    )
                 ),
                 inline=False,
             )
