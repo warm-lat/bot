@@ -13,7 +13,6 @@ from core.client.context import Context
 
 client = Client()
 
-
 class Badge(BaseModel):
     id: int
     name: str
