@@ -301,9 +301,9 @@ class Evict(commands.AutoShardedBot):
             case_insensitive=True,
             max_messages=1500,
             activity=Activity(
-                type=ActivityType.streaming,
+                type=ActivityType.watching,
                 name="🔗 warm.lat/beta",
-                url=f"{config.CLIENT.TWITCH_URL}",
+                #url=f"{config.CLIENT.TWITCH_URL}",
             ),
         )
         
@@ -525,7 +525,7 @@ class Evict(commands.AutoShardedBot):
         try:
             self.session = ClientSession(
                 headers={"User-Agent": self.user_agent},
-                connector=TCPConnector(ssl=False),
+                connector=TCPConnector(ssl=True),
             )
             log.info("Created client session")
 
