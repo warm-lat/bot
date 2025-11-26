@@ -55,10 +55,11 @@ class EditMe:
             ctx.guild.id,
             bio=bio
         )
-        return await ctx.success("Bio updated successfully.")
+        return await ctx.approve("Bio updated successfully.")
 
     async def reset(self, ctx: Context):
         await self.bot.http.edit_my_member(ctx.guild.id, avatar=None)
-        await ctx.guild.me.edit(nick=None)
         await self.bot.http.edit_my_member(ctx.guild.id, banner=None)
-        await ctx.success("Customisation reset.")
+        await self.bot.http.edit_my_member(ctx.guild.id, bio=None)
+        await ctx.guild.me.edit(nick=None)
+        await ctx.approve("Customisation reset.")
