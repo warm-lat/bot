@@ -1,5 +1,4 @@
 import base64
-from __future__ import annotations
 from typing import List
 from yarl import URL
 from discord import Embed
