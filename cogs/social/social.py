@@ -903,7 +903,7 @@ class Social(Alerts, Cog):
         embed.set_thumbnail(url=avatar)
         return await ctx.send(embed=embed)
 
-    @command(example="nxyylol", aliases=["instagramuser"])
+    @command(example="nxyylol", aliases=["instagramuser", "iguser"])
     @cooldown(1, 5, BucketType.guild)
     async def instagramu(self, ctx: Context, *, user: str) -> Message:
         """
