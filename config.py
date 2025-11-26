@@ -174,9 +174,9 @@ class CLIENT:
 
 class LAVALINK:
     NODE_COUNT: int = 2
-    HOST: str = "lavalink.expel.best"
+    HOST: str = "public.rive.wtf"
     PORT: int = 443
-    PASSWORD: str = "youwillnotpass"
+    PASSWORD: str = "youshallnotpass"
     SPOTIFY_CLIENT_ID: str = "4c3c2ba7ad6c4ef4a0c0d793cb979ce8"
     SPOTIFY_CLIENT_SECRET: str = "12dd934e7bca4536bb9f8d86b049a25e"
     

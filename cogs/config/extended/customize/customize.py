@@ -16,7 +16,7 @@ class Customize(MixinMeta, metaclass=CompositeMetaClass):
     async def customize(self, ctx: Context):
         return await ctx.send_help(ctx.command)
     
-    @customize.command(name="bio")
+    @customize.command(name="bio", example="bio <bio>")
     @has_permissions(manage_guild=True)
     async def customize_bio(self,ctx: Context, *, bio: str):
         await EditMe(self.bot).edit_bio(ctx, bio)

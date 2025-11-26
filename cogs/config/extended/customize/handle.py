@@ -44,7 +44,7 @@ class EditMe:
         )
         return await ctx.send(
             embed=Embed(
-                description=f"{EMOJIS.CONTEXT.APPROVE} {ctx.author.mention}: **Banner** updated successfully!",
+                description=f"{EMOJIS.CONTEXT.APPROVE} {ctx.author.mention}: Banner updated successfully!",
                 color=COLORS.NEUTRAL,
             ).set_image(url=url)
         )
@@ -62,4 +62,4 @@ class EditMe:
         await self.bot.http.edit_my_member(ctx.guild.id, banner=None)
         await self.bot.http.edit_my_member(ctx.guild.id, bio=None)
         await ctx.guild.me.edit(nick=None)
-        await ctx.approve("Customisation reset.")
+        await ctx.approve("All customizations have been reset.")
