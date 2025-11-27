@@ -13,11 +13,10 @@ class EditMe:
 
     async def edit_pfp(self, ctx: Context, url: str):
         """Edit the bot's server profile picture."""
-        resp = await self.bot.session.get(url)
+        async with self.bot.session.get(url) as resp:
+            data = await resp.read()
 
-        avatar = (
-            f"data:image/png;base64,{base64.b64encode(resp).decode()}"
-        )
+        avatar = f"data:image/png;base64,{base64.b64encode(data).decode()}"
 
         await self.bot.http.edit_my_member(
             ctx.guild.id,
@@ -32,11 +31,10 @@ class EditMe:
 
     async def edit_banner(self, ctx: Context, url: str):
         """Edit the bot's server banner."""
-        resp = await self.bot.session.get(url)
+        async with self.bot.session.get(url) as resp:
+            data = await resp.read()
 
-        banner = (
-            f"data:image/png;base64,{base64.b64encode(resp).decode()}"
-        )
+        banner = f"data:image/png;base64,{base64.b64encode(data).decode()}"
 
         await self.bot.http.edit_my_member(
             ctx.guild.id,
