@@ -525,7 +525,7 @@ class Evict(commands.AutoShardedBot):
         try:
             self.session = ClientSession(
                 headers={"User-Agent": self.user_agent},
-                connector=TCPConnector(ssl=True),
+                connector=TCPConnector(ssl=False),
             )
             log.info("Created client session")
 
