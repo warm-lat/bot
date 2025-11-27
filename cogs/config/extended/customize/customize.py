@@ -1,5 +1,6 @@
 import discord
 
+from discord import Message
 from discord.ext.commands import group, has_permissions
 
 from core.client.context import Context
