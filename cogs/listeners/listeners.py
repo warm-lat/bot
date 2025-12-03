@@ -371,7 +371,9 @@ class Listeners(Cog):
         headers = {"Authorization": self.topgg_auth}
         payload = {
             "server_count": len(self.bot.guilds),
-            "user_count": sum(g.member_count for g in self.bot.guilds)
+            "user_count": sum(g.member_count for g in self.bot.guilds),
+            "shard_count": self.bot.shard_count,
+            "shards": [s.id for s in self.bot.shards]
         }
         
         try:

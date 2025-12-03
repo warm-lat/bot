@@ -3232,7 +3232,7 @@ class Utility(Extended, Cog):
                 "response_format": "mp3" if isinstance(ctx.channel, discord.DMChannel) else "opus"
             }
         )
-        
+
         if response.status != 200:
             return None
             
@@ -3345,305 +3345,11 @@ class Utility(Extended, Cog):
             uses = await self.bot.redis.get(key)
             ttl = await self.bot.redis.ttl(key)
             
-            if uses and int(uses) >= 2:
-                embed = Embed(
-                    color=config.COLORS.WARN,
-                    description=f"> {config.EMOJIS.CONTEXT.WARN} {ctx.author.mention}: Rate limit exceeded! Try again in {int(ttl)} seconds.\n\nDonors get $15 worth of DALL-E credits every 2 weeks! Consider upgrading for increased access."
-                )
-                view = discord.ui.View()
-                view.add_item(
-                    discord.ui.Button(
-                        label="Become a Donor",
-                        url="https://donate.stripe.com/",
-                        style=discord.ButtonStyle.url
-                    )
-                )
-                msg = await ctx.send(embed=embed)
-                await msg.edit(view=view)
-                return
-
-        global_minute_key = "dalle_global_minute"
-        global_daily_key = "dalle_global_daily"
-        
-        global_minute_uses = await self.bot.redis.get(global_minute_key)
-        if global_minute_uses and int(global_minute_uses) >= 5:
-            return await ctx.warn("The image generation system is at capacity (5/minute). Please try again in a moment.")
-    
-        global_daily_uses = await self.bot.redis.get(global_daily_key)
-        if global_daily_uses and int(global_daily_uses) >= 500:
-            ttl = await self.bot.redis.ttl(global_daily_key)
-            hours = int(ttl / 3600)
-            minutes = int((ttl % 3600) / 60)
-            return await ctx.warn(f"Daily global limit reached (500/500). Resets in {hours}h {minutes}m")
-
-        async with ctx.typing():
-            try:
-                pipe = self.bot.redis.pipeline()
-                pipe.incr(global_minute_key)
-                pipe.expire(global_minute_key, 60)
-                pipe.incr(global_daily_key)
-                if not global_daily_uses:
-                    pipe.expire(global_daily_key, 86400)
-                await pipe.execute()
-
-                response = await self.bot.session.post(
-                    "https://api.openai.com/v1/images/generations",
-                    headers={
-                        "Authorization": f"Bearer {config.AUTHORIZATION.OPENAI}",
-                        "Content-Type": "application/json"
-                    },
-                    json={
-                        "model": "dall-e-3",
-                        "prompt": prompt,
-                        "n": 1,
-                        "quality": quality,
-                        "size": size
-                    }
-                )
-
-                if response.status != 200:
-                    error_data = await response.json()
-                    log.error(
-                        f"DALL-E generation failed: Status {response.status}\n"
-                        f"Error: {error_data}\n"
-                        f"User: {ctx.author} ({ctx.author.id})\n"
-                        f"Prompt: {prompt}\n"
-                        f"Quality: {quality}, Size: {size}"
-                    )
-                    return await ctx.warn(f"Failed to generate image: {error_data.get('error', {}).get('message', 'Unknown error')}")
-
-                data = await response.json()
-                image_url = data["data"][0]["url"]
-
-                embed = Embed(
-                    title="DALL-E Image Generation",
-                    description=f"**Prompt:** {prompt}\n**Quality:** {quality}\n**Size:** {size}"
-                )
-                embed.set_image(url=image_url)
-
-                if is_donor:
-                    new_credits = credits - base_cost
-                    await self.bot.db.execute(
-                        """
-                        UPDATE public.dalle_credits
-                        SET credits = $1
-                        WHERE user_id = $2
-                        """,
-                        new_credits,
-                        ctx.author.id
-                    )
-                    embed.set_footer(text=f"Premium User • ${new_credits:.3f} credits remaining")
-                else:
-                    pipe = self.bot.redis.pipeline()
-                    pipe.incr(key)
-                    if not uses:
-                        pipe.expire(key, 86400) 
-                    await pipe.execute()
-                    embed.set_footer(text="Free User • 2 uses per day")
-
-                pipe = self.bot.redis.pipeline()
-                pipe.incr(minute_key)
-                pipe.expire(minute_key, 60) 
-                pipe.incr(daily_key)
-                if not daily_uses:
-                    pipe.expire(daily_key, 86400)  
-                await pipe.execute()
-
-                return await ctx.send(embed=embed)
-
-            except Exception as e:
-                log.error(
-                    f"DALL-E generation error:\n"
-                    f"Error: {str(e)}\n"
-                    f"User: {ctx.author} ({ctx.author.id})\n"
-                    f"Prompt: {prompt}\n"
-                    f"Quality: {quality}, Size: {size}",
-                    exc_info=True
-                )
-                return await ctx.warn(f"Failed to generate image: {str(e)}")
-
-    @hybrid_command(name="dalle_credits")
-    async def dalle_credits(self, ctx: Context) -> Message:
-        """
-        Check your DALL-E credits.
-        """
-        is_donor = await self.bot.db.fetchval(
-            """
-            SELECT EXISTS(
-                SELECT 1 FROM public.donators 
-                WHERE user_id = $1
-            )
-            """,
-            ctx.author.id
-        )
-
-        if is_donor:
-            credits = await self.bot.db.fetchval(
-                """
-                SELECT credits
-                FROM public.dalle_credits
-                WHERE user_id = $1
-                """,
-                ctx.author.id
-            )
-
-            if credits is None:
-                await self.bot.db.execute(
-                    """
-                    INSERT INTO public.dalle_credits (user_id, credits, last_reset)
-                    VALUES ($1, $2, NOW())
-                    """,
-                    ctx.author.id,
-                    10.00 
-                )
-                credits = 10.00
-
-            last_reset = await self.bot.db.fetchval(
-                """
-                SELECT last_reset
-                FROM public.dalle_credits
-                WHERE user_id = $1
-                """,
-                ctx.author.id
-            )
-
-            if (datetime.now() - last_reset).days >= 30:
-                await self.bot.db.execute(
-                    """
-                    UPDATE public.dalle_credits
-                    SET credits = $1, last_reset = NOW()
-                    WHERE user_id = $2
-                    """,
-                    10.00,
-                    ctx.author.id
-                )
-                credits = 10.00
-
-            days_until_reset = 30- (datetime.now() - last_reset).days
-            embed = Embed(
-                title="DALL-E Credits",
-                description=f"You have ${credits:.3f} credits remaining.\n"
-                f"Credits reset in {days_until_reset} days.\n\n"
-                "**Pricing:**\n"
-                "- Standard quality: $0.040 per image\n"
-                "- HD quality: $0.080 per image\n"
-                "- Portrait/Landscape: Double the cost\n"
-                "- Premium users get $10 worth of credits every month"
-            )
-            embed.set_footer(text="Contact support to request increased limits")
-
-        else:
-            key = f"imagine:{ctx.author.id}"
-            uses = await self.bot.redis.get(key)
-            ttl = await self.bot.redis.ttl(key)
-            
             remaining_uses = 2 - int(uses) if uses else 2
             embed = Embed(
                 title="DALL-E Credits",
-                description=f"You have {remaining_uses} generations remaining.\n"
-                f"Resets in {int(ttl)} seconds.\n\n"
-                "**Pricing:**\n"
-                "- Standard quality: $0.040 per image\n"
-                "- HD quality: $0.080 per image\n"
-                "- Portrait/Landscape: Double the cost\n"
-                "- Premium users get $15 worth of credits every 2 weeks"
-            )
-            embed.set_footer(text="Become a donor for increased access")
-
-            if remaining_uses <= 0:
-                view = discord.ui.View()
-                view.add_item(
-                    discord.ui.Button(
-                        label="Become a Donor",
-                        url="https://donate.stripe.com/",
-                        style=discord.ButtonStyle.url
-                    )
-                )
-                msg = await ctx.send(embed=embed)
-                await msg.edit(view=view)
-                return
-
-        return await ctx.send(embed=embed)
-
-    @hybrid_command(name="credits")
-    async def dalle_credits(self, ctx: Context) -> Message:
-        """Check your available DALL-E credits."""
-        is_donor = await self.bot.db.fetchval(
-            """
-            SELECT EXISTS(
-                SELECT 1 FROM public.donators 
-                WHERE user_id = $1
-            )
-            """,
-            ctx.author.id
-        )
-
-        if is_donor:
-            credits = await self.bot.db.fetchval(
-                """
-                SELECT credits
-                FROM public.dalle_credits
-                WHERE user_id = $1
-                """,
-                ctx.author.id
-            )
-
-            if credits is None:
-                await self.bot.db.execute(
-                    """
-                    INSERT INTO public.dalle_credits (user_id, credits, last_reset)
-                    VALUES ($1, $2, NOW())
-                    """,
-                    ctx.author.id,
-                    10.00
-                )
-                credits = 10.00
-
-            last_reset = await self.bot.db.fetchval(
-                """
-                SELECT last_reset
-                FROM public.dalle_credits
-                WHERE user_id = $1
-                """,
-                ctx.author.id
-            )
-
-            days_until_reset = 14 - (datetime.now() - last_reset).days
-
-            embed = Embed(
-                title="DALL-E Credits",
                 description=(
-                    f"**Current Balance:** ${credits:.3f}\n"
-                    f"**Days until reset:** {days_until_reset}\n\n"
-                    "**Pricing:**\n"
-                    "- Standard Quality: $0.040 per image\n"
-                    "- HD Quality: $0.080 per image\n"
-                    "- Non-square sizes cost 2x more"
-                )
-            )
-            embed.set_footer(text="Premium User • Credits reset every month")
-            return await ctx.send(embed=embed)
-        else:
-            key = f"imagine:{ctx.author.id}"
-            uses = await self.bot.redis.get(key)
-            ttl = await self.bot.redis.ttl(key)
-            remaining = 2 - (int(uses) if uses else 0)
-
-            view = None
-            if remaining <= 0:
-                view = discord.ui.View()
-                view.add_item(
-                    discord.ui.Button(
-                        label="Become a Donor",
-                        url="https://donate.stripe.com/",
-                        style=discord.ButtonStyle.url
-                    )
-                )
-
-            embed = Embed(
-                title="DALL-E Credits",
-                description=(
-                    f"**Remaining Uses:** {remaining}/2\n"
+                    f"**Remaining Uses:** {remaining_uses}/2\n"
                     f"**Time until reset:** {int(ttl) if ttl > 0 else 0} seconds\n\n"
                     "**Premium Benefits:**\n"
                     "- $10 worth of credits every month\n"
@@ -3652,266 +3358,132 @@ class Utility(Extended, Cog):
                 )
             )
             embed.set_footer(text="Free User • 2 uses per day")
-            return await ctx.send(embed=embed, view=view)
+            return await ctx.send(embed=embed)
 
-    async def get_image_base64(self, url: str) -> str:
-        async with self.bot.session.get(url) as response:
-            if response.status != 200:
-                raise ValueError("Failed to fetch image")
-            image_data = await response.read()
-            return f"data:image/png;base64,{base64.b64encode(image_data).decode('utf-8')}"
-
-    @hybrid_command(name="describe")
-    async def describe_image(
-        self, 
-        ctx: Context, 
-        image: Optional[Attachment] = None
-    ) -> Message:
-        """Get an AI description of an image using GPT-4 Vision"""
-        if not image:
-            if not ctx.message.reference:
-                return await ctx.warn("Please provide an image or reply to a message with an image!")
+        class PremiumView(View):
+            def __init__(self, sku_id: str, page: int, total: int):
+                super().__init__()
                 
-            try:
-                reference = await ctx.channel.fetch_message(ctx.message.reference.message_id)
-                if reference.attachments:
-                    image = reference.attachments[0]
-                elif reference.embeds and reference.embeds[0].image:
-                    image = SimpleNamespace(
-                        url=reference.embeds[0].image.url,
-                        content_type='image/unknown'
+                self.add_item(
+                    Button(
+                        emoji=config.EMOJIS.PAGINATOR.PREVIOUS,
+                        style=discord.ButtonStyle.gray,
+                        custom_id=f"premium_prev",
+                        disabled=page == 0
                     )
-                else:
-                    return await ctx.warn("The replied message doesn't contain any images!")
-            except:
-                return await ctx.warn("Couldn't fetch the replied message!")
-
-        if not image.content_type.startswith('image/'):
-            return await ctx.warn("Please provide a valid image!")
-
-        is_donor = await self.bot.db.fetchval(
-            """
-            SELECT EXISTS(
-                SELECT 1 FROM public.donators 
-                WHERE user_id = $1
-            )
-            """,
-            ctx.author.id
-        )
-
-        cost = decimal.Decimal('0.05')
-
-        if is_donor:
-            credits = await self.bot.db.fetchval(
-                """
-                SELECT credits
-                FROM public.dalle_credits
-                WHERE user_id = $1
-                """,
-                ctx.author.id
-            )
-
-            if credits is None or credits < cost:
-                return await ctx.warn(
-                    f"Insufficient credits! You need ${cost:.3f} for this command.\n"
-                    f"Current balance: ${credits:.3f if credits else 0:.3f}"
-                )
-
-        else:
-            key = f"describe:{ctx.author.id}"
-            uses = await self.bot.redis.get(key)
-            if uses and int(uses) >= 2:
-                embed = Embed(
-                    color=config.COLORS.WARN,
-                    description=f"> {config.EMOJIS.CONTEXT.WARN} {ctx.author.mention}: Rate limit exceeded! Try again in 24h.\n\nDonors get $10 worth of credits every month!"
-                )
-                view = discord.ui.View()
-                view.add_item(
-                    discord.ui.Button(
-                        label="Become a Donor",
-                        url="https://donate.stripe.com/",
-                        style=discord.ButtonStyle.url
-                    )
-                )
-                return await ctx.send(embed=embed, view=view)
-        
-        async with ctx.typing():
-            try:
-                image_base64 = await self.get_image_base64(image.url)
-                response = await self.bot.session.post(
-                    "https://api.openai.com/v1/chat/completions",
-                    headers={
-                        "Authorization": f"Bearer {config.AUTHORIZATION.OPENAI}",
-                        "Content-Type": "application/json"
-                    },
-                    json={
-                        "model": "gpt-4-0125-preview",
-                        "messages": [
-                            {
-                                "role": "user",
-                                "content": [
-                                    {"type": "text", "text": "Describe this image in detail"},
-                                    {
-                                        "type": "image_url",
-                                        "image_url": {
-                                            "url": image_base64
-                                        }
-                                    }
-                                ]
-                            }
-                        ],
-                        "max_tokens": 300
-                    }
                 )
                 
-                if response.status != 200:
-                    error_data = await response.json()
-                    log.error(
-                        f"GPT-4 Vision failed: Status {response.status}\n"
-                        f"Error: {error_data}\n"
-                        f"User: {ctx.author} ({ctx.author.id})\n"
-                        f"Image URL: {image.url}"
+                self.add_item(Button(style=6, sku_id=sku_id))
+                
+                self.add_item(
+                    Button(
+                        emoji=config.EMOJIS.PAGINATOR.NEXT,
+                        style=discord.ButtonStyle.gray,
+                        custom_id=f"premium_next",
+                        disabled=page == total - 1
                     )
-                    return await ctx.warn(f"Failed to analyze image: {error_data.get('error', {}).get('message', 'Unknown error')}")
+                )
+                
+                self.add_item(
+                    Button(
+                        label="Support Server",
+                        url={config.CLIENT.SUPPORT_URL},
+                        style=discord.ButtonStyle.gray,
+                        emoji=config.EMOJIS.SOCIAL.DISCORD
+                    )
+                )
+
+        embeds = []
+        views = []
+        for i, tier in enumerate(tiers):
+            embed = Embed(
+                title=tier["name"],
+                description=f"Subscribe for **{tier['price']}**\n\n**Features:**\n" + "\n".join(tier["perks"]),
+                color=0x2b2d31
+            )
+            embed.set_thumbnail(url=ctx.guild.icon.url if ctx.guild and ctx.guild.icon else None)
+            embed.set_footer(text=f"Page {i + 1}/{len(tiers)}")
+            embeds.append(embed)
+            views.append(PremiumView(tier["sku"], i, len(tiers)))
+
+        class PremiumPaginator:
+            def __init__(self, ctx, embeds, views):
+                self.ctx = ctx
+                self.embeds = embeds
+                self.views = views
+                self.current = 0
+                self.message = None
+                
+            async def start(self):
+                self.message = await self.ctx.send(
+                    embed=self.embeds[self.current],
+                    view=self.views[self.current]
+                )
+                
+            async def update(self):
+                await self.message.edit(
+                    embed=self.embeds[self.current],
+                    view=self.views[self.current]
+                )
+                
+            async def next_page(self):
+                if self.current < len(self.embeds) - 1:
+                    self.current += 1
+                    await self.update()
                     
-                data = await response.json()
-                description = data['choices'][0]['message']['content']
+            async def previous_page(self):
+                if self.current > 0:
+                    self.current -= 1
+                    await self.update()
+
+        class PremiumView(View):
+            def __init__(self, sku_id: str, page: int, total: int, paginator=None):
+                super().__init__()
+                self.paginator = paginator
                 
-                if is_donor:
-                    await self.bot.db.execute(
-                        """
-                        UPDATE public.dalle_credits
-                        SET credits = credits - $1
-                        WHERE user_id = $2
-                        """,
-                        cost,
-                        ctx.author.id
-                    )
-                else:
-                    pipe = self.bot.redis.pipeline()
-                    pipe.incr(key)
-                    if not uses:
-                        pipe.expire(key, 86400)
-                    await pipe.execute()
-                
-                embed = Embed(description=description)
-                embed.set_image(url=image.url)
-                if is_donor:
-                    new_balance = credits - cost
-                    embed.set_footer(text=f"Premium User • ${new_balance:.3f} credits remaining")
-                else:
-                    embed.set_footer(text="Free User • 2 uses per day")
-                return await ctx.send(embed=embed)
-                
-            except Exception as e:
-                return await ctx.warn(f"Failed to analyze image: {e}")
-
-    @hybrid_command(name="complete", example="the united states is...")
-    async def complete_text(self, ctx: Context, *, prompt: str) -> Message:
-        """Complete your text using GPT-3.5"""
-        if len(prompt) > 1000:
-            return await ctx.warn("Prompt cannot exceed 1000 characters!")
-
-        is_donor = await self.bot.db.fetchval(
-            """
-            SELECT EXISTS(
-                SELECT 1 FROM public.donators 
-                WHERE user_id = $1
-            )
-            """,
-            ctx.author.id
-        )
-
-        cost = decimal.Decimal('0.02') 
-
-        if is_donor:
-            credits = await self.bot.db.fetchval(
-                """
-                SELECT credits
-                FROM public.dalle_credits
-                WHERE user_id = $1
-                """,
-                ctx.author.id
-            )
-
-            if credits is None or credits < cost:
-                return await ctx.warn(
-                    f"Insufficient credits! You need ${cost:.3f} for this command.\n"
-                    f"Current balance: ${credits:.3f if credits else 0:.3f}"
-                )
-
-        else:
-            key = f"complete:{ctx.author.id}"
-            uses = await self.bot.redis.get(key)
-            if uses and int(uses) >= 3:
-                embed = Embed(
-                    color=config.COLORS.WARN,
-                    description=f"> {config.EMOJIS.CONTEXT.WARN} {ctx.author.mention}: Rate limit exceeded! Try again in 24h.\n\nDonors get $10 worth of credits every month!"
-                )
-                view = discord.ui.View()
-                view.add_item(
-                    discord.ui.Button(
-                        label="Become a Donor",
-                        url="https://donate.stripe.com/",
-                        style=discord.ButtonStyle.url
+                self.add_item(
+                    Button(
+                        emoji=config.EMOJIS.PAGINATOR.PREVIOUS,
+                        style=discord.ButtonStyle.gray,
+                        custom_id="premium_prev",
+                        disabled=page == 0
                     )
                 )
-                return await ctx.send(embed=embed, view=view)
-
-        async with ctx.typing():
-            try:
-                response = await self.bot.session.post(
-                    "https://api.openai.com/v1/chat/completions",
-                    headers={
-                        "Authorization": f"Bearer {config.AUTHORIZATION.OPENAI}",
-                        "Content-Type": "application/json"
-                    },
-                    json={
-                        "model": "gpt-3.5-turbo",
-                        "messages": [
-                            {
-                                "role": "user",
-                                "content": prompt
-                            }
-                        ],
-                        "max_tokens": 500,
-                        "temperature": 0.7
-                    }
+                
+                self.add_item(Button(style=6, sku_id=sku_id))
+                
+                self.add_item(
+                    Button(
+                        emoji=config.EMOJIS.PAGINATOR.NEXT,
+                        style=discord.ButtonStyle.gray,
+                        custom_id="premium_next",
+                        disabled=page == total - 1
+                    )
                 )
                 
-                if response.status != 200:
-                    return await ctx.warn("Failed to generate completion!")
-                    
-                data = await response.json()
-                completion = data['choices'][0]['message']['content']
-                
-                if is_donor:
-                    await self.bot.db.execute(
-                        """
-                        UPDATE public.dalle_credits
-                        SET credits = credits - $1
-                        WHERE user_id = $2
-                        """,
-                        cost,
-                        ctx.author.id
+                self.add_item(
+                    Button(
+                        label="Support Server",
+                        url={config.CLIENT.SUPPORT_URL},
+                        style=discord.ButtonStyle.gray,
+                        emoji=config.EMOJIS.SOCIAL.DISCORD,
+                        row=1
                     )
-                else:
-                    pipe = self.bot.redis.pipeline()
-                    pipe.incr(key)
-                    if not uses:
-                        pipe.expire(key, 86400)
-                    await pipe.execute()
+                )
                 
-                embed = Embed(title="Text Completion", description=completion)
-                if is_donor:
-                    new_balance = credits - cost
-                    embed.set_footer(text=f"Premium User • ${new_balance:.3f} credits remaining")
-                else:
-                    embed.set_footer(text="Free User • 3 uses per day")
-                return await ctx.send(embed=embed)
+            async def interaction_check(self, interaction: Interaction) -> bool:
+                await interaction.response.defer() 
                 
-            except Exception as e:
-                return await ctx.warn(f"Failed to generate completion: {e}")
+                if interaction.data["custom_id"] == "premium_next":
+                    await self.paginator.next_page()
+                elif interaction.data["custom_id"] == "premium_prev":
+                    await self.paginator.previous_page()
+                return True
+
+        paginator = PremiumPaginator(ctx, embeds, views)
+        for view in views:
+            view.paginator = paginator
+        await paginator.start()
 
     @command(name="donator", aliases=["donate", "donators"])
     async def donator(self, ctx: Context) -> Message:
@@ -4167,334 +3739,320 @@ class Utility(Extended, Cog):
         )
         return await paginator.start()
 
-    @hybrid_command(
-        name="tiktokvideo",
-        description="Download TikTok content",
-        brief="Download TikTok content",
-        with_app_command=True,
-        example="https://www.tiktok.com/@user/video/1234567890"
-    )
-    @discord.app_commands.allowed_installs(guilds=True, users=True)
-    @discord.app_commands.allowed_contexts(guilds=True, dms=True, private_channels=True)
-    @discord.app_commands.default_permissions(use_application_commands=True)
-    @cooldown(2, 30, BucketType.user) 
-    async def tiktokvideo( 
-        self,
-        ctx: Context,
-        *,
-        url: str
-    ) -> Message:
-        """Download content from TikTok"""
+#    @hybrid_command(
+#        name="tiktokvideo",
+#        description="Download TikTok content",
+#        brief="Download TikTok content",
+#        with_app_command=True,
+#        example="https://www.tiktok.com/@user/video/1234567890"
+#    )
+#    @discord.app_commands.allowed_installs(guilds=True, users=True)
+#    @discord.app_commands.allowed_contexts(guilds=True, dms=True, private_channels=True)
+#    @discord.app_commands.default_permissions(use_application_commands=True)
+#    @cooldown(2, 30, BucketType.user) 
+#    async def tik_tokvideo( 
+#        self,
+#        ctx: Context,
+#        *,
+#        url: str
+#    ) -> Message:
+#        """Download content from TikTok"""
+#        
+#        tiktok_patterns = [
+#            r"https?://(?:vm|vt|www)\.tiktok\.com/\S+",
+#            r"https?://(?:www\.)?tiktok\.com/@[\w.-]+/photo/\d+"
+#        ]
+
+#        if not any(re.search(pattern, url) for pattern in tiktok_patterns):
+#            try:
+#                return await ctx.warn("Please provide a valid TikTok URL")
+#            except:
+#                return await ctx.send("Please provide a valid TikTok URL")
+
+#        try:
+#            log.info(f"[TikTok] Processing URL: {url}")
+            
+#            try:
+#                await ctx.defer()
+#            except:
+#                pass
+
+#            response = await self.bot.session.post(
+#                "http://localhost:7700/download",
+#                headers={"Authorization": "r2aq4t9ma69OiC51t"},
+#                json={"url": url},
+#                timeout=30
+#            )
+            
+#            log.info(f"[TikTok] Download API response status: {response.status}")
+            
+#            if response.status != 200:
+#                log.error(f"[TikTok] API error: Status {response.status}")
+#                try:
+#                    return await ctx.warn("Failed to process the URL")
+#                except:
+#                    return await ctx.send("Failed to process the URL")
+            
+#            data = await response.json()
+#            log.info(f"[TikTok] Download API response data: {data}")
+            
+#            if not data.get("success"):
+#                log.error(f"[TikTok] Download failed: {data}")
+#                try:
+#                    return await ctx.warn("Failed to download the content")
+#                except:
+#                    return await ctx.send("Failed to download the content")
+
+#            if data.get("type") == "photo" and data.get("photos"):
+#                log.info(f"[TikTok] Processing photo album with {len(data['photos'])} images")
+                
+#                class PhotoPaginator(discord.ui.View):
+#                    def __init__(self, photos: list, metadata: dict, bot: Evict, original_url: str):
+#                        super().__init__(timeout=300)
+#                        self.photos = photos
+#                        self.current_page = 0
+#                        self.metadata = metadata
+#                        self.bot = bot
+#                        self.original_url = original_url
+                        
+#                    async def get_image(self, photo: dict) -> File:
+#                        log.info(f"[TikTok] Attempting to download image: {photo['url']}")
+#                        async with self.bot.session.get(
+#                            photo['url'],
+#                            headers={"Authorization": "r2aq4t9ma69OiC51t"}
+#                        ) as resp:
+#                            if resp.status != 200:
+#                                log.error(f"[TikTok] Image download failed with status {resp.status}")
+#                                raise Exception("Failed to download image")
+#                            data = await resp.read()
+#                            log.info("[TikTok] Image downloaded successfully")
+#                            return File(BytesIO(data), filename=f"Warm-TikTok-{token_urlsafe(4)}.jpg")
+                        
+#                    @discord.ui.button(emoji=config.EMOJIS.PAGINATOR.PREVIOUS, style=discord.ButtonStyle.gray)
+#                    async def previous(self, interaction: Interaction, button: discord.ui.Button):
+#                        if self.current_page > 0:
+#                            self.current_page -= 1
+#                            file = await self.get_image(self.photos[self.current_page])
+                            
+#                            embed = self.create_embed()
+#                            embed.set_footer(text=f"Image {self.current_page + 1}/{len(self.photos)}")
+                            
+#                            await interaction.response.edit_message(
+#                                attachments=[file],
+#                                embed=embed,
+#                                view=self
+#                            )
+#                        else:
+#                            await interaction.response.defer()
+
+#                    @discord.ui.button(emoji=config.EMOJIS.PAGINATOR.NEXT, style=discord.ButtonStyle.gray)
+#                    async def next(self, interaction: Interaction, button: discord.ui.Button):
+#                        if self.current_page < len(self.photos) - 1:
+#                            self.current_page += 1
+#                            file = await self.get_image(self.photos[self.current_page])
+                            
+#                            embed = self.create_embed()
+#                            embed.set_footer(text=f"Image {self.current_page + 1}/{len(self.photos)}")
+                            
+#                            await interaction.response.edit_message(
+#                                attachments=[file],
+#                                embed=embed,
+#                                view=self
+#                            )
+#                        else:
+#                            await interaction.response.defer()
+
+#                    def create_embed(self) -> Embed:
+#                        log.info("[TikTok] Creating embed")
+#                        embed = Embed(color=0x1a1c1b)
+                        
+#                        photo_metadata = self.photos[self.current_page]['metadata']
+                        
+#                        if photo_metadata.get("uploader"):
+#                            try:
+#                                safe_username = urllib.parse.quote(photo_metadata["uploader"].split()[0])
+#                                profile_url = f"https://tiktok.com/@{safe_username}"
+#                                embed.set_author(
+#                                    name=photo_metadata["uploader"],
+#                                    url=profile_url
+#                                )
+#                            except Exception as e:
+#                                log.error(f"[TikTok] Failed to set author with URL: {e}")
+#                                embed.set_author(name=photo_metadata["uploader"])
+                        
+#                        if photo_metadata.get("title"):
+#                            embed.title = photo_metadata["title"]
+#                            embed.url = self.original_url
+                        
+#                        embed.set_footer(text=(
+#                            f"❤️ {photo_metadata.get('likeCount', 0)} "
+#                            f"👀 {photo_metadata.get('viewCount', 0)} "
+#                            f"💬 {photo_metadata.get('commentCount', 0)} • "
+#                            f"Image {self.current_page + 1}/{len(self.photos)}"
+#                        ))
+                        
+#                        embed.timestamp = discord.utils.utcnow()
+#                        log.info("[TikTok] Embed created successfully")
+#                        return embed
+
+#                try:
+#                    log.info("[TikTok] Initializing PhotoPaginator")
+#                    view = PhotoPaginator(data["photos"], data.get("metadata", {}), self.bot, url)
+                    
+#                    log.info("[TikTok] Downloading first image")
+#                    first_image = await view.get_image(data["photos"][0])
+#                    log.info("[TikTok] First image downloaded successfully")
+                    
+#                    log.info("[TikTok] Creating initial embed")
+#                    embed = view.create_embed()
+                    
+#                    log.info("[TikTok] Sending message with image and embed")
+#                    return await ctx.send(
+#                        file=first_image,
+#                        embed=embed,
+#                        view=view
+#                    )
+#                except Exception as e:
+#                    log.error(f"[TikTok] Failed to process photos: {e}", exc_info=True)
+#                    return await ctx.warn("Failed to process photos")
+#            elif data.get("type") == "video" and data.get("url"):
+#                log.info(f"[TikTok] Downloading video from: {data['url']}")
+                
+#                async with self.bot.session.get(data["url"], timeout=30) as resp:
+#                    if resp.status != 200:
+#                        log.error(f"[TikTok] Video download failed: Status {resp.status}")
+#                        try:
+#                            return await ctx.warn("Failed to download video")
+#                        except:
+#                            return await ctx.send("Failed to download video")
+                    
+#                video_data = await resp.read()
+#                log.info("[TikTok] Video downloaded successfully")
+                    
+#                try:
+#                    return await ctx.send(
+#                        file=File(
+#                            BytesIO(video_data),
+#                            filename=f"Warm-TikTok-{token_urlsafe(4)}.mp4"
+#                        )
+#                    )
+#                except Exception as e:
+#                    log.error(f"[TikTok] Failed to send file: {e}")
+#                    return await ctx.send("Failed to send the video file")
+#            else:
+#                log.error(f"[TikTok] Unsupported content type: {data.get('type')}")
+#                try:
+#                    return await ctx.warn("Unsupported content type")
+#                except:
+#                    return await ctx.send("Unsupported content type")
+
+#        except asyncio.TimeoutError:
+#            log.error("[TikTok] Request timed out")
+#            try:
+#                return await ctx.warn("Request timed out. Please try again.")
+#            except:
+#                return await ctx.send("Request timed out. Please try again.")
+                
+#        except Exception as e:
+#            log.error(f"[TikTok] Download failed: {str(e)}", exc_info=True)
+#            try:
+#                return await ctx.warn("An error occurred while processing your request")
+#            except:
+#                return await ctx.send("An error occurred while processing your request")
+
+    # @hybrid_command(
+    #     name="instagram",   
+    #     description="Download Instagram content",
+    #     brief="Download Instagram content",
+    #     with_app_command=True,
+    #     example="https://www.instagram.com/reel/1234567890"
+    # )
+    # @discord.app_commands.allowed_installs(guilds=True, users=True)
+    # @discord.app_commands.allowed_contexts(guilds=True, dms=True, private_channels=True)
+    # @discord.app_commands.default_permissions(use_application_commands=True)
+    # @cooldown(2, 30, BucketType.user) 
+    # async def instagram(
+    #     self,
+    #     ctx: Context,
+    #     *,
+    #     url: str
+    # ) -> Message:
+    #     """Download content from Instagram"""
         
-        tiktok_patterns = [
-            r"https?://(?:vm|vt|www)\.tiktok\.com/\S+",
-            r"https?://(?:www\.)?tiktok\.com/@[\w.-]+/photo/\d+"
-        ]
+    #     instagram_patterns = [
+    #         r"(?:https?://)?(?:www\.)?(?:instagram\.com)/reel/([^\s/]+)"
+    #     ]
 
-        if not any(re.search(pattern, url) for pattern in tiktok_patterns):
-            try:
-                return await ctx.warn("Please provide a valid TikTok URL")
-            except:
-                return await ctx.send("Please provide a valid TikTok URL")
+    #     if not any(re.search(pattern, url) for pattern in instagram_patterns):
+    #         try:
+    #             return await ctx.warn("Please provide a valid Instagram URL")
+    #         except:
+    #             return await ctx.send("Please provide a valid Instagram URL")
 
-        try:
-            log.info(f"[TikTok] Processing URL: {url}")
+    #     try:
+    #         log.info(f"[Instagram] Processing URL: {url}")
             
-            try:
-                await ctx.defer()
-            except:
-                pass
+    #         try:
+    #             await ctx.defer()
+    #         except:
+    #             pass
 
-            response = await self.bot.session.post(
-                "http://localhost:7700/download",
-                headers={"Authorization": "r2aq4t9ma69OiC51t"},
-                json={"url": url},
-                timeout=30
-            )
+    #         response = await self.bot.session.post(
+    #             "http://localhost:7700/download",
+    #             headers={"Authorization": "r2aq4t9ma69OiC51t"},
+    #             json={"url": url},
+    #             timeout=30 
+    #         )
             
-            log.info(f"[TikTok] Download API response status: {response.status}")
+    #         log.info(f"[Instagram] Download API response status: {response.status}")
             
-            if response.status != 200:
-                log.error(f"[TikTok] API error: Status {response.status}")
-                try:
-                    return await ctx.warn("Failed to process the URL")
-                except:
-                    return await ctx.send("Failed to process the URL")
+    #         if response.status != 200:
+    #             log.error(f"[Instagram] API error: Status {response.status}")
+    #             try:
+    #                 return await ctx.warn("Failed to process the URL")
+    #             except:
+    #                 return await ctx.send("Failed to process the URL")
             
-            data = await response.json()
-            log.info(f"[TikTok] Download API response data: {data}")
+    #         data = await response.json()
+    #         log.info(f"[Instagram] Download API response data: {data}")
             
-            if not data.get("success"):
-                log.error(f"[TikTok] Download failed: {data}")
-                try:
-                    return await ctx.warn("Failed to download the content")
-                except:
-                    return await ctx.send("Failed to download the content")
+    #         if not data.get("success"):
+    #             log.error(f"[Instagram] Download failed: {data}")
+    #             try:
+    #                 return await ctx.warn("Failed to download the content")
+    #             except:
+    #                 return await ctx.send("Failed to download the content")
 
-            if data.get("type") == "photo" and data.get("photos"):
-                log.info(f"[TikTok] Processing photo album with {len(data['photos'])} images")
+    #         if data.get("type") in ["video", "instagram_reel"] and data.get("url"): 
+    #             log.info(f"[Instagram] Downloading video from: {data['url']}")
                 
-                class PhotoPaginator(discord.ui.View):
-                    def __init__(self, photos: list, metadata: dict, bot: Evict, original_url: str):
-                        super().__init__(timeout=300)
-                        self.photos = photos
-                        self.current_page = 0
-                        self.metadata = metadata
-                        self.bot = bot
-                        self.original_url = original_url
-                        
-                    async def get_image(self, photo: dict) -> File:
-                        log.info(f"[TikTok] Attempting to download image: {photo['url']}")
-                        async with self.bot.session.get(
-                            photo['url'],
-                            headers={"Authorization": "r2aq4t9ma69OiC51t"}
-                        ) as resp:
-                            if resp.status != 200:
-                                log.error(f"[TikTok] Image download failed with status {resp.status}")
-                                raise Exception("Failed to download image")
-                            data = await resp.read()
-                            log.info("[TikTok] Image downloaded successfully")
-                            return File(BytesIO(data), filename=f"Warm-TikTok-{token_urlsafe(4)}.jpg")
-                        
-                    @discord.ui.button(emoji=config.EMOJIS.PAGINATOR.PREVIOUS, style=discord.ButtonStyle.gray)
-                    async def previous(self, interaction: Interaction, button: discord.ui.Button):
-                        if self.current_page > 0:
-                            self.current_page -= 1
-                            file = await self.get_image(self.photos[self.current_page])
-                            
-                            embed = self.create_embed()
-                            embed.set_footer(text=f"Image {self.current_page + 1}/{len(self.photos)}")
-                            
-                            await interaction.response.edit_message(
-                                attachments=[file],
-                                embed=embed,
-                                view=self
-                            )
-                        else:
-                            await interaction.response.defer()
-
-                    @discord.ui.button(emoji=config.EMOJIS.PAGINATOR.NEXT, style=discord.ButtonStyle.gray)
-                    async def next(self, interaction: Interaction, button: discord.ui.Button):
-                        if self.current_page < len(self.photos) - 1:
-                            self.current_page += 1
-                            file = await self.get_image(self.photos[self.current_page])
-                            
-                            embed = self.create_embed()
-                            embed.set_footer(text=f"Image {self.current_page + 1}/{len(self.photos)}")
-                            
-                            await interaction.response.edit_message(
-                                attachments=[file],
-                                embed=embed,
-                                view=self
-                            )
-                        else:
-                            await interaction.response.defer()
-
-                    def create_embed(self) -> Embed:
-                        log.info("[TikTok] Creating embed")
-                        embed = Embed(color=0x1a1c1b)
-                        
-                        photo_metadata = self.photos[self.current_page]['metadata']
-                        
-                        if photo_metadata.get("uploader"):
-                            try:
-                                safe_username = urllib.parse.quote(photo_metadata["uploader"].split()[0])
-                                profile_url = f"https://tiktok.com/@{safe_username}"
-                                embed.set_author(
-                                    name=photo_metadata["uploader"],
-                                    url=profile_url
-                                )
-                            except Exception as e:
-                                log.error(f"[TikTok] Failed to set author with URL: {e}")
-                                embed.set_author(name=photo_metadata["uploader"])
-                        
-                        if photo_metadata.get("title"):
-                            embed.title = photo_metadata["title"]
-                            embed.url = self.original_url
-                        
-                        embed.set_footer(text=(
-                            f"❤️ {photo_metadata.get('likeCount', 0)} "
-                            f"👀 {photo_metadata.get('viewCount', 0)} "
-                            f"💬 {photo_metadata.get('commentCount', 0)} • "
-                            f"Image {self.current_page + 1}/{len(self.photos)}"
-                        ))
-                        
-                        embed.timestamp = discord.utils.utcnow()
-                        log.info("[TikTok] Embed created successfully")
-                        return embed
-
-                try:
-                    log.info("[TikTok] Initializing PhotoPaginator")
-                    view = PhotoPaginator(data["photos"], data.get("metadata", {}), self.bot, url)
+    #             async with self.bot.session.get(data["url"], timeout=30) as resp:
+    #                 if resp.status != 200:
+    #                     log.error(f"[Instagram] Video download failed: Status {resp.status}")
+    #                     try:
+    #                         return await ctx.warn("Failed to download video")
+    #                     except:
+    #                         return await ctx.send("Failed to download video")
                     
-                    log.info("[TikTok] Downloading first image")
-                    first_image = await view.get_image(data["photos"][0])
-                    log.info("[TikTok] First image downloaded successfully")
+    #                 video_data = await resp.read()
+    #                 log.info("[Instagram] Video downloaded successfully")
                     
-                    log.info("[TikTok] Creating initial embed")
-                    embed = view.create_embed()
-                    
-                    log.info("[TikTok] Sending message with image and embed")
-                    return await ctx.send(
-                        file=first_image,
-                        embed=embed,
-                        view=view
-                    )
-                except Exception as e:
-                    log.error(f"[TikTok] Failed to process photos: {e}", exc_info=True)
-                    return await ctx.warn("Failed to process photos")
-            elif data.get("type") in ["video", "tiktok"] and data.get("url"):
-                log.info(f"[TikTok] Downloading video from: {data['url']}")
-                
-                async with self.bot.session.get(data["url"], timeout=30) as resp:
-                    if resp.status != 200:
-                        log.error(f"[TikTok] Video download failed: Status {resp.status}")
-                        try:
-                            return await ctx.warn("Failed to download video")
-                        except:
-                            return await ctx.send("Failed to download video")
-                    
-                    video_data = await resp.read()
-                    log.info("[TikTok] Video downloaded successfully")
-                    
-                    try:
-                        return await ctx.send(
-                            file=File(
-                                BytesIO(video_data),
-                                filename=f"Warm-TikTok-{token_urlsafe(4)}.mp4"
-                            )
-                        )
-                    except Exception as e:
-                        log.error(f"[TikTok] Failed to send file: {e}")
-                        return await ctx.send("Failed to send the video file")
-            else:
-                log.error(f"[TikTok] Unsupported content type: {data.get('type')}")
-                try:
-                    return await ctx.warn("Unsupported content type")
-                except:
-                    return await ctx.send("Unsupported content type")
-
-        except asyncio.TimeoutError:
-            log.error("[TikTok] Request timed out")
-            try:
-                return await ctx.warn("Request timed out. Please try again.")
-            except:
-                return await ctx.send("Request timed out. Please try again.")
-                
-        except Exception as e:
-            log.error(f"[TikTok] Download failed: {str(e)}", exc_info=True)
-            try:
-                return await ctx.warn("An error occurred while processing your request")
-            except:
-                return await ctx.send("An error occurred while processing your request")
-
-    @hybrid_command(
-        name="instagram",   
-        description="Download Instagram content",
-        brief="Download Instagram content",
-        with_app_command=True,
-        example="https://www.instagram.com/reel/1234567890"
-    )
-    @discord.app_commands.allowed_installs(guilds=True, users=True)
-    @discord.app_commands.allowed_contexts(guilds=True, dms=True, private_channels=True)
-    @discord.app_commands.default_permissions(use_application_commands=True)
-    @cooldown(2, 30, BucketType.user) 
-    async def instagram(
-        self,
-        ctx: Context,
-        *,
-        url: str
-    ) -> Message:
-        """Download content from Instagram"""
-        
-        instagram_patterns = [
-            r"(?:https?://)?(?:www\.)?(?:instagram\.com)/reel/([^\s/]+)"
-        ]
-
-        if not any(re.search(pattern, url) for pattern in instagram_patterns):
-            try:
-                return await ctx.warn("Please provide a valid Instagram URL")
-            except:
-                return await ctx.send("Please provide a valid Instagram URL")
-
-        try:
-            log.info(f"[Instagram] Processing URL: {url}")
-            
-            try:
-                await ctx.defer()
-            except:
-                pass
-
-            response = await self.bot.session.post(
-                "http://localhost:7700/download",
-                headers={"Authorization": "r2aq4t9ma69OiC51t"},
-                json={"url": url},
-                timeout=30 
-            )
-            
-            log.info(f"[Instagram] Download API response status: {response.status}")
-            
-            if response.status != 200:
-                log.error(f"[Instagram] API error: Status {response.status}")
-                try:
-                    return await ctx.warn("Failed to process the URL")
-                except:
-                    return await ctx.send("Failed to process the URL")
-            
-            data = await response.json()
-            log.info(f"[Instagram] Download API response data: {data}")
-            
-            if not data.get("success"):
-                log.error(f"[Instagram] Download failed: {data}")
-                try:
-                    return await ctx.warn("Failed to download the content")
-                except:
-                    return await ctx.send("Failed to download the content")
-
-            if data.get("type") in ["video", "instagram_reel"] and data.get("url"): 
-                log.info(f"[Instagram] Downloading video from: {data['url']}")
-                
-                async with self.bot.session.get(data["url"], timeout=30) as resp:
-                    if resp.status != 200:
-                        log.error(f"[Instagram] Video download failed: Status {resp.status}")
-                        try:
-                            return await ctx.warn("Failed to download video")
-                        except:
-                            return await ctx.send("Failed to download video")
-                    
-                    video_data = await resp.read()
-                    log.info("[Instagram] Video downloaded successfully")
-                    
-                    try:
-                        return await ctx.send(
-                            file=File(
-                                BytesIO(video_data),
-                                filename=f"Warm-Instagram-{token_urlsafe(4)}.mp4"
-                            )
-                        )
-                    except Exception as e:
-                        log.error(f"[Instagram] Failed to send file: {e}")
-                        return await ctx.send("Failed to send the video file")
-            else:
-                log.error(f"[Instagram] Unsupported content type: {data.get('type')}")
-                try:
-                    return await ctx.warn("Unsupported content type")
-                except:
-                    return await ctx.send("Unsupported content type")
-
-        except asyncio.TimeoutError:
-            log.error("[Instagram] Request timed out")
-            try:
-                return await ctx.warn("Request timed out. Please try again.")
-            except:
-                return await ctx.send("Request timed out. Please try again.")
-                
-        except Exception as e:
-            log.error(f"[Instagram] Download failed: {str(e)}", exc_info=True)
-            try:
-                return await ctx.warn("An error occurred while processing your request")
-            except:
-                return await ctx.send("An error occurred while processing your request")
+    #                 try:
+    #                     return await ctx.send(
+    #                         file=File(
+    #                             BytesIO(video_data),
+    #                             filename=f"Warm-Instagram-{token_urlsafe(4)}.mp4"
+    #                         )
+    #                     )
+    #                 except Exception as e:
+    #                     log.error(f"[Instagram] Failed to send file: {e}")
+    #                     return await ctx.send("Failed to send the video file")
+    #         else:
+    #             log.error(f"[Instagram] Unsupported content type: {data.get('type')}")
+    #             try:
+    #                 return await ctx.warn("Unsupported content type")
+    #             except:
+    #                 return await ctx.send("Unsupported content type")
 
     @command(name="setlink", example="github https://github.com/username")
     async def set_link(
@@ -4779,20 +4337,24 @@ class Utility(Extended, Cog):
         if not await ctx.prompt("Are you sure you want to delete your avatar history? This cannot be undone."):
             return await ctx.neutral("Cancelled avatar history deletion")
         
-        
         try:
-            async with self.bot.session.delete(
-                f"{config.AUTHORIZATION.AVH.URL}/{ctx.author.id}/",
-                headers={
-                    "AccessKey": f"{config.AUTHORIZATION.AVH.ACCESS_KEY}",
-                    "Content-Type": "application/json"
-                }
-            ) as resp:
-                response_text = await resp.text()
+            # List all objects under the user's folder in the S3 bucket
+            response = await self.bot.s3.list_objects_v2(
+                Bucket=config.AUTHORIZATION.R2.BUCKET,
+                Prefix=f"{ctx.author.id}/"
+            )
+            
+            # Check if there are objects to delete
+            if "Contents" in response:
+                objects_to_delete = [{"Key": obj["Key"]} for obj in response["Contents"]]
                 
-                if resp.status not in (200, 404):
-                    return await ctx.warn("Failed to delete avatar history")
-
+                # Delete all objects under the user's folder
+                await self.bot.s3.delete_objects(
+                    Bucket=config.AUTHORIZATION.R2.BUCKET,
+                    Delete={"Objects": objects_to_delete}
+                )
+            
+            # Delete the user's avatar history from the database
             deleted = await self.bot.db.execute(
                 "DELETE FROM public.avatar_history WHERE user_id = $1",
                 ctx.author.id

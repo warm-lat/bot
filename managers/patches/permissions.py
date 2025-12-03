@@ -124,7 +124,7 @@ def donator(booster: bool = False):
 
         raise CommandError(
             f"You must be a **donator** to use `{ctx.command.qualified_name}`, run `,donate` - [**Discord Server**](https://discord.gg/apply)\n"
-            "Alternatively, you can vote for Warm on [Top.gg](https://top.gg/bot/1420609343283531776) (lasts 6 hours)"
+            f"Alternatively, you can vote for Warm on [Top.gg](https://top.gg/bot/{self.bot.user.id}) (lasts 6 hours)"
         )
 
     return check(predicate)

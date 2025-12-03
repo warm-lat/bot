@@ -1085,7 +1085,7 @@ class Audio(Cog):
                     )
                     embed = Embed(
                         title="Discord Activity",
-                        description="Click below to show your currently playing track on Discord",
+                        description="Click the button below to show your currently playing track on Discord",
                         color=0x0d0d0d
                     )
 
@@ -1319,7 +1319,7 @@ class Audio(Cog):
                     )
                     embed = Embed(
                         title="Discord Activity",
-                        description="Click below to show your currently playing track on Discord",
+                        description="Click the button below to show your currently playing track on Discord",
                         color=0x0d0d0d
                     )
 
@@ -1496,8 +1496,8 @@ class Audio(Cog):
         async with aiohttp.ClientSession() as session:
             if percentage == 0:
                 async with session.patch(
-                    f"https://lavalink.expel.best/v4/sessions/pomice/players/{ctx.guild.id}",
-                    headers={"Authorization": "youwillnotpass"},
+                    f"https://{config.LAVALINK.HOST}/v4/sessions/pomice/players/{ctx.guild.id}",
+                    headers={"Authorization": "{config.LAVALINK.PASSWORD}"},
                     json={"filters": {}}
                 ) as response:
                     await response.read()
@@ -1507,7 +1507,7 @@ class Audio(Cog):
             bands = [{"band": i, "gain": gain} for i in range(2)]
             
             async with session.patch(
-                f"https://lavalink.expel.best/v4/sessions/pomice/players/{ctx.guild.id}",
+                f"https://{config.LAVALINK.HOST}/v4/sessions/pomice/players/{ctx.guild.id}",
                 headers={"Authorization": "youwillnotpass"},
                 json={"filters": {"equalizer": bands}}
             ) as response:
@@ -1526,7 +1526,7 @@ class Audio(Cog):
         async with aiohttp.ClientSession() as session:
             if percentage == 0:
                 async with session.patch(
-                    f"https://lavalink.expel.best/v4/sessions/pomice/players/{ctx.guild.id}",
+                    f"https://{config.LAVALINK.HOST}/v4/sessions/pomice/players/{ctx.guild.id}",
                     headers={"Authorization": "youwillnotpass"},
                     json={"filters": {}}
                 ) as response:
@@ -1537,7 +1537,7 @@ class Audio(Cog):
             pitch = 1 + (percentage / 100) * 0.5
             
             async with session.patch(
-                f"https://lavalink.expel.best/v4/sessions/pomice/players/{ctx.guild.id}",
+                f"https://{config.LAVALINK.HOST}/v4/sessions/pomice/players/{ctx.guild.id}",
                 headers={"Authorization": "youwillnotpass"},
                 json={"filters": {"timescale": {"speed": speed, "pitch": pitch}}}
             ) as response:
@@ -1556,7 +1556,7 @@ class Audio(Cog):
         async with aiohttp.ClientSession() as session:
             if percentage == 0:
                 async with session.patch(
-                    f"https://lavalink.expel.best/v4/sessions/pomice/players/{ctx.guild.id}",
+                    f"https://{config.LAVALINK.HOST}/v4/sessions/pomice/players/{ctx.guild.id}",
                     headers={"Authorization": "youwillnotpass"},
                     json={"filters": {}}
                 ) as response:
@@ -1565,7 +1565,7 @@ class Audio(Cog):
 
             level = percentage / 100
             async with session.patch(
-                f"https://lavalink.expel.best/v4/sessions/pomice/players/{ctx.guild.id}",
+                f"https://{config.LAVALINK.HOST}/v4/sessions/pomice/players/{ctx.guild.id}",
                 headers={"Authorization": "youwillnotpass"},
                 json={"filters": {
                     "equalizer": [
@@ -1584,7 +1584,7 @@ class Audio(Cog):
         """
         async with aiohttp.ClientSession() as session:
             async with session.patch(
-                f"https://lavalink.expel.best/v4/sessions/pomice/players/{ctx.guild.id}",
+                f"https://{config.LAVALINK.HOST}/v4/sessions/pomice/players/{ctx.guild.id}",
                 headers={"Authorization": "youwillnotpass"},
                 json={"filters": {}}
             ) as response:
@@ -1601,7 +1601,7 @@ class Audio(Cog):
         async with aiohttp.ClientSession() as session:
             if percentage == 0:
                 async with session.patch(
-                    f"https://lavalink.expel.best/v4/sessions/pomice/players/{ctx.guild.id}",
+                    f"https://{config.LAVALINK.HOST}/v4/sessions/pomice/players/{ctx.guild.id}",
                     headers={"Authorization": "youwillnotpass"},
                     json={"filters": {}}
                 ) as response:
@@ -1612,7 +1612,7 @@ class Audio(Cog):
             depth = 0.2 + (percentage / 100) * 0.5   
             
             async with session.patch(
-                f"https://lavalink.expel.best/v4/sessions/pomice/players/{ctx.guild.id}",
+                f"https://{config.LAVALINK.HOST}/v4/sessions/pomice/players/{ctx.guild.id}",
                 headers={"Authorization": "youwillnotpass"},
                 json={"filters": {"vibrato": {"frequency": frequency, "depth": depth}}}
             ) as response:
@@ -1629,7 +1629,7 @@ class Audio(Cog):
         async with aiohttp.ClientSession() as session:
             if percentage == 0:
                 async with session.patch(
-                    f"https://lavalink.expel.best/v4/sessions/pomice/players/{ctx.guild.id}",
+                    f"https://{config.LAVALINK.HOST}/v4/sessions/pomice/players/{ctx.guild.id}",
                     headers={"Authorization": "youwillnotpass"},
                     json={"filters": {}}
                 ) as response:
@@ -1640,7 +1640,7 @@ class Audio(Cog):
             depth = 0.2 + (percentage / 100) * 0.5
             
             async with session.patch(
-                f"https://lavalink.expel.best/v4/sessions/pomice/players/{ctx.guild.id}",
+                f"https://{config.LAVALINK.HOST}/v4/sessions/pomice/players/{ctx.guild.id}",
                 headers={"Authorization": "youwillnotpass"},
                 json={"filters": {"tremolo": {"frequency": frequency, "depth": depth}}}
             ) as response:
@@ -1657,7 +1657,7 @@ class Audio(Cog):
         async with aiohttp.ClientSession() as session:
             if percentage == 0:
                 async with session.patch(
-                    f"https://lavalink.expel.best/v4/sessions/pomice/players/{ctx.guild.id}",
+                    f"https://{config.LAVALINK.HOST}/v4/sessions/pomice/players/{ctx.guild.id}",
                     headers={"Authorization": "youwillnotpass"},
                     json={"filters": {}}
                 ) as response:
@@ -1666,7 +1666,7 @@ class Audio(Cog):
 
             scale = percentage / 100
             async with session.patch(
-                f"https://lavalink.expel.best/v4/sessions/pomice/players/{ctx.guild.id}",
+                f"https://{config.LAVALINK.HOST}/v4/sessions/pomice/players/{ctx.guild.id}",
                 headers={"Authorization": "youwillnotpass"},
                 json={"filters": {"distortion": {
                     "sinOffset": scale * 0.5,
@@ -1692,7 +1692,7 @@ class Audio(Cog):
         async with aiohttp.ClientSession() as session:
             if percentage == 0:
                 async with session.patch(
-                    f"https://lavalink.expel.best/v4/sessions/pomice/players/{ctx.guild.id}",
+                    f"https://{config.LAVALINK.HOST}/v4/sessions/pomice/players/{ctx.guild.id}",
                     headers={"Authorization": "youwillnotpass"},
                     json={"filters": {}}
                 ) as response:
@@ -1701,7 +1701,7 @@ class Audio(Cog):
 
             speed = (percentage / 100) * 0.5 
             async with session.patch(
-                f"https://lavalink.expel.best/v4/sessions/pomice/players/{ctx.guild.id}",
+                f"https://{config.LAVALINK.HOST}/v4/sessions/pomice/players/{ctx.guild.id}",
                 headers={"Authorization": "youwillnotpass"},
                 json={"filters": {"rotation": {"rotationHz": speed}}}
             ) as response:
@@ -1821,7 +1821,7 @@ class Audio(Cog):
                                 embed = Embed(
                                     title="Last.fm Scrobbling",
                                     description=f"{mentions}, The music you're listening to is being scrobbled to [Last.FM](https://www.last.fm)!",
-                                    color=0x1DB954,
+                                    color=config.COLORS.APPROVE,
                                     timestamp=discord.utils.utcnow()
                                 )
                                 await client.channel.send(embed=embed, delete_after=60)

@@ -2319,10 +2319,12 @@ class Owner(
     async def utop(self, ctx: Context):
         """Force update Top.gg stats."""
         url = f"https://top.gg/api/bots/{self.bot.user.id}/stats"
-        headers = {"Authorization": ""}
+        headers = {"Authorization": config.AUTHORIZATION.TOPGG}
         payload = {
             "server_count": len(self.bot.guilds),
-            "user_count": sum(g.member_count for g in self.bot.guilds)
+            "user_count": sum(g.member_count for g in self.bot.guilds),
+            "shard_count": self.bot.shard_count,
+            "shards": [s.id for s in self.bot.shards]
         }
         
         try:
