@@ -1,4 +1,4 @@
-import asyncio, discord, io, re, psutil, hashlib, time, config, aiohttp, validators, wavelink
+import asyncio, discord, io, re, psutil, hashlib, time, config, aiohttp, validators
 from contextlib import suppress
 from logging import getLogger
 from typing import Annotated, List, Literal, Optional, cast

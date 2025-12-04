@@ -1,6 +1,6 @@
 import logging
 from fastapi import APIRouter, Request, HTTPException
-from ..models.status import StatusResponse, ShardStatus
+from fastapi.responses import JSONResponse
 from typing import List, Dict
 from discord.ext.commands import FlagConverter, Group
 
@@ -8,51 +8,22 @@ log = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/bot", tags=["bot"])
 
-@router.get("/status", response_model=StatusResponse)
-async def status(request: Request) -> StatusResponse:
+@router.get("/status")
+async def status(request: Request):
     bot = getattr(request.app.state, "bot", None)
     if bot is None:
         raise HTTPException(status_code=503, detail="Bot is not ready")
-
-    total_guilds = len(bot.guilds)
-    total_users = sum((g.member_count or 0) for g in bot.guilds)
-    uptime_seconds = int(getattr(bot, "uptime2", 0))
-
-    shards_data = List[ShardStatus] = []
-    shards_mapping = getattr(bot, "shards", None)
-
-    if shards_mapping and len(shards_mapping) > 0:
-        for shard in shards_mapping.values():
-            sid = int(getattr(shard, "id", 0))
-            guilds_in_shard = [g for g in bot.guilds if g.shard_id == sid]
-            users_in_shard = sum((g.member_count or 0) for g in guilds_in_shard)
-            latency = getattr(shard, "latency", None)
-            ping_ms = round((latency if latency is not None else bot.latency) * 1000, 2)
-            shards_data.append(
-                ShardStatus(
-                    id=sid,
-                    ping_ms=ping_ms,
-                    guilds=len(guilds_in_shard),
-                    users=users_in_shard,
-                )
-            )
-    else:
-        # Unsharded fallback
-        shards_data.append(
-            ShardStatus(
-                id=0,
-                ping_ms=round(bot.latency * 1000, 2),
-                guilds=total_guilds,
-                users=total_users,
-            )
-        )
-
-    return StatusResponse(
-        uptime_seconds=uptime_seconds,
-        total_guilds=total_guilds,
-        total_users=total_users,
-        shards=shards_data,
-    )
+    shards = [
+        {
+            "guilds": f"{len([guild for guild in bot.guilds if guild.shard_id == shard.id])}",
+            "id": f"{shard.id}",
+            "ping": f"{(shard.latency * 1000):.2f}ms",
+            "uptime": f"{int(bot.uptime2)}",
+            "users": f"{sum(guild.member_count for guild in bot.guilds if guild.shard_id == shard.id)}",
+        }
+        for shard in bot.shards.values()
+    ]
+    return JSONResponse(content={"shards": shards})
 
 
 @router.get("/commands", include_in_schema=False)
