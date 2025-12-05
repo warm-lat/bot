@@ -13,17 +13,39 @@ async def status(request: Request):
     bot = request.app.state.bot
     if not bot:
         raise HTTPException(status_code=503, detail="Bot is not ready")
-    shards = [
-        {
-            "guilds": f"{len([guild for guild in bot.guilds if guild.shard_id == shard.id])}",
-            "id": f"{shard.id}",
-            "ping": f"{(shard.latency * 1000):.2f}ms",
-            "uptime": f"{int(bot.uptime2)}",
-            "users": f"{sum(guild.member_count for guild in bot.guilds if guild.shard_id == shard.id)}",
-        }
-        for shard in bot.shards.values()
-    ]
-    return JSONResponse(content={"shards": shards})
+
+    shard_data = []
+    total_guilds = 0
+    total_users = 0
+
+    for shard in bot.shards.values():
+        guilds_in_shard = [g for g in bot.guilds if g.shard_id == shard.id]
+        guild_count = len(guilds_in_shard)
+        user_count = sum(g.member_count for g in guilds_in_shard)
+        
+        total_guilds += guild_count
+        total_users += user_count
+
+        shard_data.append({
+            "id": shard.id,
+            "guilds": guild_count,
+            "users": user_count,
+            "ping": round(shard.latency * 1000, 2),
+            "status": "closed" if shard.is_closed() else "connected",
+        })
+
+    avg_ping = sum(s['ping'] for s in shard_data) / len(shard_data) if shard_data else 0
+
+    response_data = {
+        "shards": shard_data,
+        "total_guilds": total_guilds,
+        "total_users": total_users,
+        "total_shards": bot.shard_count,
+        "avg_ping": round(avg_ping, 2),
+        "uptime": int(bot.uptime.total_seconds()) if hasattr(bot, 'uptime') else 0,
+    }
+
+    return JSONResponse(content=response_data)
 
 
 @router.get("/commands", include_in_schema=False)
