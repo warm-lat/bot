@@ -1,6 +1,6 @@
 import hmac, hashlib, time, orjson, logging
-from fastapi import APIRouter, Request
-from fastapi.responses import JSONResponse, Response
+from fastapi import APIRouter, Request, HTTPException
+from fastapi.responses import JSONResponse
 from ..models.github import GithubPushEvent, CONFIG
 
 log = logging.getLogger(__name__)
@@ -69,9 +69,13 @@ async def github_webhook(self, request: Request):
 
 
 @router.get("/health")
-async def health(self):
+async def health(request: Request):
+    bot = request.app.state.bot
+    if not bot:
+        raise HTTPException(status_code=503, detail="Bot is not ready")
+    else:
         return JSONResponse({
             "status": "ok",
             "timestamp": int(time.time()),
-            "uptime": int(self.bot.uptime2)
+            "uptime": int(bot.uptime2)
         })

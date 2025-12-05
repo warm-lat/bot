@@ -1,7 +1,7 @@
 # POSTHOG -> HOG.EVICT.BOT
 # THIS HAS BEEN DEPRECATED -> TOO MANY REQUESTS WHICH SLOWS DOWN THE BOT
 
-import os, json, logging, config, asyncio, time, discord, aiohttp, stripe, orjson, hmac, hashlib, functools, traceback, re, uuid
+import os, json, logging, config, asyncio, time, discord, aiohttp, stripe, hashlib, functools, traceback, re, uuid
 from discord import Embed
 from random import choice
 from typing import Any, Dict, List, Optional
@@ -12,7 +12,7 @@ import random
 import string
 from Crypto.Cipher import AES
 from Crypto.Util.Padding import unpad
-from aiobotocore.session import get_session
+
 from main import Evict
 from aiohttp import web, WSMsgType
 from aiohttp.abc import AbstractAccessLogger
@@ -384,39 +384,7 @@ class Network(Cog):
 
         self.failed_payment_notifications = defaultdict(list)
         
-    async def upload_to_r2(self, file_name: str, data: dict):
-        """Uploads a file to Cloudflare R2 Storage."""
-        session = get_session()
-        async with session.create_client(
-            "s3",
-            endpoint_url=config.CLOUDFLARE.R2.ENDPOINT,
-            aws_access_key_id=config.CLOUDFLARE.R2.ACCESS_KEY,
-            aws_secret_access_key=config.CLOUDFLARE.R2.ACCESS_SECRET,
-        ) as client:
-            await client.put_object(
-                Bucket=config.CLOUDFLARE.R2.BUCKET,
-                Key=file_name,
-                Body=json.dumps(data, indent=4).encode("utf-8"),
-                ContentType="application/json",
-            )
-    async def download_from_r2(self, file_name: str):
-        """Downloads a file from Cloudflare R2 Storage."""
-        session = get_session()
-        async with session.create_client(
-            "s3",
-            endpoint_url=config.CLOUDFLARE.R2.ENDPOINT,
-            aws_access_key_id=config.CLOUDFLARE.R2.ACCESS_KEY,
-            aws_secret_access_key=config.CLOUDFLARE.R2.ACCESS_SECRET,
-        ) as client:
-            try:
-                response = await client.get_object(
-                    Bucket=config.CLOUDFLARE.R2.BUCKET, Key=file_name
-                )
-                async with response["Body"] as stream:
-                    content = await stream.read()
-                return json.loads(content)
-            except client.exceptions.NoSuchKey:
-                return None
+
 
     def required_xp(self, level: int, multiplier: int = 1) -> int:
         """
@@ -511,7 +479,7 @@ class Network(Cog):
         log.info("Gracefully shutdown the API")
 
 
-    @route("/commands")
+    @route("/commands") #fastapi rewrite
     async def commands(self: "Network", request: Request) -> Response:
         """
         Export command information as JSON, including commands within groups.
@@ -919,7 +887,7 @@ class Network(Cog):
     #         ] if active_incidents else []
     #     })
 
-    @route("/status")
+    @route("/status") #fastapi rewrite
     @ratelimit(5, 60)
     async def status(self, request: Request) -> Response:
         return web.json_response({
@@ -935,7 +903,7 @@ class Network(Cog):
             ]
         })
 
-    @route("/tickets")
+    @route("/tickets") #fastapi rewrite
     @ratelimit(5, 60)
     @requires_auth
     async def tickets(self: "Network", request: Request) -> Response:
@@ -983,7 +951,7 @@ class Network(Cog):
             log.error(f"Error reading ticket {ticket_id}: {e}")
             return web.json_response({"error": "Internal server error"}, status=500)
 
-    @route("/tickets", ["POST"])
+    @route("/tickets", ["POST"]) #fastapi rewrite
     @ratelimit(5, 60)
     @requires_auth
     async def create_ticket(self: "Network", request: Request) -> Response:

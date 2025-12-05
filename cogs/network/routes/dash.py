@@ -1,6 +1,8 @@
-import logging
+import logging, asyncio
 from fastapi import APIRouter, Request, Depends, Query, Header, HTTPException
+from fastapi.responses import JSONResponse
 from ..middleware.auth import verify_auth
+from ..modls.dash import TicketCreate
 
 log = logging.getLogger(__name__)
 
@@ -19,10 +21,9 @@ async def beta(request: Request):
 
     token = auth_header.split(" ", 1)[1]
 
-    bot = getattr(request.app.state, "bot", None)
-    if not bot or not hasattr(bot, "db"):
-        log.error("Bot or database not available on app state")
-        raise HTTPException(status_code=503, detail="Service not ready")
+    bot = request.app.state.bot
+    if not bot:
+        raise HTTPException(status_code=503, detail="Bot is not ready")
 
     try:
         user_data = await bot.db.fetchrow(
@@ -61,10 +62,9 @@ async def tickets(
     ticket_id: str = Query(..., alias="id", description="The ID of the ticket to fetch."), 
     user_id: str = Header(..., alias="User-ID", description="The Discord User ID of the requester."),
 ):
-    bot = getattr(request.app.state, "bot", None)
-    if not bot or not hasattr(bot, "download_from_r2"):
-        log.error("Bot instance or download_from_r2 method not available on app state.")
-        raise HTTPException(status_code=503, detail="Service is not ready.")
+    bot = request.app.state.bot
+    if not bot:
+        raise HTTPException(status_code=503, detail="Bot is not ready")
     
     log.info(f"Request received for ticket {ticket_id} for User-ID: {user_id}")
 
@@ -89,8 +89,47 @@ async def tickets(
         log.info(f"Ticket {ticket_id} successfully retrieved for User-ID: {user_id}")
         return ticket_data
     
-    except HTTPException:
-        raise
     except Exception as e:
         log.error(f"Error retrieving ticket {ticket_id}: {e}")
+        raise HTTPException(status_code=500, detail="Internal server error.")
+    
+@router.post("/tickets", include_in_schema=False)
+async def create_ticket(request: Request, data: TicketCreate):
+    bot = request.app.state.bot
+    if not bot:
+        raise HTTPException(status_code=503, detail="Bot is not ready")
+    
+    try:
+        data = await request.json()
+        
+        if "ticket_id" not in data or "ticket_data" not in data or "user_ids" not in data:
+            raise HTTPException(status_code=400, detail="Missing required fields: ticket_id, ticket_data, user_ids.")
+        
+        ticket_id = data.ticket_id
+        ticket_data = data.ticket_data
+        user_ids = data.user_ids
+        
+        ticket_path = f"tickets/{ticket_id}.json"
+        user_ids_path = f"tickets/{ticket_id}_ids.json"
+        
+        if await bot.download_from_r2(ticket_path):
+            raise HTTPException(status_code=409, detail="Ticket with this ID already exists.")
+        
+        await asyncio.gather(
+            bot.upload_to_r2(ticket_path, ticket_data),
+            bot.upload_to_r2(user_ids_path, {"ids": user_ids}),
+        )
+
+        
+        log.info(f"Created ticket {ticket_id} for users {user_ids}")
+        return JSONResponse(
+            content={
+                "success": True,
+                "message": f"Ticket {ticket_id} created successfully",
+                "ticket_id": ticket_id,
+            }
+        )
+
+    except Exception as e:
+        log.error(f"Error creating ticket: {e}", exc_info=True)
         raise HTTPException(status_code=500, detail="Internal server error.")

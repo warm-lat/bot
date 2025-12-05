@@ -1,12 +1,10 @@
-import os
+import os, json, sys, glob
 os.environ['PYTHONDONTWRITEBYTECODE'] = '1'
 import psutil
 import onnxruntime
 import discord
 import secrets
-import sys
 import importlib
-import glob
 import asyncpg
 import time
 import jishaku
@@ -14,12 +12,12 @@ import jishaku.flags
 import config
 import asyncio
 import discord_ios
-import psutil
 
 if sys.platform == "win32":
     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
 from contextlib import suppress
+from aiobotocore.session import get_session
 from datetime import datetime, timedelta
 from pathlib import Path
 from pomice import NodePool
@@ -27,16 +25,13 @@ from collections.abc import Mapping
 from typing import Any, Collection, Dict, Optional, cast
 from humanfriendly import format_timespan
 from colorama import Fore, Style
-# from posthog import Posthog
 from aiohttp import ClientSession, TCPConnector
 from asyncpraw import Reddit as RedditClient
 from cashews import cache
 from collections import defaultdict
-from multiprocessing import Pool, cpu_count
-from datetime import datetime, timedelta, timezone
-from typing import List
+from multiprocessing import Pool
+from datetime import datetime
 
-from managers.backup import BackupManager
 from managers.parser.TagScript.exceptions import EmbedParseError, TagScriptError
 
 from core.client import database
@@ -154,9 +149,6 @@ sess_options.enable_cpu_mem_arena = False
 sess_options.enable_mem_pattern = False
 sess_options.graph_optimization_level = onnxruntime.GraphOptimizationLevel.ORT_DISABLE_ALL
 
-# posthog = Posthog(
-#     "phc_9CO68Be49weXo25XXmg0CY7wwFLl2HMzW5qoXWdH1J8", host="https://us.i.posthog.com"
-# )
 
 async def getprefix(bot, message):
     """
@@ -302,7 +294,7 @@ class Evict(commands.AutoShardedBot):
             max_messages=1500,
             activity=Activity(
                 type=ActivityType.watching,
-                name="🔗 warm.lat/beta",
+                name="🔗 warm.lat",
                 #url=f"{config.CLIENT.TWITCH_URL}",
             ),
         )
@@ -1219,29 +1211,6 @@ class Evict(commands.AutoShardedBot):
         except Exception as e:
             log.error(f"Failed to update system stats: {e}")
 
-    async def _backup_task(self):
-        """
-        Run backups every 8 hours.
-        """
-        await self.wait_until_ready()
-        while not self.is_closed():
-            try:
-                now = datetime.now(timezone.utc)
-                next_run = now.replace(minute=35, second=0, microsecond=0)
-                while next_run <= now:
-                    next_run += timedelta(hours=8)
-                
-                await asyncio.sleep((next_run - now).total_seconds())
-                
-                if await self.backup_manager.run_backup():
-                    log.info("8-hour backup completed successfully")
-                else:
-                    log.error("8-hour backup failed")
-                    
-            except Exception as e:
-                log.error(f"Error in backup task: {e}")
-                await asyncio.sleep(300) 
-
     async def process_image(self, buffer, effect_type, **kwargs):
         """
         Wrapper for process pool execution.
@@ -1295,6 +1264,40 @@ class Evict(commands.AutoShardedBot):
         finally:
             if hasattr(self, 'process_pool'):
                 self.process_pool._maintain_pool()
+                
+    async def upload_to_r2(self, file_name: str, data: dict):
+        """Uploads a file to Cloudflare R2 Storage."""
+        session = get_session()
+        async with session.create_client(
+            "s3",
+            endpoint_url=config.CLOUDFLARE.R2.ENDPOINT,
+            aws_access_key_id=config.CLOUDFLARE.R2.ACCESS_KEY,
+            aws_secret_access_key=config.CLOUDFLARE.R2.ACCESS_SECRET,
+        ) as client:
+            await client.put_object(
+                Bucket=config.CLOUDFLARE.R2.BUCKET,
+                Key=file_name,
+                Body=json.dumps(data, indent=4).encode("utf-8"),
+                ContentType="application/json",
+            )
+    async def download_from_r2(self, file_name: str):
+        """Downloads a file from Cloudflare R2 Storage."""
+        session = get_session()
+        async with session.create_client(
+            "s3",
+            endpoint_url=config.CLOUDFLARE.R2.ENDPOINT,
+            aws_access_key_id=config.CLOUDFLARE.R2.ACCESS_KEY,
+            aws_secret_access_key=config.CLOUDFLARE.R2.ACCESS_SECRET,
+        ) as client:
+            try:
+                response = await client.get_object(
+                    Bucket=config.CLOUDFLARE.R2.BUCKET, Key=file_name
+                )
+                async with response["Body"] as stream:
+                    content = await stream.read()
+                return json.loads(content)
+            except client.exceptions.NoSuchKey:
+                return None
 
 if __name__ == "__main__":
     bot = Evict(

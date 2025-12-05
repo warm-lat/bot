@@ -182,8 +182,8 @@ class LAVALINK:
     
 class RATELIMITS:
     PER_10S: int = 10
-    PER_30S: int = 35
-    PER_1M: int = 75
+    PER_30S: int = 25
+    PER_1M: int = 50
 
 class CLOUDFLARE:
     
