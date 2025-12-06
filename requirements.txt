@@ -42,7 +42,7 @@ plotly
 posthog
 psutil
 pycryptodome
-pydantic==1.9
+pydantic
 pydub
 pylast
 PyNaCl
