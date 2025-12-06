@@ -1,4 +1,4 @@
-from routes import router
+from .routes import router
 
 
 from main import Evict
