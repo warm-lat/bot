@@ -1,9 +1,8 @@
 import uvicorn
 import asyncio
-from .routes import router
 
 from main import Evict
-
+from .routes import bots, dash, misc
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from discord.ext.commands import Cog
@@ -14,7 +13,7 @@ class Network(Cog):
     """Network cog for managing network-related commands."""
 
     def __init__(self, bot: Evict):
-        self.bot = Evict
+        self.bot: Evict = bot
         self.app = FastAPI(
             title="warm.lat API", 
             version="2.0.1", 
@@ -30,7 +29,9 @@ class Network(Cog):
             allow_headers=["*"],
         )
 
-        self.app.include_router(router)
+        self.app.include_router(bots.router)
+        self.app.include_router(dash.router)
+        self.app.include_router(misc.router)
 
         config = uvicorn.Config(
             self.app,
