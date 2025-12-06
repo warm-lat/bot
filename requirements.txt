@@ -59,6 +59,7 @@ stripe
 tornado
 typing_extensions
 unidecode
+uvicorn
 validators
 wand
 xmltodict
