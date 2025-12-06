@@ -373,7 +373,6 @@ class Listeners(Cog):
             "server_count": len(self.bot.guilds),
             "user_count": sum(g.member_count for g in self.bot.guilds),
             "shard_count": self.bot.shard_count,
-            "shards": [s.id for s in self.bot.shards]
         }
         
         try:
