@@ -22,6 +22,7 @@ cryptography
 dateparser
 discord_ios
 dnspython
+fastapi
 ffmpeg-python>=0.2.0
 gitpython
 httpx
@@ -52,6 +53,7 @@ redis
 rich
 scipy
 shazamio
+slowapi
 stackprinter
 stripe
 tornado
