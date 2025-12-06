@@ -140,7 +140,7 @@ class AUTHORIZATION:
     PIPED_API: str = "pipedapi.adminforge.de"
     SOUNDCLOUD: str = ""
     OSU: str = "a64dd995fcfb3754bb734f7a80fe13168be51879"
-    TOPGG: str = ""
+    TOPGG: str = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfdCI6Ijc4NTE0MDI1MjI3MTA1MDc1MiIsImlkIjoiNzU4ODg5MTMyMzUyMzcyNzM2IiwiaWF0IjoxNzY1MDI4ODIzfQ.scL2Ion0w1MsclhC3kiPGnb5QC7pLJZWuUu--fXo8R0"
     
     class REDDIT:
         CLIENT_ID: str = "7s2HJa0My0keJAiLvFhvZQ"
