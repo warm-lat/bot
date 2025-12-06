@@ -14,7 +14,7 @@ class Network(Cog):
     """Network cog for managing network-related commands."""
 
     def __init__(self, bot: Evict):
-        self.bot: Evict = bot
+        self.bot = Evict
         self.app = FastAPI(
             title="warm.lat API", 
             version="2.0.1", 
