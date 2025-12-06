@@ -60,7 +60,7 @@ async def beta(request: Request):
 async def tickets(
     request: Request, 
     ticket_id: str = Query(..., alias="id", description="The ID of the ticket to fetch."), 
-    user_id: str = Header(..., alias="User-ID", description="The Discord User ID of the requester."),
+    user_id: str = Header(default=..., alias="User-ID", description="The Discord User ID of the requester."),
 ):
     bot = request.app.state.bot
     if bot is None:
@@ -100,11 +100,6 @@ async def create_ticket(request: Request, data: TicketCreate):
         raise HTTPException(status_code=503, detail="Bot is not ready")
     
     try:
-        data = await request.json()
-        
-        if "ticket_id" not in data or "ticket_data" not in data or "user_ids" not in data:
-            raise HTTPException(status_code=400, detail="Missing required fields: ticket_id, ticket_data, user_ids.")
-        
         ticket_id = data.ticket_id
         ticket_data = data.ticket_data
         user_ids = data.user_ids
