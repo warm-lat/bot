@@ -22,7 +22,7 @@ async def beta(request: Request):
     token = auth_header.split(" ", 1)[1]
 
     bot = request.app.state.bot
-    if not bot:
+    if bot is None:
         raise HTTPException(status_code=503, detail="Bot is not ready")
 
     try:
@@ -63,7 +63,7 @@ async def tickets(
     user_id: str = Header(..., alias="User-ID", description="The Discord User ID of the requester."),
 ):
     bot = request.app.state.bot
-    if not bot:
+    if bot is None:
         raise HTTPException(status_code=503, detail="Bot is not ready")
     
     log.info(f"Request received for ticket {ticket_id} for User-ID: {user_id}")
@@ -96,7 +96,7 @@ async def tickets(
 @router.post("/tickets", include_in_schema=False)
 async def create_ticket(request: Request, data: TicketCreate):
     bot = request.app.state.bot
-    if not bot:
+    if bot is None:
         raise HTTPException(status_code=503, detail="Bot is not ready")
     
     try:

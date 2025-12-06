@@ -11,7 +11,7 @@ router = APIRouter(prefix="/bot", tags=["bot"])
 @router.get("/status")
 async def status(request: Request):
     bot = request.app.state.bot
-    if not bot:
+    if bot is None:
         raise HTTPException(status_code=503, detail="Bot is not ready")
 
     shard_data = []
@@ -51,7 +51,7 @@ async def status(request: Request):
 @router.get("/commands", include_in_schema=False)
 async def commands(request: Request):
     bot = request.app.state.bot
-    if not bot:
+    if bot is None:
         raise HTTPException(status_code=503, detail="Bot is not ready")
 
     def get_flags(param):

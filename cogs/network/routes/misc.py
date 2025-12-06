@@ -71,7 +71,7 @@ async def github_webhook(self, request: Request):
 @router.get("/health")
 async def health(request: Request):
     bot = request.app.state.bot
-    if not bot:
+    if bot is None:
         raise HTTPException(status_code=503, detail="Bot is not ready")
     else:
         return JSONResponse({
