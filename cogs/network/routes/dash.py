@@ -2,7 +2,7 @@ import logging, asyncio
 from fastapi import APIRouter, Request, Depends, Query, Header, HTTPException
 from fastapi.responses import JSONResponse
 from ..middleware.auth import verify_auth
-from ..modls.dash import TicketCreate
+from ..models.dash import TicketCreate
 
 log = logging.getLogger(__name__)
 
