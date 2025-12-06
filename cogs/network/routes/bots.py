@@ -42,7 +42,7 @@ async def status(request: Request):
         "total_users": total_users,
         "total_shards": bot.shard_count,
         "avg_ping": round(avg_ping, 2),
-        "uptime": int(bot.uptime.total_seconds()) if hasattr(bot, 'uptime') else 0,
+        "uptime": int(bot.uptime2()) if hasattr(bot, 'uptime') else 0,
     }
 
     return JSONResponse(content=response_data)
