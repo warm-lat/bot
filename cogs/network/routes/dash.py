@@ -131,7 +131,7 @@ async def create_ticket(request: Request, data: TicketCreate):
         log.error(f"Error creating ticket: {e}", exc_info=True)
         raise HTTPException(status_code=500, detail="Internal server error.")
     
-@router.get("/login", dependencies=[Depends(verify_dash_auth)], response_model=LoginResponse)
+@router.post("/login", dependencies=[Depends(verify_dash_auth)], response_model=LoginResponse)
 async def login(request: Request, data: LoginPayload):
     bot = request.app.state.bot
     if bot is None:
