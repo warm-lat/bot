@@ -17,8 +17,10 @@ class Network(Cog):
         self.bot: Evict = bot
         self.app = FastAPI(
             title="warm.lat API", 
-            version="2.0.1", 
-            debug=False
+            version="2.0.2",
+            docs_url="/",
+            redoc_url=None,
+            openapi_url="/openapi.json"
         )
         self.app.state.bot = bot
         

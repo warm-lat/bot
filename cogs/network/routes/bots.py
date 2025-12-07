@@ -3,12 +3,13 @@ from fastapi import APIRouter, Request, HTTPException
 from fastapi.responses import JSONResponse
 from typing import List, Dict
 from discord.ext.commands import FlagConverter, Group
+from ..models.bots import BotStatus
 
 log = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/bot")
 
-@router.get("/status")
+@router.get("/status", response_model=BotStatus)
 async def status(request: Request):
     bot = request.app.state.bot
     if bot is None:
