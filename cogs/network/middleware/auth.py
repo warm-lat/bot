@@ -10,7 +10,7 @@ async def verify_auth(authorization: str = Header(..., alias='Authorization')):
     if authorization != os.getenv("INTERNAL_AUTH_KEY"):
         raise HTTPException(
             status_code=401, 
-            detail="Invalid Internal-API Key"
+            detail="Invalid Internal API Key"
         )
 
 async def verify_special_auth(special_auth: str = Header(..., alias='Authorization')):
@@ -23,4 +23,16 @@ async def verify_special_auth(special_auth: str = Header(..., alias='Authorizati
         raise HTTPException(
             status_code=401, 
             detail="Invalid Callback API Key"
+        )
+        
+async def verify_dash_auth(dash_auth: str = Header(..., alias='X-Special-Auth')):
+    """
+    Dependency to verify a dashboard static API key in the 'Authorization' header.
+    
+    Raises HTTPException with status 401 if the key is missing or invalid.
+    """
+    if dash_auth != os.getenv("SPECIAL_AUTH_KEY"):
+        raise HTTPException(
+            status_code=401, 
+            detail="Invalid Dashboard API Key"
         )

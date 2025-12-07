@@ -5,9 +5,9 @@ from ..models.github import GithubPushEvent, CONFIG
 
 log = logging.getLogger(__name__)
 
-router = APIRouter(prefix="/misc")
+router = APIRouter(prefix="/misc", include_in_schema=False)
 
-@router.post("/github", include_in_schema=False)
+@router.post("/github")
 async def github_webhook(self, request: Request):
     event_type = request.headers.get('X-GitHub-Event')
     

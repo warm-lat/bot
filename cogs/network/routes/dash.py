@@ -1,15 +1,17 @@
-import logging, asyncio
+import logging, asyncio, os, hashlib
+from datetime import datetime, timezone
+from attr import dataclass
 from fastapi import APIRouter, Request, Depends, Query, Header, HTTPException
 from fastapi.responses import JSONResponse
-from ..middleware.auth import verify_auth
-from ..models.dash import TicketCreate
+from ..middleware.auth import verify_auth, verify_dash_auth
+from ..models.dash import TicketCreate, LoginPayload, LoginResponse
 
 log = logging.getLogger(__name__)
 
-router = APIRouter(prefix="/dash")
+router = APIRouter(prefix="/dash", include_in_schema=False)
 
 
-@router.get("/beta", include_in_schema=False)
+@router.get("/beta")
 async def beta(request: Request):
     """
     Check whether the bearer token corresponds to a user with beta dashboard access.
@@ -56,7 +58,7 @@ async def beta(request: Request):
         log.error(f"Error checking beta access: {e}", exc_info=True)
         raise HTTPException(status_code=500, detail="Internal server error")
 
-@router.get("/tickets", include_in_schema=False, dependencies=[Depends(verify_auth)])
+@router.get("/tickets", dependencies=[Depends(verify_auth)])
 async def tickets(
     request: Request, 
     ticket_id: str = Query(..., alias="id", description="The ID of the ticket to fetch."), 
@@ -93,7 +95,7 @@ async def tickets(
         log.error(f"Error retrieving ticket {ticket_id}: {e}")
         raise HTTPException(status_code=500, detail="Internal server error.")
     
-@router.post("/tickets", include_in_schema=False)
+@router.post("/tickets")
 async def create_ticket(request: Request, data: TicketCreate):
     bot = request.app.state.bot
     if bot is None:
@@ -128,3 +130,40 @@ async def create_ticket(request: Request, data: TicketCreate):
     except Exception as e:
         log.error(f"Error creating ticket: {e}", exc_info=True)
         raise HTTPException(status_code=500, detail="Internal server error.")
+    
+@router.get("/login", dependencies=[Depends(verify_dash_auth)], response_model=LoginResponse)
+async def login(request: Request, data: LoginPayload):
+    bot = request.app.state.bot
+    if bot is None:
+        raise HTTPException(status_code=503, detail="Bot is not ready")
+    
+    try:
+        timestamp = int(datetime.now(timezone.utc).timestamp())
+        token_data = f"{data.user_id}-{timestamp}"
+        secret = os.getenv('TOKEN_SECRET')
+        token = hashlib.sha256(f"{token_data}-{secret}".encode()).hexdigest()
+        
+        await bot.db.execute(
+            """
+            INSERT INTO public.access_tokens (user_id, token, discord_token, created_at, expires_at)
+            VALUES ($1, $2, $3, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP + INTERVAL '14 days')
+            ON CONFLICT (user_id) 
+            DO UPDATE SET 
+                token = EXCLUDED.token,
+                discord_token = EXCLUDED.discord_token,
+                created_at = CURRENT_TIMESTAMP,
+                expires_at = CURRENT_TIMESTAMP + INTERVAL '14 days'
+            """,
+            data.user_id,
+            token,
+            data.access_token
+        )
+        log.info(f"Successfully generated new access token for user_id: {data.user_id}")
+        return LoginResponse(success=True, token=token)
+    
+    except Exception as e:
+        log.error(f"Error in login endpoint for user_id {data.user_id}: {e}", exc_info=True)
+        raise HTTPException(
+            status_code=500,
+            detail="An internal error occurred while processing the login."
+        )

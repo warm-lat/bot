@@ -6,7 +6,7 @@ from discord.ext.commands import FlagConverter, Group
 
 log = logging.getLogger(__name__)
 
-router = APIRouter(prefix="/bot", tags=["bot"])
+router = APIRouter(prefix="/bot")
 
 @router.get("/status")
 async def status(request: Request):
@@ -48,7 +48,7 @@ async def status(request: Request):
     return JSONResponse(content=response_data)
 
 
-@router.get("/commands", include_in_schema=False)
+@router.get("/commands")
 async def commands(request: Request):
     bot = request.app.state.bot
     if bot is None:
