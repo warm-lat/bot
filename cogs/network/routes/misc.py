@@ -1,7 +1,8 @@
-import hmac, hashlib, time, orjson, logging, config
+import hmac, hashlib, orjson, logging, config
 from fastapi import APIRouter, Request, HTTPException, Header
 from fastapi.responses import JSONResponse
 from discord import Embed
+from datetime import datetime
 from ..models.github import GithubPushEvent, CONFIG
 
 log = logging.getLogger(__name__)
@@ -110,7 +111,7 @@ async def topgg_webhook(
                             "Vote again in 12 hours to maintain access."
                         ),
                         color=0x2f3136,
-                        timestamp=time.time()
+                        timestamp=datetime.now()
                     )
                     embed.set_footer(text="Tip: Donators get permanent access to these commands!")
                     await channel.send(embed=embed)
@@ -132,6 +133,6 @@ async def health(request: Request):
     else:
         return JSONResponse({
             "status": "ok",
-            "timestamp": int(time.time()),
+            "timestamp": int(datetime.utcnow().timestamp()),
             "uptime": int(bot.uptime2)
         })
