@@ -14,7 +14,6 @@ from .invites import Invites
 from .joindm import JoinDM
 from .level import Level
 from .logging import Logging
-from .lovense import Lovense
 from .porn import Porn
 from .publisher import Publisher
 from .recording import Recording
@@ -52,7 +51,6 @@ class Extended(
     JoinDM,
     Level,
     Logging,
-    Lovense,
     #Porn,
     Publisher,
     Recording,

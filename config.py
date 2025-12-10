@@ -141,6 +141,7 @@ class AUTHORIZATION:
     SOUNDCLOUD: str = ""
     OSU: str = "a64dd995fcfb3754bb734f7a80fe13168be51879"
     TOPGG: str = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfdCI6Ijc4NTE0MDI1MjI3MTA1MDc1MiIsImlkIjoiNzU4ODg5MTMyMzUyMzcyNzM2IiwiaWF0IjoxNzY1MDI4ODIzfQ.scL2Ion0w1MsclhC3kiPGnb5QC7pLJZWuUu--fXo8R0"
+    TOPGG_AUTH: str = "4%rJk^tT#p5Ky%95G79$&na$6&pmaMAx"
     
     class REDDIT:
         CLIENT_ID: str = "7s2HJa0My0keJAiLvFhvZQ"
@@ -153,10 +154,6 @@ class AUTHORIZATION:
     class TWITCH:
         CLIENT_ID: str = "jzkbprff40iqj646a697cyrvl0zt2m3"
         CLIENT_SECRET: str = "zj8b3n1t9m6b4g4f6vd5p3l4w1x9y0"
-        
-class LASTFM:
-    API_KEY: str = "4b25716d870cfa49dce73170b5d67439"
-    API_SECRET: str = "f3384c0ce4269dd575ac597347747b3c"
 
 class LOGGER:
     GUILD_JOIN_LOGGER: int = 1421685971308773447
@@ -174,8 +171,8 @@ class CLIENT:
 
 class LAVALINK:
     NODE_COUNT: int = 2
-    HOST: str = "public.rive.wtf"
-    PORT: int = 443
+    HOST: str = "audio.rive.wtf"
+    PORT: int = 24597
     PASSWORD: str = "youshallnotpass"
     SPOTIFY_CLIENT_ID: str = "4c3c2ba7ad6c4ef4a0c0d793cb979ce8"
     SPOTIFY_CLIENT_SECRET: str = "12dd934e7bca4536bb9f8d86b049a25e"

@@ -33,7 +33,6 @@ from tools.conversion.discord import StrictRole, TouchableMember
 from tools.parser import Script, parse
 from tools.formatter import codeblock, vowel
 from tools import CompositeMetaClass, MixinMeta
-
 from managers.paginator import Paginator
 
 log = getLogger("warm/ticket")
@@ -117,22 +116,6 @@ class Ticket(MixinMeta, metaclass=CompositeMetaClass):
     Create tickets for users to contact the staff.
     """
 
-    async def upload_to_r2(self, file_name: str, data: dict):
-        """Uploads a file to Cloudflare R2 Storage."""
-        session = get_session()
-        async with session.create_client(
-            "s3",
-            endpoint_url=config.CLOUDFLARE.R2.ENDPOINT,
-            aws_access_key_id=config.CLOUDFLARE.R2.ACCESS_KEY,
-            aws_secret_access_key=config.CLOUDFLARE.R2.ACCESS_SECRET,
-        ) as client:
-            await client.put_object(
-                Bucket=config.CLOUDFLARE.R2.BUCKET,
-                Key=file_name,
-                Body=json.dumps(data, indent=4).encode("utf-8"),
-                ContentType="application/json",
-            )
-
     @staticmethod
     def sanitize_data(data):
         if isinstance(data, dict):
@@ -183,7 +166,7 @@ class Ticket(MixinMeta, metaclass=CompositeMetaClass):
         file_path = f"tickets/{log_id}.json"
 
         transcript_data = await self.generate_transcript(channel)
-        await self.upload_to_r2(file_path, transcript_data)
+        await self.bot.upload_to_r2(file_path, transcript_data)
 
         await ctx.send(f"Transcript saved: https://warm.lat/tickets/{log_id}")
 

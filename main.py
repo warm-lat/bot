@@ -1235,7 +1235,7 @@ class Evict(commands.AutoShardedBot):
             'guild_data': process_guild_data,
             'jail_permissions': process_jail_permissions,
             'add_role': process_add_role,
-            'upload_bunny': process_bunny_upload
+            #'upload_bunny': process_bunny_upload
         }
         
         try:

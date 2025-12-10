@@ -36,6 +36,7 @@ moviepy
 msgpack
 nudenet
 orjson
+oxapay-python
 parsedatetime
 playwright
 plotly
@@ -55,7 +56,6 @@ scipy
 shazamio
 slowapi
 stackprinter
-stripe
 tornado
 typing_extensions
 unidecode

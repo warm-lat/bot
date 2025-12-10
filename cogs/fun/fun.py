@@ -383,158 +383,6 @@ class Fun(Cog):
                     
         return badges
 
-    async def generate_profile_image(self, user: Member | User, force_update: bool = False) -> str:
-        cached = await self.bot.db.fetchrow(
-            "SELECT profile_image, last_avatar, last_background FROM public.socials WHERE user_id = $1",
-            user.id
-        )
-
-        current_avatar = str(user.display_avatar.url)
-        current_badges = await self.get_user_badges(user)
-        current_background = await self.bot.db.fetchval(
-            "SELECT background_url FROM public.socials WHERE user_id = $1",
-            user.id
-        )
-
-        if not force_update and cached and cached['profile_image'] and \
-           cached['last_avatar'] == current_avatar and \
-           cached['last_background'] == current_background:
-            return cached['profile_image']
-
-        width, height = 1200, 630
-        image = Image.new('RGBA', (width, height))
-        draw = ImageDraw.Draw(image)
-
-        if current_background:
-            async with aiohttp.ClientSession() as session:
-                async with session.get(current_background) as resp:
-                    if resp.status == 200:
-                        bg_data = await resp.read()
-                        background = Image.open(BytesIO(bg_data)).convert('RGBA')
-                        bg_ratio = width / height
-                        img_ratio = background.width / background.height
-                        
-                        if img_ratio > bg_ratio:
-                            new_width = int(height * img_ratio)
-                            background = background.resize((new_width, height))
-                            left = (new_width - width) // 2
-                            background = background.crop((left, 0, left + width, height))
-                        else:
-                            new_height = int(width / img_ratio)
-                            background = background.resize((width, new_height))
-                            top = (new_height - height) // 2
-                            background = background.crop((0, top, width, top + height))
-                        image.paste(background, (0, 0))
-        else:
-            image.paste((24, 24, 27), (0, 0, width, height))
-
-        overlay = Image.new('RGBA', (width, height), (0, 0, 0, 80))
-        image.paste(overlay, (0, 0), overlay)
-
-        avatar_size = 160
-        async with aiohttp.ClientSession() as session:
-            async with session.get(current_avatar) as resp:
-                if resp.status == 200:
-                    avatar_data = await resp.read()
-                    avatar = Image.open(BytesIO(avatar_data))
-                    avatar = avatar.resize((avatar_size, avatar_size))
-                    
-                    mask = Image.new('L', (avatar_size, avatar_size), 0)
-                    draw_mask = ImageDraw.Draw(mask)
-                    draw_mask.ellipse((0, 0, avatar_size, avatar_size), fill=255)
-                    
-                    output = Image.new('RGBA', (avatar_size, avatar_size), (0, 0, 0, 0))
-                    output.paste(avatar, (0, 0))
-                    output.putalpha(mask)
-                    
-                    avatar_x = (width - avatar_size) // 2
-                    avatar_y = height // 4 - avatar_size // 4
-                    image.paste(output, (avatar_x, avatar_y), output)
-
-        username_font = ImageFont.truetype("assets/fonts/Montserrat-SemiBold.ttf", 75)
-        link_font = ImageFont.truetype("assets/fonts/Montserrat-Regular.ttf", 32)
-        
-        username = user.name
-        if len(username) > 15:
-            username_font = ImageFont.truetype("assets/fonts/Montserrat-SemiBold.ttf", 60)
-        
-        bbox = draw.textbbox((0, 0), username, font=username_font)
-        text_width = bbox[2] - bbox[0]
-        username_x = (width - text_width) // 2
-        username_y = avatar_y + avatar_size + 20
-        draw.text((username_x, username_y), username, font=username_font, fill=(255, 255, 255))
-
-        if current_badges:
-            badge_size = 28
-            badge_bg_size = 36
-            total_width = len(current_badges) * badge_bg_size
-            badge_start_x = (width - total_width) // 2
-            badge_y = username_y + 100
-
-            container = Image.new('RGBA', (total_width, badge_bg_size), (24, 24, 27))
-            container_mask = Image.new('L', (total_width, badge_bg_size))
-            container_draw = ImageDraw.Draw(container_mask)
-            container_draw.rounded_rectangle((0, 0, total_width, badge_bg_size), radius=8, fill=255)
-            
-            image.paste(container, (badge_start_x, badge_y), container_mask)
-
-            for i, badge in enumerate(current_badges):
-                try:
-                    badge_path = f"assets/badges/slugs/{badge}.png"
-                    badge_img = Image.open(badge_path).convert('RGBA')
-                    badge_img = badge_img.resize((badge_size, badge_size))
-                    
-                    x = badge_start_x + i * badge_bg_size
-                    icon_x = x + (badge_bg_size - badge_size) // 2
-                    icon_y = badge_y + (badge_bg_size - badge_size) // 2
-                    image.paste(badge_img, (icon_x, icon_y), badge_img)
-                except Exception as e:
-                    continue
-
-        profile_link = f"warm.lat/@{user.name}"
-        bbox = draw.textbbox((0, 0), profile_link, font=link_font)
-        link_width = bbox[2] - bbox[0]
-        link_x = (width - link_width) // 2
-        link_y = badge_y + 60 if current_badges else username_y + 80
-        draw.text((link_x, link_y), profile_link, font=link_font, fill=(160, 160, 180))
-
-        buffer = BytesIO()
-        image.save(buffer, 'PNG')
-        buffer.seek(0)
-
-        filename = f"socials/profile_{user.id}_{int(time.time())}.png"
-        session = get_session()
-        headers = {"AccessKey": "bc5e2ae5-5433-4030-bbaaf49ef043-9766-4d31"}
-        
-        async with session.create_client(
-            's3',
-            endpoint_url=config.CLOUDFLARE.R2.ENDPOINT,
-            aws_access_key_id=config.CLOUDFLARE.R2.ACCESS_KEY,
-            aws_secret_access_key=config.CLOUDFLARE.R2.ACCESS_SECRET,
-        ) as s3:
-            await s3.put_object(
-                Bucket=config.CLOUDFLARE.R2.BUCKET,
-                Key=filename,
-                Body=buffer.read(),
-                ContentType=f"image/png"
-            )
-
-            new_url = f"https://r2.warm.lat/{filename}"
-
-            if cached and cached['profile_image']:
-                    old_filename = cached['profile_image'].split('/')[-1]
-                    await s3.delete_object(
-                        Bucket=config.CLOUDFLARE.R2.BUCKET,
-                        Key=old_filename
-                    )
-
-            await self.bot.db.execute(
-                    "INSERT INTO public.socials (user_id, profile_image, last_avatar, last_background) VALUES ($1, $2, $3, $4) ON CONFLICT (user_id) DO UPDATE SET profile_image = $2, last_avatar = $3, last_background = $4",
-                    user.id, new_url, current_avatar, current_background
-                )
-                
-            return new_url
-
     @command()  
     async def blacktea(self, ctx: Context) -> Optional[Message]:
         """
@@ -5608,26 +5456,6 @@ class Fun(Cog):
 
                 await session.save(self.bot.redis)
 
-    #@command(aliases=["niko"])
-    #async def dog(self, ctx):
-    #    """
-    #    Sends qilla's dog to chat.
-    #    """
-    #    urls = [
-    #        "https://r2.evict.bot/reskins/930383131863842816_1735300560.png",
-    #        "https://r2.evict.bot/reskins/930383131863842816_1736194975.png"
-    #    ]
-    #    url = random.choice(urls)
-    #    
-    #    async with aiohttp.ClientSession() as session:
-    #        async with session.get(url) as response:
-    #            if response.status == 200:
-    #                image_data = await response.read()
-    #                file = discord.File(io.BytesIO(image_data), filename="dog.png")
-    #                await ctx.send(file=file)
-    #            else:
-    #                await ctx.send("Failed to fetch the dog image")
-
     @group(name="socials", invoke_without_command=True)
     async def socials(self, ctx: Context, user: Member | User = parameter(
             default=lambda ctx: ctx.author,
@@ -6974,7 +6802,7 @@ class Fun(Cog):
                 view = discord.ui.View()
                 view.add_item(
                     discord.ui.Button(
-                        label="Become a Donor",
+                        label="Become a Donor (crypto only)",
                         url="https://donate.stripe.com/",
                         style=discord.ButtonStyle.url
                     )

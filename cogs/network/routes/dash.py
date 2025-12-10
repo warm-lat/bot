@@ -10,7 +10,6 @@ log = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/dash", include_in_schema=False)
 
-
 @router.get("/beta")
 async def beta(request: Request):
     """

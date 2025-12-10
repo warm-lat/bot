@@ -27,12 +27,13 @@ async def verify_special_auth(special_auth: str = Header(..., alias='Authorizati
         
 async def verify_dash_auth(dash_auth: str = Header(..., alias='X-Special-Auth')):
     """
-    Dependency to verify a dashboard static API key in the 'Authorization' header.
-    
+    Dependency to verify a dashboard static API key in the 'X-Special-Auth' header.
+
     Raises HTTPException with status 401 if the key is missing or invalid.
     """
-    if dash_auth != os.getenv("SPECIAL_AUTH_SECRET"):
+    secret = os.getenv("SPECIAL_AUTH_SECRET")
+    if not secret or dash_auth != secret:
         raise HTTPException(
-            status_code=401, 
+            status_code=401,
             detail="Invalid Dashboard API Key"
         )

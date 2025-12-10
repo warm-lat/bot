@@ -53,9 +53,9 @@ class Listeners(Cog):
                 ContentType=f"image/{file_extension}"
             )
             
-        return f"https://r2.warm.lat/avh/{user_id}/{avatar_hash}.{file_extension}"
+        return f"https://r2.warm.lat/{file_path}"
 
-    async def store_avatar_hash(self, user_id: int, avatar_hash: str, bunny_url: str) -> None:
+    async def store_avatar_hash(self, user_id: int, avatar_hash: str, r2_url: str) -> None:
         """
         Store avatar hash for the user in the database.
         """
@@ -68,7 +68,7 @@ class Listeners(Cog):
                 ON CONFLICT (user_id, avatar_url) DO NOTHING
                 """,
                 user_id,
-                bunny_url
+                r2_url
             )
         except Exception as e:
             log.error(f"Failed to store avatar hash for user {user_id}: {e}")
@@ -112,14 +112,14 @@ class Listeners(Cog):
                 file_extension = "gif" if after.avatar.is_animated() else "png"
                 avatar_hash = str(after.avatar.key)
                 
-                bunny_url = await self.upload_to_cfr2(
+                r2_url = await self.upload_to_cfr2(
                     avatar_bytes,
                     after.id,
                     avatar_hash,
                     file_extension
                 )
                 
-                if bunny_url:
+                if r2_url:
                     if stored_avatar:
                         await self.store_avatar_hash(after.id, stored_avatar['avatar_hash'], stored_avatar['avatar_url'])
                     
@@ -132,7 +132,7 @@ class Listeners(Cog):
                         """,
                         after.id,
                         avatar_hash,
-                        bunny_url
+                        r2_url
                     )
                     
                     if after.id not in self.avatar_stats:

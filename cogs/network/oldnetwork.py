@@ -1383,56 +1383,6 @@ class Network(Cog):
         except Exception as e:
             log.error(f"Error in state updates for guild {guild_id}: {e}")
 
-    @route("/spotify/auth", ["POST"])
-    @ratelimit(5, 60)
-    @requires_not_auth
-    async def spotify_auth(self: "Network", request: Request) -> Response:
-        try:
-            data = await request.json()
-            
-            required_fields = {
-                "user_id": data.get("user_id"),
-                "spotify_access_token": data.get("spotify_access_token"), 
-                "spotify_refresh_token": data.get("spotify_refresh_token"),
-                "expires_in": data.get("expires_in"),
-                "spotify_id": data.get("spotify_id")
-            }
-
-            if missing := [k for k, v in required_fields.items() if not v]:
-                return web.json_response(
-                    {"error": f"Missing required fields: {', '.join(missing)}"},
-                    status=400
-                )
-
-            current_time = datetime.now(timezone.utc)
-            expires_at = (current_time + timedelta(seconds=int(required_fields["expires_in"])))
-            
-            expires_at_ts = expires_at.replace(tzinfo=None)
-
-            await self.bot.db.execute(
-                """
-                INSERT INTO public.user_spotify (
-                    user_id, access_token, refresh_token, token_expires_at, spotify_id
-                ) VALUES ($1, $2, $3, $4, $5)
-                ON CONFLICT (user_id) DO UPDATE SET
-                    access_token = EXCLUDED.access_token,
-                    refresh_token = EXCLUDED.refresh_token, 
-                    token_expires_at = EXCLUDED.token_expires_at,
-                    spotify_id = EXCLUDED.spotify_id
-                """,
-                int(required_fields["user_id"]),
-                required_fields["spotify_access_token"],
-                required_fields["spotify_refresh_token"], 
-                expires_at_ts, 
-                required_fields["spotify_id"]
-            )
-
-            return web.json_response({"success": True})
-            
-        except Exception as e:
-            log.error(f"Error processing Spotify auth: {str(e)}", exc_info=True)
-            return web.json_response({"error": "Internal server error"}, status=500)
-
     async def handle_options(self, request):
         return web.Response(status=200)
 
@@ -1488,7 +1438,7 @@ class Network(Cog):
         
         return len(self.failed_payment_notifications[user_id]) < 2
 
-    @route("/paylix-webhook", ["POST"])
+    @route("/", ["POST"])
     @ratelimit(10, 60)
     async def paylix_webhook(self: "Network", request: Request) -> Response:
         try:
@@ -5678,63 +5628,6 @@ class Network(Cog):
                 {"error": "Internal server error"}, 
                 status=500
             )
-
-    @route("/domains/verify", method="GET")
-    @ratelimit(5, 60)
-    @requires_auth
-    async def verify_domain(self, request: Request) -> Response:
-        """Verify domain DNS records"""
-        domain = request.query.get('domain')
-        if not domain:
-            return web.json_response({"error": "Missing domain parameter"}, status=400)
-        
-        try:
-            cname_records = await self.bot.loop.run_in_executor(
-                None, 
-                lambda: dns.resolver.resolve(domain, 'CNAME')
-            )
-            cname_valid = any(str(record.target).rstrip('.') == 'cname.warm.lat' for record in cname_records)
-            
-            if not cname_valid:
-                return web.json_response({
-                    "error": "CNAME record not properly configured",
-                    "details": "Domain should point to cname.warm.lat"
-                }, status=400)
-                
-            txt_records = await self.bot.loop.run_in_executor(
-                None, 
-                lambda: dns.resolver.resolve(f'__warm-verification.{domain}', 'TXT')
-            )
-            
-            owner = None
-            for record in txt_records:
-                txt_value = str(record).strip('"')
-                if txt_value.startswith("warm-verification="):
-                    owner = txt_value.split("=")[1]
-                    break
-                    
-            if not owner:
-                return web.json_response({
-                    "error": "TXT record not properly configured",
-                    "details": "Missing or invalid verification record"
-                }, status=400)
-                
-            return web.json_response({
-                "success": True,
-                "domain": domain,
-                "owner": owner
-            })
-            
-        except dns.resolver.NXDOMAIN:
-            return web.json_response({
-                "error": "Domain not found",
-                "details": "Could not resolve DNS records"
-            }, status=404)
-        except Exception as e:
-            return web.json_response({
-                "error": "Verification failed",
-                "details": str(e)
-            }, status=500)
 
     @route("/verification/status/{guild_id}")
     @ratelimit(5, 60)

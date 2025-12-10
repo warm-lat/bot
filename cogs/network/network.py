@@ -1,12 +1,14 @@
 import uvicorn
 import asyncio
-import logging
 
-from main import Evict
-from .routes import bots, dash, misc, verify
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from discord.ext.commands import Cog
+
+from main import Evict
+from .routes import bots, dash, misc, verify
+from core.client import logging
+
 
 log = logging.getLogger(__name__)
 
@@ -42,6 +44,8 @@ class Network(Cog):
             host="0.0.0.0",
             port=8000,
             log_level="info",
+            proxy_headers=True,
+            server_header=False
         )
         self.server = uvicorn.Server(config)
         self.task = None
@@ -49,9 +53,8 @@ class Network(Cog):
     async def cog_load(self):
         """Start the API server when the cog is loaded."""
         self.task = asyncio.create_task(self.server.serve())
-        log.info("FastAPI server started on http://0.0.0.0:8000")
 
-    def cog_unload(self):
+    async def cog_unload(self):
         """Handle cleanup when the cog is unloaded."""
         self.server.should_exit = True
         if self.task:
