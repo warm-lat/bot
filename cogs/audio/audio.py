@@ -1497,7 +1497,7 @@ class Audio(Cog):
             if percentage == 0:
                 async with session.patch(
                     f"https://{config.LAVALINK.HOST}/v4/sessions/pomice/players/{ctx.guild.id}",
-                    headers={"Authorization": "{config.LAVALINK.PASSWORD}"},
+                    headers={"Authorization": {config.LAVALINK.PASSWORD}},
                     json={"filters": {}}
                 ) as response:
                     await response.read()
@@ -1508,7 +1508,7 @@ class Audio(Cog):
             
             async with session.patch(
                 f"https://{config.LAVALINK.HOST}/v4/sessions/pomice/players/{ctx.guild.id}",
-                headers={"Authorization": "youwillnotpass"},
+                headers={"Authorization": {config.LAVALINK.PASSWORD}},
                 json={"filters": {"equalizer": bands}}
             ) as response:
                 await response.read()
@@ -1527,7 +1527,7 @@ class Audio(Cog):
             if percentage == 0:
                 async with session.patch(
                     f"https://{config.LAVALINK.HOST}/v4/sessions/pomice/players/{ctx.guild.id}",
-                    headers={"Authorization": "youwillnotpass"},
+                    headers={"Authorization": {config.LAVALINK.PASSWORD}},
                     json={"filters": {}}
                 ) as response:
                     await response.read()
@@ -1538,7 +1538,7 @@ class Audio(Cog):
             
             async with session.patch(
                 f"https://{config.LAVALINK.HOST}/v4/sessions/pomice/players/{ctx.guild.id}",
-                headers={"Authorization": "youwillnotpass"},
+                headers={"Authorization": {config.LAVALINK.PASSWORD}},
                 json={"filters": {"timescale": {"speed": speed, "pitch": pitch}}}
             ) as response:
                 await response.read()
@@ -1557,7 +1557,7 @@ class Audio(Cog):
             if percentage == 0:
                 async with session.patch(
                     f"https://{config.LAVALINK.HOST}/v4/sessions/pomice/players/{ctx.guild.id}",
-                    headers={"Authorization": "youwillnotpass"},
+                    headers={"Authorization": {config.LAVALINK.PASSWORD}},
                     json={"filters": {}}
                 ) as response:
                     await response.read()
@@ -1566,7 +1566,7 @@ class Audio(Cog):
             level = percentage / 100
             async with session.patch(
                 f"https://{config.LAVALINK.HOST}/v4/sessions/pomice/players/{ctx.guild.id}",
-                headers={"Authorization": "youwillnotpass"},
+                headers={"Authorization": {config.LAVALINK.PASSWORD}},
                 json={"filters": {
                     "equalizer": [
                         {"band": 0, "gain": level * 0.6},
@@ -1585,7 +1585,7 @@ class Audio(Cog):
         async with aiohttp.ClientSession() as session:
             async with session.patch(
                 f"https://{config.LAVALINK.HOST}/v4/sessions/pomice/players/{ctx.guild.id}",
-                headers={"Authorization": "youwillnotpass"},
+                headers={"Authorization": {config.LAVALINK.PASSWORD}},
                 json={"filters": {}}
             ) as response:
                 await response.read()
@@ -1602,7 +1602,7 @@ class Audio(Cog):
             if percentage == 0:
                 async with session.patch(
                     f"https://{config.LAVALINK.HOST}/v4/sessions/pomice/players/{ctx.guild.id}",
-                    headers={"Authorization": "youwillnotpass"},
+                    headers={"Authorization": {config.LAVALINK.PASSWORD}},
                     json={"filters": {}}
                 ) as response:
                     await response.read()
@@ -1613,7 +1613,7 @@ class Audio(Cog):
             
             async with session.patch(
                 f"https://{config.LAVALINK.HOST}/v4/sessions/pomice/players/{ctx.guild.id}",
-                headers={"Authorization": "youwillnotpass"},
+                headers={"Authorization": {config.LAVALINK.PASSWORD}},
                 json={"filters": {"vibrato": {"frequency": frequency, "depth": depth}}}
             ) as response:
                 await response.read()
@@ -1630,7 +1630,7 @@ class Audio(Cog):
             if percentage == 0:
                 async with session.patch(
                     f"https://{config.LAVALINK.HOST}/v4/sessions/pomice/players/{ctx.guild.id}",
-                    headers={"Authorization": "youwillnotpass"},
+                    headers={"Authorization": {config.LAVALINK.PASSWORD}},
                     json={"filters": {}}
                 ) as response:
                     await response.read()
@@ -1641,7 +1641,7 @@ class Audio(Cog):
             
             async with session.patch(
                 f"https://{config.LAVALINK.HOST}/v4/sessions/pomice/players/{ctx.guild.id}",
-                headers={"Authorization": "youwillnotpass"},
+                headers={"Authorization": {config.LAVALINK.PASSWORD}},
                 json={"filters": {"tremolo": {"frequency": frequency, "depth": depth}}}
             ) as response:
                 await response.read()
@@ -1658,7 +1658,7 @@ class Audio(Cog):
             if percentage == 0:
                 async with session.patch(
                     f"https://{config.LAVALINK.HOST}/v4/sessions/pomice/players/{ctx.guild.id}",
-                    headers={"Authorization": "youwillnotpass"},
+                    headers={"Authorization": {config.LAVALINK.PASSWORD}},
                     json={"filters": {}}
                 ) as response:
                     await response.read()
@@ -1667,7 +1667,7 @@ class Audio(Cog):
             scale = percentage / 100
             async with session.patch(
                 f"https://{config.LAVALINK.HOST}/v4/sessions/pomice/players/{ctx.guild.id}",
-                headers={"Authorization": "youwillnotpass"},
+                headers={"Authorization": {config.LAVALINK.PASSWORD}},
                 json={"filters": {"distortion": {
                     "sinOffset": scale * 0.5,
                     "sinScale": scale * 0.5,

@@ -6,7 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from discord.ext.commands import Cog
 
 from main import Evict
-from .routes import bots, dash, misc, verify
+from .routes import bots, dash, misc, music
 from core.client import logging
 
 
@@ -37,7 +37,7 @@ class Network(Cog):
         self.app.include_router(bots.router)
         self.app.include_router(dash.router)
         self.app.include_router(misc.router)
-        self.app.include_router(verify.router)
+        self.app.include_router(music.router)
 
         config = uvicorn.Config(
             self.app,
