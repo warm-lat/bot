@@ -3533,8 +3533,8 @@ class Utility(Extended, Cog):
                 "- 2 authentication (more available with justifications)\n"
                 "- Custom commands of your choice\n\n"
                 "**Hosting**\n"
-                "Hosted on dedicated US servers for optimal latency. System access "
-                "limited to Warm administrators and senior staff for security."
+                "Hosted on USA Virtual Private Servers for optimal latency. System access "
+                "limited to Warm developers only."
             ),
             color=0x2ecc71
         )
