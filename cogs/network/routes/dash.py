@@ -3,8 +3,10 @@ from datetime import datetime, timezone
 from attr import dataclass
 from fastapi import APIRouter, Request, Depends, Query, Header, HTTPException
 from fastapi.responses import JSONResponse
+from dotenv import load_dotenv
 from ..middleware.auth import verify_auth, verify_dash_auth
 from ..models.dash import TicketCreate, LoginPayload, LoginResponse
+load_dotenv()
 
 log = logging.getLogger(__name__)
 

@@ -3,12 +3,11 @@ from fastapi import APIRouter, Depends, Request, HTTPException
 from fastapi.responses import JSONResponse
 from ..middleware.auth import verify_auth
 
-router = APIRouter(prefix="/music", tags=["Music"])
+router = APIRouter(prefix="/music", include_in_schema=False)
 log = logging.getLogger(__name__)
 
 @router.get("/playing/{user_id}", dependencies=[Depends(verify_auth)])
 async def currently_playing(request: Request, user_id: int):
-    """Get currently playing track info for a specific user (FastAPI version)"""
     bot = request.app.state.bot
     audio_cog = bot.get_cog("Audio") if bot else None
     if not audio_cog:

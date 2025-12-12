@@ -137,3 +137,5 @@ class RecentTracks(BaseModel):
             raise CommandError(f"Last.fm user **{username}** not found!")
 
         return cls.parse_obj((await response.json())["recenttracks"]).track
+
+RecentTracks.model_rebuild()

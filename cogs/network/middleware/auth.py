@@ -1,5 +1,7 @@
 import os
 from fastapi import Header, HTTPException
+from dotenv import load_dotenv
+load_dotenv()
 
 async def verify_auth(authorization: str = Header(..., alias='Authorization')):
     """
