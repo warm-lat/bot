@@ -31,8 +31,7 @@ async def verify_dash_auth(dash_auth: str = Header(..., alias='X-Special-Auth'))
 
     Raises HTTPException with status 401 if the key is missing or invalid.
     """
-    secret = os.getenv("SPECIAL_AUTH_SECRET")
-    if not secret or dash_auth != secret:
+    if dash_auth != os.getenv("SPECIAL_AUTH_SECRET"):
         raise HTTPException(
             status_code=401,
             detail="Invalid Dashboard API Key"

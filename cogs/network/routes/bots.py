@@ -183,4 +183,4 @@ async def commands(request: Request):
                     "donator": get_donator(command),
                 })
 
-    return {"categories": categories, "commands": commands_info}
+    return JSONResponse(content={"categories": categories, "commands": commands_info})
