@@ -49,6 +49,7 @@ pylast
 PyNaCl
 pyparsing
 python-dateutil
+python-multipart
 rapidfuzz
 redis
 rich
