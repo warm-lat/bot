@@ -1,7 +1,6 @@
 import logging, asyncio, os, hashlib
 from datetime import datetime, timezone
-from attr import dataclass
-from fastapi import APIRouter, Request, Depends, Query, Header, HTTPException
+from fastapi import APIRouter, Request, Depends, Query, Header, HTTPException, Body
 from fastapi.responses import JSONResponse
 from dotenv import load_dotenv
 from ..middleware.auth import verify_auth, verify_dash_auth
@@ -133,7 +132,7 @@ async def create_ticket(request: Request, data: TicketCreate):
         raise HTTPException(status_code=500, detail="Internal server error.")
     
 @router.post("/login", dependencies=[Depends(verify_dash_auth)], response_model=LoginResponse)
-async def login(request: Request, data: LoginPayload):
+async def login(request: Request, data: LoginPayload = Body(...)):
     bot = request.app.state.bot
     if bot is None:
         raise HTTPException(status_code=503, detail="Bot is not ready")
