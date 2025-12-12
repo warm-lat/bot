@@ -139,5 +139,5 @@ class RecentTracks(BaseModel):
         return cls.parse_obj((await response.json())["recenttracks"]).track
 
 
-TrackItem.model_rebuild(namespace={"Track": __import__("cogs.lastfm.interface.track.info", fromlist=["Track"]).Track})
+TrackItem.model_rebuild()
 RecentTracks.model_rebuild()
