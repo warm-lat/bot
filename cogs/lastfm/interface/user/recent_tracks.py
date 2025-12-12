@@ -67,7 +67,7 @@ class TrackItem(BaseModel):
     field_attr: Optional[FieldAttr] = Field(None, alias="@attr")
     url: str
     date: Optional[Date] = None
-    data: Optional[Track | TrackItem] = None
+    data: Optional["Track" | "TrackItem"] = None
 
     def __str__(self) -> str:
         return self.name
