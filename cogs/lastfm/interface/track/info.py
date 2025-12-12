@@ -102,3 +102,5 @@ class Track(BaseModel):
             return cls(**(await response.json())["track"], image=image_url)
         except KeyError as exc:
             raise CommandError(f"Last.fm track **{track}** not found!") from exc
+
+Track.model_rebuild()
