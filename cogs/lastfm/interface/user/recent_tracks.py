@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, List, Optional, cast
+from typing import TYPE_CHECKING, List, Optional, cast, Union
 from aiohttp import ClientSession
 
 from discord import Color
@@ -67,7 +67,7 @@ class TrackItem(BaseModel):
     field_attr: Optional[FieldAttr] = Field(None, alias="@attr")
     url: str
     date: Optional[Date] = None
-    data: Optional["Track" | "TrackItem"] = None
+    data: Optional['Union[Track, TrackItem]'] = None
 
     def __str__(self) -> str:
         return self.name
