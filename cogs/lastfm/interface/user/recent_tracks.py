@@ -67,7 +67,10 @@ class TrackItem(BaseModel):
     field_attr: Optional[FieldAttr] = Field(None, alias="@attr")
     url: str
     date: Optional[Date] = None
-    data: Optional['Union[Track, TrackItem]'] = None
+    # Use string forward reference for Pydantic v2, and Union for possible types
+    data: Optional['Track'] = None  # type: ignore  # 'Track' is a forward reference
+    # If you want to allow TrackItem as well, use: Optional[Union['Track', 'TrackItem']]
+    # data: Optional[Union['Track', 'TrackItem']] = None
 
     def __str__(self) -> str:
         return self.name
@@ -138,4 +141,6 @@ class RecentTracks(BaseModel):
 
         return cls.parse_obj((await response.json())["recenttracks"]).track
 
+# Rebuild models for forward references (required for Pydantic v2+)
+TrackItem.model_rebuild()
 RecentTracks.model_rebuild()
