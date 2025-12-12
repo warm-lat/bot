@@ -12,7 +12,8 @@ from cogs.lastfm import http
 from tools import dominant_color
 from core.client.redis import Redis
 
-from cogs.lastfm.interface.track.info import Track
+if TYPE_CHECKING:
+    from cogs.lastfm.interface.track.info import Track
 
 
 class Artist(BaseModel):
@@ -66,9 +67,6 @@ class TrackItem(BaseModel):
     field_attr: Optional[FieldAttr] = Field(None, alias="@attr")
     url: str
     date: Optional[Date] = None
-    # Use string forward reference for Pydantic v2, and Union for possible types
-    # data: Optional['Track'] = None  # type: ignore  # 'Track' is a forward reference
-    # If you want to allow TrackItem as well, use: Optional[Union['Track', 'TrackItem']]
     data: Optional[Union['Track', 'TrackItem']] = None
 
     def __str__(self) -> str:
@@ -140,6 +138,6 @@ class RecentTracks(BaseModel):
 
         return cls.parse_obj((await response.json())["recenttracks"]).track
 
-# Rebuild models for forward references (required for Pydantic v2+)
-TrackItem.model_rebuild()
+
+TrackItem.model_rebuild(namespace={"Track": __import__("cogs.lastfm.interface.track.info", fromlist=["Track"]).Track})
 RecentTracks.model_rebuild()
