@@ -9,7 +9,7 @@ from cogs.lastfm import http
 
 class Artist(BaseModel):
     name: str
-    mbid: Optional[str]
+    mbid: Optional[str] = None
     url: str
 
 
@@ -26,7 +26,7 @@ class TrackItem(BaseModel):
     name: str
     playcount: int
     listeners: int
-    mbid: Optional[str]
+    mbid: Optional[str] = None
     url: str
     streamable: str
     artist: Artist

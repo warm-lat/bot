@@ -23,7 +23,7 @@ class TrackSearch(BaseModel):
     streamable: str
     listeners: int
     image: List[ImageItem]
-    mbid: Optional[str]
+    mbid: Optional[str] = None
 
     def __str__(self) -> str:
         return self.name

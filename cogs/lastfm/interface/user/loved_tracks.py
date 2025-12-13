@@ -11,7 +11,7 @@ from cogs.lastfm import http
 class Artist(BaseModel):
     url: str
     name: str
-    mbid: Optional[str]
+    mbid: Optional[str] = None
 
 
 class Date(BaseModel):
@@ -32,7 +32,7 @@ class Streamable(BaseModel):
 class TrackItem(BaseModel):
     artist: Artist
     date: Date
-    mbid: Optional[str]
+    mbid: Optional[str] = None
     url: str
     name: str
     image: List[ImageItem]

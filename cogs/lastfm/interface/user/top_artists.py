@@ -20,7 +20,7 @@ class FieldAttr(BaseModel):
 class ArtistItem(BaseModel):
     streamable: str
     image: List[ImageItem]
-    mbid: Optional[str]
+    mbid: Optional[str] = None
     url: str
     playcount: int
     field_attr: FieldAttr = Field(..., alias="@attr")
