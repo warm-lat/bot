@@ -6,7 +6,6 @@ from discord.ext.commands import CommandError
 from pydantic import BaseModel, Field
 
 from cogs.lastfm import http
-from cogs.lastfm.interface.user.recent_tracks import RecentTracks
 
 if TYPE_CHECKING:
     from cogs.lastfm.lastfm import Context
@@ -125,6 +124,8 @@ class Artist(BaseModel):
         ctx: Context,
         username: Optional[str] = None,
     ) -> str:
+        from cogs.lastfm.interface.user.recent_tracks import RecentTracks
+
         username = username or cast(
             Optional[str],
             await ctx.bot.db.fetchval(
