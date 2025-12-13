@@ -17,7 +17,7 @@ if TYPE_CHECKING:
 
 
 class Artist(BaseModel):
-    mbid: Optional[str]
+    mbid: Optional[str] = None
     text: str = Field(..., alias="#text")
 
     def __str__(self) -> str:
@@ -41,7 +41,7 @@ class ImageItem(BaseModel):
 
 
 class Album(BaseModel):
-    mbid: Optional[str]
+    mbid: Optional[str] = None
     text: str = Field(..., alias="#text")
 
     def __str__(self) -> str:
@@ -61,7 +61,7 @@ class TrackItem(BaseModel):
     artist: Artist
     streamable: str
     image: List[ImageItem]
-    mbid: Optional[str]
+    mbid: Optional[str] = None
     album: Album
     name: str
     field_attr: Optional[FieldAttr] = Field(None, alias="@attr")

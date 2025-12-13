@@ -19,7 +19,7 @@ class ImageItem(BaseModel):
 class ArtistSearch(BaseModel):
     name: str
     listeners: int
-    mbid: Optional[str]
+    mbid: Optional[str] = None
     url: str
     streamable: str
     image: List[ImageItem]

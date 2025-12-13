@@ -18,7 +18,7 @@ class ImageItem(BaseModel):
 
 class ArtistItem(BaseModel):
     name: str
-    mbid: Optional[str]
+    mbid: Optional[str] = None
     match: str
     url: str
     image: List[ImageItem]

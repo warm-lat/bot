@@ -22,7 +22,7 @@ class AlbumSearch(BaseModel):
     url: str
     image: List[ImageItem]
     streamable: str
-    mbid: Optional[str]
+    mbid: Optional[str] = None
 
     def __str__(self) -> str:
         return self.name

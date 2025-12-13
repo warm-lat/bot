@@ -11,7 +11,7 @@ from cogs.lastfm.interface.spotify.track import SpotifyTrack
 
 class Artist(BaseModel):
     name: str
-    mbid: Optional[str]
+    mbid: Optional[str] = None
     url: str
 
     def __str__(self) -> str:
@@ -33,7 +33,7 @@ class ImageItem(BaseModel):
 class Album(BaseModel):
     artist: str
     title: str
-    mbid: Optional[str]
+    mbid: Optional[str] = None
     url: str
     image: List[ImageItem]
     # field_attr: FieldAttr = Field(..., alias="@attr")
@@ -53,18 +53,18 @@ class Wiki(BaseModel):
 
 class Track(BaseModel):
     name: str
-    mbid: Optional[str]
+    mbid: Optional[str] = None
     url: str
     duration: int
     listeners: int
     playcount: int
     artist: Artist
-    album: Optional[Album]
+    album: Optional[Album] = None
     userplaycount: Optional[int] = 0
     userloved: Optional[bool] = False
-    wiki: Optional[Wiki]
-    image: Optional[str]
-    spotify: Optional[SpotifyTrack]
+    wiki: Optional[Wiki] = None
+    image: Optional[str] = None
+    spotify: Optional[SpotifyTrack] = None
 
     def __str__(self) -> str:
         return self.name

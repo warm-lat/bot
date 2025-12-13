@@ -23,7 +23,7 @@ class ImageItem(BaseModel):
 class Artist(BaseModel):
     url: str
     name: str
-    mbid: Optional[str]
+    mbid: Optional[str] = None
 
     def __str__(self) -> str:
         return self.name
@@ -48,11 +48,11 @@ class Tracks(BaseModel):
 
 class Album(BaseModel):
     artist: str
-    mbid: Optional[str]
+    mbid: Optional[str] = None
     name: str
     userplaycount: int
     image: List[ImageItem]
-    tracks: Optional[Tracks]
+    tracks: Optional[Tracks] = None
     listeners: int
     playcount: int
     url: str

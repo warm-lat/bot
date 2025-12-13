@@ -21,7 +21,7 @@ class ImageItem(BaseModel):
 class Artist(BaseModel):
     url: str
     name: str
-    mbid: Optional[str]
+    mbid: Optional[str] = None
 
 
 class FieldAttr(BaseModel):
@@ -30,7 +30,7 @@ class FieldAttr(BaseModel):
 
 class TrackItem(BaseModel):
     streamable: Streamable
-    mbid: Optional[str]
+    mbid: Optional[str] = None
     name: str
     image: List[ImageItem]
     artist: Artist

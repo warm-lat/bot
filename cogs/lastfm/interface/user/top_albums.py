@@ -11,7 +11,7 @@ from cogs.lastfm import http
 class Artist(BaseModel):
     url: str
     name: str
-    mbid: Optional[str]
+    mbid: Optional[str] = None
 
 
 class ImageItem(BaseModel):
@@ -26,7 +26,7 @@ class FieldAttr(BaseModel):
 class AlbumItem(BaseModel):
     artist: Artist
     image: List[ImageItem]
-    mbid: Optional[str]
+    mbid: Optional[str] = None
     url: str
     playcount: int
     field_attr: FieldAttr = Field(..., alias="@attr")

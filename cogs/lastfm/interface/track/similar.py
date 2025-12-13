@@ -14,7 +14,7 @@ class Streamable(BaseModel):
 
 class Artist(BaseModel):
     name: str
-    mbid: Optional[str]
+    mbid: Optional[str] = None
     url: str
 
 
