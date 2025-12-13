@@ -12,5 +12,5 @@ class LoginResponse(BaseModel):
     expires_in: int = Field(1209600, alias="expiresIn")
     
 class LoginPayload(BaseModel):
-    user_id: str
-    access_token: str = Field(..., alias="accessToken")
+    user_id: str 
+    access_token: str
