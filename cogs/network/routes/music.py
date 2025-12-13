@@ -1,9 +1,12 @@
-import aiohttp, logging
-from fastapi import APIRouter, Depends, Request, HTTPException
+import aiohttp, logging, config, asyncio
+from fastapi import APIRouter, Depends, Request, HTTPException, Query
 from fastapi.responses import JSONResponse
 from ..middleware.auth import verify_auth
+from ..models.music import TrackRecommendation
+from typing import List, Optional
 
 router = APIRouter(prefix="/music", include_in_schema=False)
+
 log = logging.getLogger(__name__)
 
 @router.get("/playing/{user_id}", dependencies=[Depends(verify_auth)])
@@ -115,3 +118,93 @@ async def currently_playing(request: Request, user_id: int):
     except Exception as e:
         log.error(f"Error getting currently playing info: {e}", exc_info=True)
         return JSONResponse({"error": "Internal server error"}, status_code=500)
+    
+
+@router.get(
+    "/autoplay", 
+    dependencies=[Depends(verify_auth)], 
+    response_model=List[TrackRecommendation]
+)
+async def get_autoplay_recommendations(
+    title: str = Query(..., description="The title of the track."),
+    author: str = Query(..., description="The author of the track."),
+    algorithm: str = Query("DYNAMIC", description="The recommendation algorithm to use."),
+    limit: int = Query(10, ge=1, le=25, description="Number of recommendations to return."),
+):
+    """
+    Provides a list of track recommendations based on a seed track.
+    It fetches similar tracks from Last.fm and enriches them with data from Deezer.
+    """
+    if not config.AUTHORIZATION.LASTFM.KEY:
+        raise HTTPException(status_code=503, detail="Last.fm API key is not configured.")
+    
+    lastfm_params = {
+        "method": "track.getsimilar",
+        "artist": author,
+        "track": title,
+        "api_key": config.AUTHORIZATION.LASTFM.KEY,
+        "format": "json",
+        "limit": limit,
+    }
+    
+    try:
+        async with aiohttp.ClientSession() as session:
+            # 1. Get similar tracks from Last.fm
+            async with session.get("https://ws.audioscrobbler.com/2.0/", params=lastfm_params) as response:
+                if response.status != 200:
+                    log.error(f"Last.fm API error: {response.status} - {await response.text()}")
+                    raise HTTPException(status_code=502, detail="Error fetching recommendations from Last.fm")
+
+                data = await response.json()
+                similar_tracks = data.get("similartracks", {}).get("track", [])
+
+                if not similar_tracks:
+                    return []
+
+            # 2. Asynchronously enrich Last.fm results with Deezer data
+            tasks = [
+                find_best_match(session, track['name'], track['artist']['name'])
+                for track in similar_tracks
+            ]
+            results = await asyncio.gather(*tasks)
+            
+            # Filter out any None results and return
+            return [rec for rec in results if rec]
+
+    except aiohttp.ClientError as e:
+        log.error(f"HTTP client error in autoplay: {e}")
+        raise HTTPException(status_code=502, detail="Could not connect to external music services.")
+    except Exception as e:
+        log.error(f"Unexpected error in autoplay endpoint: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail="An internal error occurred.")
+
+
+async def find_best_match(session: aiohttp.ClientSession, title: str, author: str) -> Optional[TrackRecommendation]:
+    """
+    Find the best matching track on Deezer. If not found, fallback to Last.fm data.
+    """
+    # First, try searching on Deezer
+    search_query = f"{author} {title}"
+    params = {'q': search_query, 'limit': 1}
+    try:
+        async with session.get("https://api.deezer.com/search", params=params) as resp:
+            if resp.status == 200:
+                data = await resp.json()
+                if data.get('data'):
+                    track_data = data['data'][0]
+                    return TrackRecommendation(
+                        title=track_data.get('title_short', title),
+                        author=track_data.get('artist', {}).get('name', author),
+                        uri=track_data.get('link'),
+                        sourceName='deezer',
+                        artwork=track_data.get('album', {}).get('cover_xl')
+                    )
+    except Exception as e:
+        log.warning(f"Deezer search failed for '{search_query}': {e}")
+    
+    # Fallback to Last.fm data if Deezer search fails or returns no results
+    return TrackRecommendation(
+        title=title,
+        author=author,
+        sourceName='lastfm' # Indicates this is a fallback
+    )

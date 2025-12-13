@@ -13,13 +13,13 @@ from core.client import logging
 log = logging.getLogger(__name__)
 
 class Network(Cog):
-    """Network cog for managing network-related commands."""
+    """Network cog for hosting the backend API using FastAPI and Uvicorn."""
 
     def __init__(self, bot: Evict):
-        self.bot: Evict = bot
+        self.bot = Evict
         self.app = FastAPI(
             title="warm.lat API", 
-            version="2.0.2",
+            version="2.0.3",
             docs_url="/",
             redoc_url=None,
             openapi_url="/openapi.json"

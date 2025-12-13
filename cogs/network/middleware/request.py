@@ -36,22 +36,16 @@ def register_request_middleware(app: FastAPI) -> None:
 
             bot = getattr(request.app.state, "bot", None)
             try:
-                # 429 handling and simple weblog throttling using redis if available
-                if status == 429 and bot and getattr(bot, "redis", None):
-                    ratelimit_key = f"ratelimit_log:{remote}:{path}"
-                    if not await bot.redis.exists(ratelimit_key):
-                        log.info(f"[{request_id}] Rate limited {request.method} {path} from {remote}")
-                        await bot.redis.set(ratelimit_key, "1", ex=60)
+                # simple weblog throttling using redis if available
+                log_key = f"weblogs:{path}:{remote}"
+                if bot and getattr(bot, "redis", None):
+                    should_log = not await bot.redis.exists(log_key)
+                    if should_log:
+                        log.info(f"[{request_id}] {request.method} {path} from {remote}")
+                        await bot.redis.set(log_key, "1", ex=60)
                 else:
-                    log_key = f"weblogs:{path}:{remote}"
-                    if bot and getattr(bot, "redis", None):
-                        should_log = not await bot.redis.exists(log_key)
-                        if should_log:
-                            log.info(f"[{request_id}] {request.method} {path} from {remote}")
-                            await bot.redis.set(log_key, "1", ex=60)
-                    else:
-                        # fallback logging when redis or bot not available
-                        log.info(f"[{request_id}] {request.method} {path} from {remote} -> {status}")
+                    # fallback logging when redis or bot not available
+                    log.info(f"[{request_id}] {request.method} {path} from {remote} -> {status}")
             except Exception as e:
                 # non-fatal logging/redis error
                 log.warning(f"[{request_id}] logging/redis error: {e}")
