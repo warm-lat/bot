@@ -138,6 +138,7 @@ class RecentTracks(BaseModel):
 
         return cls.parse_obj((await response.json())["recenttracks"]).track
 
+from cogs.lastfm.interface.track.info import Track
 
 TrackItem.model_rebuild()
 RecentTracks.model_rebuild()
