@@ -1,6 +1,7 @@
 import uvicorn
 import asyncio
 
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from discord.ext.commands import Cog
@@ -18,7 +19,7 @@ class Network(Cog):
     def __init__(self, bot: Evict):
         self.bot = Evict
         self.app = FastAPI(
-            title="warm.lat API", 
+            title="warm.lat API",
             version="2.0.3",
             docs_url="/",
             redoc_url=None,

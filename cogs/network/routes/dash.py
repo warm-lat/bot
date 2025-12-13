@@ -154,7 +154,7 @@ async def login(request: Request, data: LoginPayload = Body(..., embed=True)):
                 created_at = CURRENT_TIMESTAMP,
                 expires_at = CURRENT_TIMESTAMP + INTERVAL '14 days'
             """,
-            data.user_id,
+            int(data.user_id),
             token,
             data.access_token
         )
