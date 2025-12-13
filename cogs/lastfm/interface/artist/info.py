@@ -124,7 +124,7 @@ class Artist(BaseModel):
         ctx: Context,
         username: Optional[str] = None,
     ) -> str:
-        from cogs.lastfm.interface.user.recent_tracks import RecentTracks
+        from cogs.lastfm.interface.user import RecentTracks
 
         username = username or cast(
             Optional[str],
