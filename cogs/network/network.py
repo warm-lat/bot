@@ -4,6 +4,9 @@ import asyncio
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from slowapi import Limiter, _rate_limit_exceeded_handler
+from slowapi.util import get_remote_address
+from slowapi.errors import RateLimitExceeded
 from discord.ext.commands import Cog
 
 from main import Evict
@@ -18,6 +21,7 @@ class Network(Cog):
 
     def __init__(self, bot: Evict):
         self.bot = Evict
+        self.limiter = Limiter(key_func=get_remote_address)
         self.app = FastAPI(
             title="warm.lat API",
             version="2.0.3",
@@ -25,7 +29,9 @@ class Network(Cog):
             redoc_url=None,
             openapi_url="/openapi.json"
         )
+        self.app.state.limiter = self.limiter
         self.app.state.bot = bot
+        self.app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
         
         self.app.add_middleware(
             CORSMiddleware,
@@ -45,7 +51,6 @@ class Network(Cog):
             host="0.0.0.0",
             port=8000,
             log_level="info",
-            proxy_headers=True,
             server_header=False
         )
         self.server = uvicorn.Server(config)
