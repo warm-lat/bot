@@ -165,7 +165,7 @@ class Settings:
     async def fetch(cls, bot: "Evict", guild: Guild) -> "Settings":
         record = await bot.db.fetchrow(
             """
-            INSERT INTO settings (guild_id)
+            INSERT INTO public.settings (guild_id)
             VALUES ($1)
             ON CONFLICT (guild_id)
             DO UPDATE
