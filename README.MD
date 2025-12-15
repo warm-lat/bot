@@ -1,4 +1,3 @@
-# Original Evict code. Reuploaded with proper licensing.
+# Updated Evict Code.
 
-# https://azron.net
-# https://evict.bot
+# https://nxyy.space
