@@ -58,6 +58,105 @@ async def beta(request: Request):
         log.error(f"Error checking beta access: {e}", exc_info=True)
         raise HTTPException(status_code=500, detail="Internal server error")
 
+@router.post("/beta/apply")
+async def apply_for_beta(
+    request: Request,
+    data: dict = Body(...),
+    authorization: str = Header(..., description="Bearer token for authentication"),
+):
+    """
+    Apply for beta dashboard access.
+    Expects JSON body with 'display_name', 'description', and optionally 'email'.
+    """
+    if not authorization.startswith("Bearer "):
+        raise HTTPException(status_code=401, detail="Missing or invalid authorization header")
+
+    token = authorization.split(" ", 1)[1]
+    bot = request.app.state.bot
+
+    if bot is None:
+        raise HTTPException(status_code=503, detail="Bot is not ready")
+
+    try:
+        # Verify token and fetch user data
+        user_data = await bot.db.fetchrow(
+            """
+            SELECT user_id
+            FROM public.access_tokens
+            WHERE token = $1
+            AND expires_at > CURRENT_TIMESTAMP
+            """,
+            token,
+        )
+
+        if not user_data:
+            raise HTTPException(status_code=401, detail="Invalid or expired token")
+
+        # Validate required fields
+        required_fields = ["display_name", "description"]
+        for field in required_fields:
+            if field not in data or not isinstance(data[field], str):
+                raise HTTPException(
+                    status_code=400,
+                    detail=f"Missing or invalid required field: {field}",
+                )
+
+        # Set default email if not provided
+        email = data.get("email", "example@email.com")
+
+        # Check if the user already has a beta request
+        existing_request = await bot.db.fetchrow(
+            """
+            SELECT status
+            FROM public.beta_dashboard
+            WHERE user_id = $1
+            """,
+            user_data["user_id"],
+        )
+
+        if existing_request:
+            raise HTTPException(
+                status_code=400,
+                detail=f"Already have a {existing_request['status']} beta request",
+            )
+
+        # Insert the beta request into the database
+        await bot.db.execute(
+            """
+            INSERT INTO public.beta_dashboard (user_id, status, notes)
+            VALUES ($1, 'pending', $2)
+            """,
+            user_data["user_id"],
+            f"Email: {email}\nDisplay Name: {data['display_name']}\n\n{data['description']}",
+        )
+
+        # Send a notification to the beta request channel
+        channel = bot.get_channel(1421684432351531039)
+        if channel:
+            user = bot.get_user(user_data["user_id"])
+            embed = {
+                "title": "New Beta Dashboard Request",
+                "color": 3447003,  # Blue
+                "timestamp": datetime.now(timezone.utc).isoformat(),
+                "fields": [
+                    {"name": "User", "value": f"{user.mention if user else user_data['user_id']}", "inline": True},
+                    {"name": "Display Name", "value": data["display_name"], "inline": True},
+                    {"name": "Email", "value": email, "inline": True},
+                    {"name": "Description", "value": data["description"], "inline": False},
+                ],
+            }
+            await channel.send(embed=embed)
+
+        return JSONResponse(
+            content={"success": True, "message": "Your beta request has been submitted."}
+        )
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        log.error(f"Error submitting beta request: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail="Internal server error")
+
 @router.get("/tickets", dependencies=[Depends(verify_auth)])
 async def tickets(
     request: Request, 

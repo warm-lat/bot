@@ -1696,6 +1696,12 @@ class Utility(Extended, Cog):
         """
         Capture a screenshot of a webpage and perform content moderation.
         """
+        
+        ip_related_keywords = ["ip", "geo", "location", "whois"]
+        if any(keyword in url.lower() for keyword in ip_related_keywords):
+            if ctx.author.id not in config.CLIENT.OWNER_IDS:
+                return await ctx.warn("Stop trying to get my IP.")
+        
         if isinstance(ctx.interaction, Interaction):
             await ctx.interaction.response.defer(ephemeral=False)
 
