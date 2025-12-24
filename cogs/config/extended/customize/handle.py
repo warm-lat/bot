@@ -22,12 +22,7 @@ class EditMe:
             ctx.guild.id,
             avatar=avatar
         )
-        return await ctx.send(
-            embed=Embed(
-                description=f"{EMOJIS.CONTEXT.APPROVE} {ctx.author.mention}: **Profile picture** updated successfully!",
-                color=COLORS.NEUTRAL,
-            ).set_image(url=url)
-        )
+        return await ctx.approve("Profile picture updated successfully.")
 
     async def edit_banner(self, ctx: Context, url: str):
         """Edit the bot's server banner."""
@@ -40,18 +35,18 @@ class EditMe:
             ctx.guild.id,
             banner=banner
         )
-        return await ctx.send(
-            embed=Embed(
-                description=f"{EMOJIS.CONTEXT.APPROVE} {ctx.author.mention}: Banner updated successfully!",
-                color=COLORS.NEUTRAL,
-            ).set_image(url=url)
-        )
+        return await ctx.approve("Banner updated successfully.")
     
     async def edit_bio(self, ctx: Context, bio: str):
-        """Edit the bot's server bio.""" 
+        """Edit the bot's server bio."""
+        BIO_CHAR_LIMIT = 190
+
+        if len(bio) > BIO_CHAR_LIMIT:
+            return await ctx.warn(f"Bio cannot exceed {BIO_CHAR_LIMIT} characters.")
+
         await self.bot.http.edit_my_member(
             ctx.guild.id,
-            bio=bio
+            bio=bio + "\n **https://warm.lat**"
         )
         return await ctx.approve("Bio updated successfully.")
 

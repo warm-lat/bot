@@ -3255,7 +3255,7 @@ class Utility(Extended, Cog):
     ) -> Message:
         """
         Generate images using DALL-E 3.
-        Premium users get $15 worth of credits per 2 weeks.
+        Premium users get $10 worth of credits per month.
         Free users get 2 generations per day.
 
         Quality:
@@ -3314,9 +3314,9 @@ class Utility(Extended, Cog):
                     VALUES ($1, $2, NOW())
                     """,
                     ctx.author.id,
-                    15.00 
+                    10.00 
                 )
-                credits = decimal.Decimal('15.00')
+                credits = decimal.Decimal('10.00')
 
             last_reset = await self.bot.db.fetchval(
                 """
