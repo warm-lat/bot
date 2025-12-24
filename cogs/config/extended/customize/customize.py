@@ -20,13 +20,13 @@ class Customize(MixinMeta, metaclass=CompositeMetaClass):
     
     @customize.command(name="bio", example="warm.lat")
     @has_permissions(manage_guild=True)
-    async def customize_bio(self,ctx: Context, bio: str):
+    async def customize_bio(self,ctx: Context, *, bio: str):
         """Customize the bot's bio."""
         await EditMe(self.bot).edit_bio(ctx, bio)
         
     @customize.command(name="pfp", aliases=["avatar"])
     @has_permissions(manage_guild=True)
-    async def customize_pfp(self, ctx: Context, url: str):
+    async def customize_pfp(self, ctx: Context, *, url: str):
         """Customize the bot's profile picture."""
         if url is None:
             if ctx.message.attachments:
@@ -41,7 +41,7 @@ class Customize(MixinMeta, metaclass=CompositeMetaClass):
         
     @customize.command(name="banner")
     @has_permissions(manage_guild=True)
-    async def customize_banner(self, ctx: Context, url: str):
+    async def customize_banner(self, ctx: Context, *, url: str):
         """Customize the bot's profile banner."""
         if url is None:
             if ctx.message.attachments:

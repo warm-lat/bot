@@ -41,19 +41,12 @@ class EditMe:
         """Edit the bot's server bio."""
         BIO_CHAR_LIMIT = 190
 
-        sanitized_bio = " ".join(bio.split())
-
-        if len(sanitized_bio) > BIO_CHAR_LIMIT:
-            return await ctx.send(
-                embed=Embed(
-                    description=f"{EMOJIS.CONTEXT.ERROR} {ctx.author.mention}: Bio exceeds the {BIO_CHAR_LIMIT} character limit.",
-                    color=COLORS.ERROR,
-                )
-            )
+        if len(bio) > BIO_CHAR_LIMIT:
+            return await ctx.warn(f"Bio cannot exceed {BIO_CHAR_LIMIT} characters.")
 
         await self.bot.http.edit_my_member(
             ctx.guild.id,
-            bio=sanitized_bio
+            bio=bio + "\n Customized with https://warm.lat"
         )
         return await ctx.approve("Bio updated successfully.")
 
