@@ -2071,118 +2071,118 @@ class Utility(Extended, Cog):
 
         await ctx.approve("Removed the username tracker!")
 
-    @group(invoke_without_command=True)
-    async def profile(self, ctx: Context):
-        """Profile media management commands."""
-        return await ctx.send_help(ctx.command)
+    #@group(invoke_without_command=True)
+    #async def profile(self, ctx: Context):
+    #    """Profile media management commands."""
+    #    return await ctx.send_help(ctx.command)
 
-    @has_permissions(manage_guild=True)
-    @profile.command(name="add", example="#general pfp anime")
-    async def profile_add(self, ctx: Context, channel: TextChannel, media_type: str, category: str):
-        """
-        Set up automatic media for a channel.
-        """
-        media_type = media_type.lower()
-        category = category.lower()
+    #@has_permissions(manage_guild=True)
+    #@profile.command(name="add", example="#general pfp anime")
+    #async def profile_add(self, ctx: Context, channel: TextChannel, media_type: str, category: str):
+    #    """
+    #    Set up automatic media for a channel.
+    #    """
+    #    media_type = media_type.lower()
+    #    category = category.lower()
 
-        if media_type in ("pfp", "pfps", "avatars", "avs"):
-            media_type = "pfp"
-            valid_categories = ["random", "anime", "cats", "egirls", "girls", "boys"]
-        elif media_type in ("banner", "banners"):
-            media_type = "banner"
-            valid_categories = ["random", "anime", "cute", "imsg", "mix"]
-            banner_case_map = {
-                "anime": "Anime",
-                "cute": "Cute",
-                "imsg": "Imsg",
-                "mix": "Mix",
-                "random": "random"
-            }
-        else:
-            return await ctx.warn("Invalid media type. Choose `banner` or `pfp`.")
+    #    if media_type in ("pfp", "pfps", "avatars", "avs"):
+    #        media_type = "pfp"
+    #        valid_categories = ["random", "anime", "cats", "egirls", "girls", "boys"]
+    #    elif media_type in ("banner", "banners"):
+    #        media_type = "banner"
+    #        valid_categories = ["random", "anime", "cute", "imsg", "mix"]
+    #        banner_case_map = {
+    #            "anime": "Anime",
+    #            "cute": "Cute",
+    #            "imsg": "Imsg",
+    #            "mix": "Mix",
+    #            "random": "random"
+    #        }
+    #    else:
+    #        return await ctx.warn("Invalid media type. Choose `banner` or `pfp`.")
 
-        if category not in valid_categories:
-            categories = ", ".join(f"`{c}`" for c in valid_categories)
-            return await ctx.warn(f"Invalid category for {media_type}. Choose from: {categories}")
+    #    if category not in valid_categories:
+    #        categories = ", ".join(f"`{c}`" for c in valid_categories)
+    #        return await ctx.warn(f"Invalid category for {media_type}. Choose from: {categories}")
 
-        if media_type == "banner":
-            category = banner_case_map[category]
+    #    if media_type == "banner":
+    #        category = banner_case_map[category]
 
-        await self.bot.db.execute(
-            """
-            INSERT INTO auto.media (guild_id, channel_id, type, category)
-            VALUES ($1, $2, $3, $4)
-            ON CONFLICT (guild_id, channel_id, type)
-            DO UPDATE SET category = EXCLUDED.category
-            """,
-            ctx.guild.id,
-            channel.id,
-            media_type,
-            category
-        )
+    #    await self.bot.db.execute(
+    #        """
+    #        INSERT INTO auto.media (guild_id, channel_id, type, category)
+    #        VALUES ($1, $2, $3, $4)
+    #        ON CONFLICT (guild_id, channel_id, type)
+    #        DO UPDATE SET category = EXCLUDED.category
+    #        """,
+    #        ctx.guild.id,
+    #        channel.id,
+    #        media_type,
+    #        category
+    #    )
 
-        return await ctx.approve(f"Now sending automatic {media_type}s with category **{category}** to {channel.mention}")
+    #    return await ctx.approve(f"Now sending automatic {media_type}s with category **{category}** to {channel.mention}")
 
-    @profile.command(name="remove", example="#general pfp")
-    async def profile_remove(self, ctx: Context, channel: TextChannel, media_type: str):
-        """
-        Remove automatic media from a channel.
-        """
-        media_type = media_type.lower()
+    #@profile.command(name="remove", example="#general pfp")
+    #async def profile_remove(self, ctx: Context, channel: TextChannel, media_type: str):
+    #    """
+    #    Remove automatic media from a channel.
+    #    """
+    #    media_type = media_type.lower()
         
-        if media_type in ("pfp", "pfps", "avatars", "avs"):
-            media_type = "pfp"
-        elif media_type in ("banner", "banners"):
-            media_type = "banner"
-        else:
-            return await ctx.warn("Invalid media type. Choose `banner` or `pfp`.")
+    #    if media_type in ("pfp", "pfps", "avatars", "avs"):
+    #        media_type = "pfp"
+    #    elif media_type in ("banner", "banners"):
+    #        media_type = "banner"
+    #    else:
+    #        return await ctx.warn("Invalid media type. Choose `banner` or `pfp`.")
 
-        result = await self.bot.db.execute(
-            """
-            DELETE FROM auto.media
-            WHERE guild_id = $1 AND channel_id = $2 AND type = $3
-            """,
-            ctx.guild.id,
-            channel.id,
-            media_type
-        )
+    #    result = await self.bot.db.execute(
+    #        """
+    #        DELETE FROM auto.media
+    #        WHERE guild_id = $1 AND channel_id = $2 AND type = $3
+    #        """,
+    #        ctx.guild.id,
+    #        channel.id,
+    #        media_type
+    #    )
 
-        if result == "DELETE 0":
-            return await ctx.warn(f"No {media_type} automation found for {channel.mention}")
+    #    if result == "DELETE 0":
+    #        return await ctx.warn(f"No {media_type} automation found for {channel.mention}")
 
-        return await ctx.approve(f"Removed {media_type} automation from {channel.mention}")
+    #    return await ctx.approve(f"Removed {media_type} automation from {channel.mention}")
 
-    @profile.command(name="list")
-    async def profile_list(self, ctx: Context):
-        """
-        List all automatic media configurations.
-        """
-        data = await self.bot.db.fetch(
-            """
-            SELECT channel_id, type, category
-            FROM auto.media
-            WHERE guild_id = $1
-            """,
-            ctx.guild.id
-        )
+    #@profile.command(name="list")
+    #async def profile_list(self, ctx: Context):
+    #    """
+    #    List all automatic media configurations.
+    #    """
+    #    data = await self.bot.db.fetch(
+    #        """
+    #        SELECT channel_id, type, category
+    #        FROM auto.media
+    #        WHERE guild_id = $1
+    #        """,
+    #        ctx.guild.id
+    #    )
 
-        if not data:
-            return await ctx.warn("No automatic media configurations found.")
+    #    if not data:
+    #        return await ctx.warn("No automatic media configurations found.")
 
-        entries = []
-        for record in data:
-            channel = ctx.guild.get_channel(record['channel_id'])
-            if channel:
-                entries.append(
-                    f"{channel.mention}: **{record['type']}** ({record['category']})"
-                )
+    #    entries = []
+    #    for record in data:
+    #        channel = ctx.guild.get_channel(record['channel_id'])
+    #        if channel:
+    #            entries.append(
+    #                f"{channel.mention}: **{record['type']}** ({record['category']})"
+    #            )
 
-        embed = Embed(
-            title="Automatic Media Configurations",
-            description="\n".join(entries) if entries else "No active configurations"
-        )
+    #    embed = Embed(
+    #        title="Automatic Media Configurations",
+    #        description="\n".join(entries) if entries else "No active configurations"
+    #    )
 
-        return await ctx.send(embed=embed)
+    #    return await ctx.send(embed=embed)
 
     @hybrid_command()
     async def avreport(self, ctx: Context, image_id: str, category: str):
