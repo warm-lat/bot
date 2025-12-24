@@ -54,7 +54,7 @@ class Customize(MixinMeta, metaclass=CompositeMetaClass):
                 return await ctx.warn("Please provide a URL or attachment for the profile banner.")
         await EditMe(self.bot).edit_banner(ctx, url)
         
-    @customize.command(name="reset")
+    @customize.command(name="reset", aliases=["default", "restore"])
     @has_permissions(manage_guild=True)
     async def customize_reset(self, ctx: Context):
         """Reset the bot's appearance to default."""
