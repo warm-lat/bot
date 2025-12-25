@@ -3372,7 +3372,7 @@ class Utility(Extended, Cog):
                 
                 self.add_item(
                     Button(
-                        emoji=config.EMOJIS.PAGINATOR.PREVIOUS,
+                        emoji=config.EMOJIS.CONTEXT.PREVIOUS,
                         style=discord.ButtonStyle.gray,
                         custom_id=f"premium_prev",
                         disabled=page == 0
@@ -3383,7 +3383,7 @@ class Utility(Extended, Cog):
                 
                 self.add_item(
                     Button(
-                        emoji=config.EMOJIS.PAGINATOR.NEXT,
+                        emoji=config.EMOJIS.CONTEXT.NEXT,
                         style=discord.ButtonStyle.gray,
                         custom_id=f"premium_next",
                         disabled=page == total - 1
@@ -3449,7 +3449,7 @@ class Utility(Extended, Cog):
                 
                 self.add_item(
                     Button(
-                        emoji=config.EMOJIS.PAGINATOR.PREVIOUS,
+                        emoji=config.EMOJIS.CONTEXT.PREVIOUS,
                         style=discord.ButtonStyle.gray,
                         custom_id="premium_prev",
                         disabled=page == 0
@@ -3460,7 +3460,7 @@ class Utility(Extended, Cog):
                 
                 self.add_item(
                     Button(
-                        emoji=config.EMOJIS.PAGINATOR.NEXT,
+                        emoji=config.EMOJIS.CONTEXT.NEXT,
                         style=discord.ButtonStyle.gray,
                         custom_id="premium_next",
                         disabled=page == total - 1
@@ -3834,7 +3834,7 @@ class Utility(Extended, Cog):
 #                            log.info("[TikTok] Image downloaded successfully")
 #                            return File(BytesIO(data), filename=f"Warm-TikTok-{token_urlsafe(4)}.jpg")
                         
-#                    @discord.ui.button(emoji=config.EMOJIS.PAGINATOR.PREVIOUS, style=discord.ButtonStyle.gray)
+#                    @discord.ui.button(emoji=config.EMOJIS.CONTEXT.PREVIOUS, style=discord.ButtonStyle.gray)
 #                    async def previous(self, interaction: Interaction, button: discord.ui.Button):
 #                        if self.current_page > 0:
 #                            self.current_page -= 1
@@ -3851,7 +3851,7 @@ class Utility(Extended, Cog):
 #                        else:
 #                            await interaction.response.defer()
 
-#                    @discord.ui.button(emoji=config.EMOJIS.PAGINATOR.NEXT, style=discord.ButtonStyle.gray)
+#                    @discord.ui.button(emoji=config.EMOJIS.CONTEXT.NEXT, style=discord.ButtonStyle.gray)
 #                    async def next(self, interaction: Interaction, button: discord.ui.Button):
 #                        if self.current_page < len(self.photos) - 1:
 #                            self.current_page += 1
@@ -4710,7 +4710,7 @@ class Utility(Extended, Cog):
                 
                 self.add_item(
                     Button(
-                        emoji=config.EMOJIS.PAGINATOR.PREVIOUS,
+                        emoji=config.EMOJIS.CONTEXT.PREVIOUS,
                         style=discord.ButtonStyle.gray,
                         custom_id=f"premium_prev",
                         disabled=page == 0
@@ -4721,7 +4721,7 @@ class Utility(Extended, Cog):
                 
                 self.add_item(
                     Button(
-                        emoji=config.EMOJIS.PAGINATOR.NEXT,
+                        emoji=config.EMOJIS.CONTEXT.NEXT,
                         style=discord.ButtonStyle.gray,
                         custom_id=f"premium_next",
                         disabled=page == total - 1
