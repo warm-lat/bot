@@ -46,7 +46,7 @@ class EditMe:
 
         await self.bot.http.edit_my_member(
             ctx.guild.id,
-            bio=bio + "\n Customized with https://warm.lat"
+            bio=bio + "\nCustomized with https://warm.lat"
         )
         return await ctx.approve("Bio updated successfully.")
 

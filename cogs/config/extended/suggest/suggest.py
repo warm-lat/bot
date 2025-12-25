@@ -358,7 +358,7 @@ class Suggest(MixinMeta, metaclass=CompositeMetaClass):
         await ctx.send(embed=embed)
 
     @has_permissions(manage_channels=True)
-    @suggestion.command(name="threads")
+    @suggestion.command(name="threads", example="true")
     async def suggestion_threads(self, ctx: Context, enabled: bool):
         """Enable/disable automatic thread creation for suggestions"""
         await self.bot.db.execute(
@@ -374,7 +374,7 @@ class Suggest(MixinMeta, metaclass=CompositeMetaClass):
         )
 
     @has_permissions(manage_channels=True)
-    @suggestion.command(name="anonymous")
+    @suggestion.command(name="anonymous", example="true")
     async def suggestion_anonymous(self, ctx: Context, enabled: bool):
         """Enable/disable anonymous suggestions"""
         await self.bot.db.execute(

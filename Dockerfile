@@ -34,7 +34,7 @@ RUN apt-get update && apt-get install -y \
 COPY requirements.txt .
 
 # Install Python dependencies
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install -r requirements.txt
 
 # Install Playwright browsers (needed for browser automation)
 RUN playwright install-deps
@@ -45,13 +45,6 @@ COPY . .
 
 # Set appropriate permissions
 RUN chmod +x /app/main.py
-
-# Expose port if needed (for web interface or API)
-EXPOSE 9562
-
-# Health check to ensure the bot is running
-HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-    CMD python -c "import psutil; exit(0 if any('python' in p.name().lower() and 'main.py' in ' '.join(p.cmdline()) for p in psutil.process_iter(['pid', 'name', 'cmdline']) if p.info['cmdline']) else 1)" || exit 1
 
 # Run the bot
 CMD ["python", "main.py"]

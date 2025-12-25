@@ -193,7 +193,7 @@ class Utility(Extended, Cog):
         self.locks = defaultdict(asyncio.Lock)
         self.shazamio = ShazamClient()
         self.nude_detector = NudeDetector()
-        self.auto_media.start()
+        #self.auto_media.start()
         self._cache = {}
         self._cache_times = {}
         self._filter_cache = {}
@@ -287,77 +287,77 @@ class Utility(Extended, Cog):
         self._cache_times[key] = time.time() + expire
 
     def cog_unload(self):
-        self.auto_media.cancel()
+        #self.auto_media.cancel()
         self.reminder_check_task.cancel()
     
     async def cog_load(self):
         self.reminder_check_task = self.bot.loop.create_task(self.reminder_check())
 
-    @tasks.loop(seconds=60)
-    async def auto_media(self):
-        """Auto-post media to configured channels."""
-        records = await self.bot.db.fetch(
-            """
-            SELECT guild_id, channel_id, type, category
-            FROM auto.media
-            """
-        )
+    #@tasks.loop(seconds=60)
+    #async def auto_media(self):
+    #    """Auto-post media to configured channels."""
+    #    records = await self.bot.db.fetch(
+    #        """
+    #        SELECT guild_id, channel_id, type, category
+    #        FROM auto.media
+    #        """
+    #    )
 
-        for record in records:
-            try:
-                guild = self.bot.get_guild(record['guild_id'])
-                if not guild:
-                    continue
+    #    for record in records:
+    #        try:
+    #            guild = self.bot.get_guild(record['guild_id'])
+    #            if not guild:
+    #                continue
 
-                channel = guild.get_channel(record['channel_id'])
-                if not channel:
-                    continue
+    #            channel = guild.get_channel(record['channel_id'])
+    #            if not channel:
+    #                continue
 
-                media_type = record['type']
-                category = record['category']
+    #            media_type = record['type']
+    #            category = record['category']
 
-                base_url = f"https://cdn.warm.lat/random/{media_type}s"
-                if category != "random":
-                    base_url = f"{base_url}/{category}"
+    #            base_url = f"https://cdn.warm.lat/random/{media_type}s"
+    #            if category != "random":
+    #                base_url = f"{base_url}/{category}"
 
-                async with self.bot.session.get(f"{base_url}?token=aS7kACJiHfh8") as resp:
-                    if resp.status != 200:
-                        continue
+    #            async with self.bot.session.get(f"{base_url}?token=aS7kACJiHfh8") as resp:
+    #                if resp.status != 200:
+    #                    continue
                     
-                    data = await resp.json()
+    #                data = await resp.json()
                     
-                    async with self.bot.session.get(data['url']) as img_resp:
-                        if img_resp.status != 200:
-                            continue
+    #                async with self.bot.session.get(data['url']) as img_resp:
+    #                    if img_resp.status != 200:
+    #                        continue
                             
-                        image_data = await img_resp.read()
+    #                    image_data = await img_resp.read()
                         
-                        color = await dominant_color(io.BytesIO(image_data))
+    #                    color = await dominant_color(io.BytesIO(image_data))
                         
-                        file_hash = data['url'].split('/')[-1].split('.')[0]
-                        file_ext = data['format_type']
-                        file = discord.File(
-                            io.BytesIO(image_data), 
-                            filename=f"warm-{file_hash}.{file_ext}"
-                        )
+    #                    file_hash = data['url'].split('/')[-1].split('.')[0]
+    #                    file_ext = data['format_type']
+    #                    file = discord.File(
+    #                        io.BytesIO(image_data), 
+    #                        filename=f"warm-{file_hash}.{file_ext}"
+    #                    )
                         
-                        embed = Embed(color=color, title="Powered by Warm", url=f"{config.CLIENT.INVITE_URL}")
-                        embed.set_image(url=f"attachment://warm-{file_hash}.{file_ext}")
+    #                    embed = Embed(color=color, title="Powered by Warm", url=f"{config.CLIENT.INVITE_URL}")
+    #                    embed.set_image(url=f"attachment://warm-{file_hash}.{file_ext}")
                         
-                        filename_without_ext = data['filename'].split('.')[0]
-                        embed.set_footer(
-                            text=f"{data['category']} • id: {filename_without_ext} • /avreport • discord.gg/apply"
-                        )
+    #                    filename_without_ext = data['filename'].split('.')[0]
+    #                    embed.set_footer(
+    #                        text=f"{data['category']} • id: {filename_without_ext} • /avreport • discord.gg/apply"
+    #                    )
                         
-                        await channel.send(embed=embed, file=file)
+    #                    await channel.send(embed=embed, file=file)
 
-            except Exception as e:
-                log.error(f"Error in auto_media task: {e}")
-                continue
+    #        except Exception as e:
+    #            log.error(f"Error in auto_media task: {e}")
+    #            continue
 
-    @auto_media.before_loop
-    async def before_auto_media(self):
-        await self.bot.wait_until_ready()
+    #@auto_media.before_loop
+    #async def before_auto_media(self):
+    #    await self.bot.wait_until_ready()
 
     @staticmethod
     def get_emojis(content: str) -> Optional[List[StolenEmoji]]:
@@ -1621,7 +1621,7 @@ class Utility(Extended, Cog):
             return await ctx.warn("The attachment must be an image!")
 
         color = await dominant_color(attachment.buffer)
-        image_url = f"https://place-hold.it/250x250/{str(color).strip('#')}?text=%20"
+        image_url = f"https://placeholdit.com/250x250/{str(color).strip('#')}?text=%20"
         return await ctx.neutral(
             f"The dominant color is [**{color}**]({image_url})",
             color=color,
@@ -4787,7 +4787,7 @@ class Utility(Extended, Cog):
                 
                 self.add_item(
                     Button(
-                        emoji=config.EMOJIS.PAGINATOR.PREVIOUS,
+                        emoji=config.EMOJIS.CONTEXT.PREVIOUS,
                         style=discord.ButtonStyle.gray,
                         custom_id="premium_prev",
                         disabled=page == 0
@@ -4798,7 +4798,7 @@ class Utility(Extended, Cog):
                 
                 self.add_item(
                     Button(
-                        emoji=config.EMOJIS.PAGINATOR.NEXT,
+                        emoji=config.EMOJIS.CONTEXT.NEXT,
                         style=discord.ButtonStyle.gray,
                         custom_id="premium_next",
                         disabled=page == total - 1
