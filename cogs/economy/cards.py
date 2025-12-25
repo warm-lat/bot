@@ -260,14 +260,14 @@ class Yugioh(Cog):
                 self.pages = pages
                 self.current_page = 0
 
-            @discord.ui.button(label="Previous", emoji=config.EMOJIS.CONTEXT.PREVIOUS, style=ButtonStyle.primary)
+            @discord.ui.button(label="Previous", emoji=config.EMOJIS.CONTEXT.LEFT, style=ButtonStyle.primary)
             async def previous_page(self, interaction: Interaction, button: discord.ui.Button):
                 if interaction.user != ctx.author:
                     return await interaction.warn("This is not your collection!")
                 self.current_page = (self.current_page - 1) % len(self.pages)
                 await interaction.response.edit_message(embed=self.pages[self.current_page])
 
-            @discord.ui.button(label="Next", emoji=config.EMOJIS.CONTEXT.NEXT, style=ButtonStyle.primary)
+            @discord.ui.button(label="Next", emoji=config.EMOJIS.CONTEXT.RIGHT, style=ButtonStyle.primary)
             async def next_page(self, interaction: Interaction, button: discord.ui.Button):
                 if interaction.user != ctx.author:
                     return await interaction.warn("This is not your collection!")
@@ -694,9 +694,9 @@ class Yugioh(Cog):
             def __init__(self, direction: str):
                 style = discord.ButtonStyle.primary
                 if direction == "previous":
-                    super().__init__(label="Previous Card", emoji=config.EMOJIS.CONTEXT.PREVIOUS, style=style)
+                    super().__init__(label="Previous Card", emoji=config.EMOJIS.CONTEXT.LEFT, style=style)
                 else:
-                    super().__init__(label="Next Card", emoji=config.EMOJIS.CONTEXT.NEXT, style=style)
+                    super().__init__(label="Next Card", emoji=config.EMOJIS.CONTEXT.RIGHT, style=style)
                 self.direction = direction
                 
             async def callback(self, interaction: discord.Interaction):

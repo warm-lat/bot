@@ -63,7 +63,7 @@ class Paginator(View):
             Button(
                 custom_id="navigation",
                 style=ButtonStyle.secondary,
-                emoji=config.EMOJIS.CONTEXT.FILTER or "🔢",
+                emoji=config.EMOJIS.CONTEXT.NAVIGATE or "🔢",
             ),
             Button(
                 custom_id="next",

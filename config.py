@@ -74,7 +74,7 @@ class EMOJIS:
         WARN: str = ""
         LEFT: str = "<:previous:1427025073587355768>"
         RIGHT: str = "<:next:1427025026858749983>"
-        FILTER: str = ""
+        NAVIGATE: str = ""
         JUUL: str = ""
         
     class POLL:

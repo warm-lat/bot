@@ -166,7 +166,7 @@ class NavigateButton(discord.ui.Button):
 
 class PreviousButton(discord.ui.Button):
     def __init__(self, paginator: ImagePaginator):
-        super().__init__(emoji=config.EMOJIS.CONTEXT.PREVIOUS)
+        super().__init__(emoji=config.EMOJIS.CONTEXT.LEFT)
         self.paginator = paginator
     
     async def callback(self, interaction: discord.Interaction):
@@ -183,7 +183,7 @@ class PreviousButton(discord.ui.Button):
 
 class NextButton(discord.ui.Button):
     def __init__(self, paginator: ImagePaginator):
-        super().__init__(emoji=config.EMOJIS.CONTEXT.NEXT)
+        super().__init__(emoji=config.EMOJIS.CONTEXT.RIGHT)
         self.paginator = paginator
     
     async def callback(self, interaction: discord.Interaction):

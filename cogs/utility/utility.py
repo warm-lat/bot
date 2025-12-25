@@ -3372,7 +3372,7 @@ class Utility(Extended, Cog):
                 
                 self.add_item(
                     Button(
-                        emoji=config.EMOJIS.CONTEXT.PREVIOUS,
+                        emoji=config.EMOJIS.CONTEXT.LEFT,
                         style=discord.ButtonStyle.gray,
                         custom_id=f"premium_prev",
                         disabled=page == 0
@@ -3383,7 +3383,7 @@ class Utility(Extended, Cog):
                 
                 self.add_item(
                     Button(
-                        emoji=config.EMOJIS.CONTEXT.NEXT,
+                        emoji=config.EMOJIS.CONTEXT.RIGHT,
                         style=discord.ButtonStyle.gray,
                         custom_id=f"premium_next",
                         disabled=page == total - 1
@@ -3449,7 +3449,7 @@ class Utility(Extended, Cog):
                 
                 self.add_item(
                     Button(
-                        emoji=config.EMOJIS.CONTEXT.PREVIOUS,
+                        emoji=config.EMOJIS.CONTEXT.LEFT,
                         style=discord.ButtonStyle.gray,
                         custom_id="premium_prev",
                         disabled=page == 0
@@ -3460,7 +3460,7 @@ class Utility(Extended, Cog):
                 
                 self.add_item(
                     Button(
-                        emoji=config.EMOJIS.CONTEXT.NEXT,
+                        emoji=config.EMOJIS.CONTEXT.RIGHT,
                         style=discord.ButtonStyle.gray,
                         custom_id="premium_next",
                         disabled=page == total - 1
@@ -4710,7 +4710,7 @@ class Utility(Extended, Cog):
                 
                 self.add_item(
                     Button(
-                        emoji=config.EMOJIS.CONTEXT.PREVIOUS,
+                        emoji=config.EMOJIS.CONTEXT.LEFT,
                         style=discord.ButtonStyle.gray,
                         custom_id=f"premium_prev",
                         disabled=page == 0
@@ -4721,7 +4721,7 @@ class Utility(Extended, Cog):
                 
                 self.add_item(
                     Button(
-                        emoji=config.EMOJIS.CONTEXT.NEXT,
+                        emoji=config.EMOJIS.CONTEXT.RIGHT,
                         style=discord.ButtonStyle.gray,
                         custom_id=f"premium_next",
                         disabled=page == total - 1
@@ -4787,7 +4787,7 @@ class Utility(Extended, Cog):
                 
                 self.add_item(
                     Button(
-                        emoji=config.EMOJIS.CONTEXT.PREVIOUS,
+                        emoji=config.EMOJIS.CONTEXT.LEFT,
                         style=discord.ButtonStyle.gray,
                         custom_id="premium_prev",
                         disabled=page == 0
@@ -4798,7 +4798,7 @@ class Utility(Extended, Cog):
                 
                 self.add_item(
                     Button(
-                        emoji=config.EMOJIS.CONTEXT.NEXT,
+                        emoji=config.EMOJIS.CONTEXT.RIGHT,
                         style=discord.ButtonStyle.gray,
                         custom_id="premium_next",
                         disabled=page == total - 1

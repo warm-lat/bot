@@ -265,7 +265,7 @@ class Starboard(Cog):
         self.bot: Evict = bot
 
     @group(
-        aliases=["star", "board", "sb"],
+        aliases=["star", "board", "sb", "skullboard"],
         invoke_without_command=True,
     )
     @has_permissions(manage_guild=True)
