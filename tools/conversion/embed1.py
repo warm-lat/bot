@@ -3,10 +3,11 @@ import discord
 import datetime
 
 from discord.ext import commands
-
+from main import Evict
 
 class EmbedBuilder:
     def __init__(self):
+        self.bot = Evict
         self.ok = "hi"
 
     def ordinal(self, num: int) -> str:
@@ -93,11 +94,11 @@ class EmbedBuilder:
         if "{invisible}" in params:
             params = params.replace("{invisible}", "2b2d31")
         if "{botcolor}" in params:
-            params = params.replace("{botcolor}", "729bb0")
+            params = params.replace("{botcolor}", "e9d8b6")
         if "{botavatar}" in params:
             params = params.replace(
                 "{botavatar}",
-                "https://images-ext-1.discordapp.net/external/gQinzaMi-EYOvq-VudfO8fWk21PD2NLefrk6QZyVyDs/%3Fsize%3D1024/https/cdn.discordapp.com/icons/1177424668328726548/a_229e85dbdae4f77c4accdf92ced9d822.gif",
+                self.bot.user.display_avatar.url,
             )
         if "{guild.icon}" in params:
             if user.guild.icon:

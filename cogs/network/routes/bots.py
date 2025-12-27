@@ -184,3 +184,12 @@ async def commands(request: Request):
                 })
 
     return JSONResponse(content={"categories": categories, "commands": commands_info})
+
+@router.get("/avatar")
+async def avatar(request: Request):
+    bot = request.app.state.bot
+    if bot is None:
+        raise HTTPException(status_code=503, detail="Bot is not ready")
+
+    avatar_url = str(bot.user.avatar.url) if bot.user.avatar else None
+    return JSONResponse(content={"avatar_url": avatar_url})
