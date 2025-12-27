@@ -1,6 +1,6 @@
 import logging
 from fastapi import APIRouter, Request, HTTPException
-from fastapi.responses import JSONResponse
+from fastapi.responses import StreamingResponse, JSONResponse
 from typing import List, Dict
 from discord.ext.commands import FlagConverter, Group
 from ..models.bots import BotStatus
@@ -191,5 +191,5 @@ async def avatar(request: Request):
     if bot is None:
         raise HTTPException(status_code=503, detail="Bot is not ready")
 
-    avatar_url = str(bot.user.avatar.url) if bot.user.avatar else None
-    return JSONResponse(content={"avatar_url": avatar_url})
+    avatar_url = bot.user.avatar if bot.user.avatar else None
+    return StreamingResponse(content=await avatar_url.read(), media_type="image/png")
