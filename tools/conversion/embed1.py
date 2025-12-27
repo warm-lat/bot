@@ -3,11 +3,10 @@ import discord
 import datetime
 
 from discord.ext import commands
-from main import Evict
 
 class EmbedBuilder:
     def __init__(self):
-        self.bot = Evict
+        self.bot = commands.Bot()
         self.ok = "hi"
 
     def ordinal(self, num: int) -> str:
