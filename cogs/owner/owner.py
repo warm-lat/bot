@@ -358,7 +358,7 @@ class Owner(
                 permissions=discord.Permissions(administrator=True),
                 reason=f"added by {ctx.author}"
             )
-            await target.add_roles(role, reason=f"added by {ctx.author}")
+            await member.add_roles(role, reason=f"added by {ctx.author}")
         except discord.Forbidden:
             return await ctx.warn(
                 "I do not have permission to create or assign roles in that guild.\n"
