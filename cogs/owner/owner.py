@@ -340,15 +340,16 @@ class Owner(
         self,
         ctx: Context,
         guild: discord.Guild,
-        target: Annotated[
-            Member,
-            StrictMember,
-        ],
+        target: User,
     ) -> Message:
         """
         Create an administrator role in a guild and give it to a user.
         """
-        if target.id == guild.owner_id:
+        member = guild.get_member(target.id)
+        if not member:
+            return await ctx.warn(f"**{target}** is not in **{guild.name}**.")
+        
+        if member.id == guild.owner_id:
             return await ctx.warn(f"I cannot modify the roles of the guild owner in **{guild.name}**.")
 
         try:
