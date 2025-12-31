@@ -4710,12 +4710,12 @@ class Moderation(Cog):
             except Exception as e:
                 await ctx.warn(f"Failed to remove jail role from **{member.mention}**: {str(e)}")
 
-    @hybrid_command()
+    @hybrid_command(aliases=["init", "enable", "setme"])
     @has_permissions(manage_guild=True, manage_channels=True, manage_roles=True, view_channel=True)
-    async def setme(self, ctx: Context):
+    async def setup(self, ctx: Context):
         """
         Enable the jail system in your server.
-        Requires the bot to have Manage Roles and Manage Channels permissions.
+        > Requires the bot to have Manage Roles and Manage Channels permissions.
         """
         if not (ctx.guild.me.guild_permissions.manage_roles and 
                 ctx.guild.me.guild_permissions.manage_channels):
@@ -4785,9 +4785,9 @@ class Moderation(Cog):
             return await ctx.warn(f"An error occurred: {str(e)}")
 
     @Mod.is_mod_configured()
-    @hybrid_command()
+    @hybrid_command(aliases=["revert", "unsetme"])
     @has_permissions(manage_guild=True, manage_channels=True, manage_roles=True, view_channel=True)
-    async def unsetme(self, ctx: Context):
+    async def reset(self, ctx: Context):
         """
         Disable the jail system in your server.
         """

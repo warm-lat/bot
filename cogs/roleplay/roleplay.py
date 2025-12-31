@@ -828,7 +828,7 @@ class Roleplay(Cog):
         """
         return await self.send(ctx, member, "smug")
     
-    @hybrid_command(example="@aadam")
+    @command(example="@aadam")
     @roleplay_ratelimit()
     async def nutkick(self, ctx: Context, user: Member):
         """
@@ -867,7 +867,7 @@ class Roleplay(Cog):
         embed.set_image(url=images)
         await ctx.send(embed=embed)
 
-    @hybrid_command(example="@nxy")
+    @command(example="@nxy")
     @roleplay_ratelimit()
     async def fuck(self, ctx: Context, user: Member):
         """
@@ -904,7 +904,7 @@ class Roleplay(Cog):
         embed.set_image(url=images)
         await ctx.send(embed=embed)
 
-    @hybrid_command(example="@harry")
+    @command(example="@harry")
     @roleplay_ratelimit()
     async def spank(self, ctx: Context, user: Member):
         """
@@ -995,194 +995,194 @@ class Roleplay(Cog):
         if ctx.invoked_subcommand is None:
             await ctx.send_help(ctx.command)
 
-    @actions_group.command(name="fuck")
-    async def roleplay_fuck(self, ctx: Context, user: Union[Member, User]):
-        """
-        Fuck someone (DMs only).
-        """
-        if not isinstance(ctx.channel, discord.DMChannel):
-            return await ctx.warn("This command can only be used in DMs!")
-            
-        try:
-            amount = 0
-            if user != ctx.author:
-                amount = cast(
-                    int,
-                    await self.bot.db.fetchval(
-                        """
-                        INSERT INTO public.roleplay (user_id, target_id, category)
-                        VALUES ($1, $2, $3)
-                        ON CONFLICT (user_id, target_id, category)
-                        DO UPDATE SET amount = roleplay.amount + 1
-                        RETURNING amount
-                        """,
-                        ctx.author.id,
-                        user.id,
-                        "fuck",
-                    ),
-                )
+#@actions_group.command(name="fuck")
+#async def roleplay_fuck(self, ctx: Context, user: Union[Member, User]):
+#    """
+#    Fuck someone (DMs only).
+#    """
+#    if not isinstance(ctx.channel, discord.DMChannel):
+#        return await ctx.warn("This command can only be used in DMs!")
+#        
+#    try:
+#        amount = 0
+#        if user != ctx.author:
+#            amount = cast(
+#                int,
+#                await self.bot.db.fetchval(
+#                    """
+#                    INSERT INTO public.roleplay (user_id, target_id, category)
+#                    VALUES ($1, $2, $3)
+#                    ON CONFLICT (user_id, target_id, category)
+#                    DO UPDATE SET amount = roleplay.amount + 1
+#                    RETURNING amount
+#                    """,
+#                    ctx.author.id,
+#                    user.id,
+#                    "fuck",
+#                ),
+#            )
+#
+#        image_num = random.randint(1, 11)
+#        image_path = f"assets/roleplay/fuck/fuck{image_num}.gif"
+#        
+#        file = discord.File(image_path, filename="roleplay.gif")
+#        embed = Embed(
+#            description=f"**{ctx.author.mention}** just fucked {f'**{str(user.mention)}**' if user else 'themselves'}"
+#            + (
+#                f" for the **{ordinal(amount)}** time"
+#                if user != ctx.author and amount
+#                else " ... kinky"
+#            )
+#        )
+#        embed.set_author(name=ctx.author.name, icon_url=ctx.author.display_avatar)
+#        embed.set_image(url="attachment://roleplay.gif")
+#        await ctx.send(embed=embed, file=file)
+#    except Exception as e:
+#        await ctx.send(f"Error: {str(e)}")
 
-            image_num = random.randint(1, 11)
-            image_path = f"assets/roleplay/fuck/fuck{image_num}.gif"
-            
-            file = discord.File(image_path, filename="roleplay.gif")
-            embed = Embed(
-                description=f"**{ctx.author.mention}** just fucked {f'**{str(user.mention)}**' if user else 'themselves'}"
-                + (
-                    f" for the **{ordinal(amount)}** time"
-                    if user != ctx.author and amount
-                    else " ... kinky"
-                )
-            )
-            embed.set_author(name=ctx.author.name, icon_url=ctx.author.display_avatar)
-            embed.set_image(url="attachment://roleplay.gif")
-            await ctx.send(embed=embed, file=file)
-        except Exception as e:
-            await ctx.send(f"Error: {str(e)}")
+#@actions_group.command(name="spank")
+#async def actions_spank(self, ctx: Context, user: Union[Member, User, None] = parameter(
+#        default=lambda ctx: ctx.author,
+#        description="Spank a user."
+#    )):
+#    """
+#    Spank someone (DMs only).
+#    """
+#    if not isinstance(ctx.channel, discord.DMChannel):
+#        return await ctx.warn("This command can only be used in DMs!")
+#        
+#    try:
+#        amount = 0
+#        if user != ctx.author:
+#            amount = cast(
+#                int,
+#                await self.bot.db.fetchval(
+#                    """
+#                    INSERT INTO public.roleplay (user_id, target_id, category)
+#                    VALUES ($1, $2, $3)
+#                    ON CONFLICT (user_id, target_id, category)
+#                    DO UPDATE SET amount = roleplay.amount + 1
+#                    RETURNING amount
+#                    """,
+#                    ctx.author.id,
+#                    user.id,
+#                    "spank",
+#                ),
+#            )
+#
+#        image_num = random.randint(1, 13)  
+#        image_path = f"assets/roleplay/spank/spank{image_num}.gif"
+#        
+#        file = discord.File(image_path, filename="roleplay.gif")
+#        embed = Embed(
+#            description=f"**{ctx.author.mention}** just spanked {f'**{str(user.mention)}**' if user else 'themselves'}"
+#            + (
+#                f" for the **{ordinal(amount)}** time"
+#                if user != ctx.author and amount
+#                else " ... kinky"
+#            )
+#        )
+#        embed.set_author(name=ctx.author.name, icon_url=ctx.author.display_avatar)
+#        embed.set_image(url="attachment://roleplay.gif")
+#        await ctx.send(embed=embed, file=file)
+#    except Exception as e:
+#        await ctx.send(f"Error: {str(e)}")
 
-    @actions_group.command(name="spank")
-    async def actions_spank(self, ctx: Context, user: Union[Member, User, None] = parameter(
-            default=lambda ctx: ctx.author,
-            description="Spank a user."
-        )):
-        """
-        Spank someone (DMs only).
-        """
-        if not isinstance(ctx.channel, discord.DMChannel):
-            return await ctx.warn("This command can only be used in DMs!")
-            
-        try:
-            amount = 0
-            if user != ctx.author:
-                amount = cast(
-                    int,
-                    await self.bot.db.fetchval(
-                        """
-                        INSERT INTO public.roleplay (user_id, target_id, category)
-                        VALUES ($1, $2, $3)
-                        ON CONFLICT (user_id, target_id, category)
-                        DO UPDATE SET amount = roleplay.amount + 1
-                        RETURNING amount
-                        """,
-                        ctx.author.id,
-                        user.id,
-                        "spank",
-                    ),
-                )
+#@actions_group.command(name="kick")
+#async def actions_kick(self, ctx: Context, user: Union[Member, User, None] = parameter(
+#        default=lambda ctx: ctx.author,
+#        description="Kick a user."
+#    )):
+#    """
+#    Kick someone (DMs only).
+#    """
+#    if not isinstance(ctx.channel, discord.DMChannel):
+#        return await ctx.warn("This command can only be used in DMs!")
+#        
+#    try:
+#        amount = 0
+#        if user != ctx.author:
+#            amount = cast(
+#                int,
+#                await self.bot.db.fetchval(
+#                    """
+#                    INSERT INTO public.roleplay (user_id, target_id, category)
+#                    VALUES ($1, $2, $3)
+#                    ON CONFLICT (user_id, target_id, category)
+#                    DO UPDATE SET amount = roleplay.amount + 1
+#                    RETURNING amount
+#                    """,
+#                    ctx.author.id,
+#                    user.id,
+#                    "kick",
+#                ),
+#            )
+#
+#        image_num = random.randint(1, 13)
+#        image_path = f"assets/roleplay/kick/kick{image_num}.gif"
+#        
+#        file = discord.File(image_path, filename="roleplay.gif")
+#        embed = Embed(
+#            description=f"**{ctx.author.mention}** just kicked {f'**{str(user.mention)}**' if user else 'themselves'}"
+#            + (
+#                f" for the **{ordinal(amount)}** time"
+#                if user != ctx.author and amount
+#                else " ... kinky"
+#            )
+#        )
+#        embed.set_author(name=ctx.author.name, icon_url=ctx.author.display_avatar)
+#        embed.set_image(url="attachment://roleplay.gif")
+#        await ctx.send(embed=embed, file=file)
+#    except Exception as e:
+#        await ctx.send(f"Error: {str(e)}")
 
-            image_num = random.randint(1, 13)  
-            image_path = f"assets/roleplay/spank/spank{image_num}.gif"
-            
-            file = discord.File(image_path, filename="roleplay.gif")
-            embed = Embed(
-                description=f"**{ctx.author.mention}** just spanked {f'**{str(user.mention)}**' if user else 'themselves'}"
-                + (
-                    f" for the **{ordinal(amount)}** time"
-                    if user != ctx.author and amount
-                    else " ... kinky"
-                )
-            )
-            embed.set_author(name=ctx.author.name, icon_url=ctx.author.display_avatar)
-            embed.set_image(url="attachment://roleplay.gif")
-            await ctx.send(embed=embed, file=file)
-        except Exception as e:
-            await ctx.send(f"Error: {str(e)}")
-
-    @actions_group.command(name="kick")
-    async def actions_kick(self, ctx: Context, user: Union[Member, User, None] = parameter(
-            default=lambda ctx: ctx.author,
-            description="Kick a user."
-        )):
-        """
-        Kick someone (DMs only).
-        """
-        if not isinstance(ctx.channel, discord.DMChannel):
-            return await ctx.warn("This command can only be used in DMs!")
-            
-        try:
-            amount = 0
-            if user != ctx.author:
-                amount = cast(
-                    int,
-                    await self.bot.db.fetchval(
-                        """
-                        INSERT INTO public.roleplay (user_id, target_id, category)
-                        VALUES ($1, $2, $3)
-                        ON CONFLICT (user_id, target_id, category)
-                        DO UPDATE SET amount = roleplay.amount + 1
-                        RETURNING amount
-                        """,
-                        ctx.author.id,
-                        user.id,
-                        "kick",
-                    ),
-                )
-
-            image_num = random.randint(1, 13)
-            image_path = f"assets/roleplay/kick/kick{image_num}.gif"
-            
-            file = discord.File(image_path, filename="roleplay.gif")
-            embed = Embed(
-                description=f"**{ctx.author.mention}** just kicked {f'**{str(user.mention)}**' if user else 'themselves'}"
-                + (
-                    f" for the **{ordinal(amount)}** time"
-                    if user != ctx.author and amount
-                    else " ... kinky"
-                )
-            )
-            embed.set_author(name=ctx.author.name, icon_url=ctx.author.display_avatar)
-            embed.set_image(url="attachment://roleplay.gif")
-            await ctx.send(embed=embed, file=file)
-        except Exception as e:
-            await ctx.send(f"Error: {str(e)}")
-
-    @actions_group.command(name="nutkick")
-    async def actions_nutkick(self, ctx: Context, user: Union[Member, User, None] = parameter(
-            default=lambda ctx: ctx.author,
-            description="Nutkick a user."
-        )):
-        """
-        Nutkick someone (DMs only).
-        """
-        if not isinstance(ctx.channel, discord.DMChannel):
-            return await ctx.warn("This command can only be used in DMs!")
-            
-        try:
-            amount = 0
-            if user != ctx.author:
-                amount = cast(
-                    int,
-                    await self.bot.db.fetchval(
-                        """
-                        INSERT INTO public.roleplay (user_id, target_id, category)
-                        VALUES ($1, $2, $3)
-                        ON CONFLICT (user_id, target_id, category)
-                        DO UPDATE SET amount = roleplay.amount + 1
-                        RETURNING amount
-                        """,
-                        ctx.author.id,
-                        user.id,
-                        "nutkick",
-                    ),
-                )
-
-            image_num = random.randint(1, 8)
-            image_path = f"assets/roleplay/nutkick/nutkick{image_num}.gif"
-            
-            file = discord.File(image_path, filename="roleplay.gif")
-            embed = Embed(
-                description=f"**{ctx.author.mention}** just nutkicked {f'**{str(user.mention)}**' if user else 'themselves'}"
-                + (
-                    f" for the **{ordinal(amount)}** time"
-                    if user != ctx.author and amount
-                    else " ... kinky"
-                )
-            )
-            embed.set_author(name=ctx.author.name, icon_url=ctx.author.display_avatar)
-            embed.set_image(url="attachment://roleplay.gif")
-            await ctx.send(embed=embed, file=file)
-        except Exception as e:
-            await ctx.send(f"Error: {str(e)}")
+#@actions_group.command(name="nutkick")
+#async def actions_nutkick(self, ctx: Context, user: Union[Member, User, None] = parameter(
+#        default=lambda ctx: ctx.author,
+#        description="Nutkick a user."
+#    )):
+#    """
+#    Nutkick someone (DMs only).
+#    """
+#    if not isinstance(ctx.channel, discord.DMChannel):
+#        return await ctx.warn("This command can only be used in DMs!")
+#        
+#    try:
+#        amount = 0
+#        if user != ctx.author:
+#            amount = cast(
+#                int,
+#                await self.bot.db.fetchval(
+#                    """
+#                    INSERT INTO public.roleplay (user_id, target_id, category)
+#                    VALUES ($1, $2, $3)
+#                    ON CONFLICT (user_id, target_id, category)
+#                    DO UPDATE SET amount = roleplay.amount + 1
+#                    RETURNING amount
+#                    """,
+#                    ctx.author.id,
+#                    user.id,
+#                    "nutkick",
+#                ),
+#            )
+#
+#        image_num = random.randint(1, 8)
+#        image_path = f"assets/roleplay/nutkick/nutkick{image_num}.gif"
+#        
+#        file = discord.File(image_path, filename="roleplay.gif")
+#        embed = Embed(
+#            description=f"**{ctx.author.mention}** just nutkicked {f'**{str(user.mention)}**' if user else 'themselves'}"
+#            + (
+#                f" for the **{ordinal(amount)}** time"
+#                if user != ctx.author and amount
+#                else " ... kinky"
+#            )
+#        )
+#        embed.set_author(name=ctx.author.name, icon_url=ctx.author.display_avatar)
+#        embed.set_image(url="attachment://roleplay.gif")
+#        await ctx.send(embed=embed, file=file)
+#    except Exception as e:
+#        await ctx.send(f"Error: {str(e)}")
 
     @actions_group.command(name="bite")
     async def actions_bite(self, ctx: Context, user: Union[Member, User, None] = parameter(

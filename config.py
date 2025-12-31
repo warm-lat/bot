@@ -69,9 +69,9 @@ class EMOJIS:
         QUEUE: str = ""
         
     class CONTEXT:
-        APPROVE: str = "<:approve:1427496487927021631>"
-        DENY: str = ""
-        WARN: str = ""
+        APPROVE: str = "<:approve:1455782858370322553>"
+        DENY: str = "<:deny:1455782784818872381>"
+        WARN: str = "<:warn:1455782935906095217>"
         LEFT: str = "<:previous:1427025073587355768>"
         RIGHT: str = "<:next:1427025026858749983>"
         NAVIGATE: str = ""

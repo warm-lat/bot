@@ -42,7 +42,7 @@ class Network(Cog):
         )
 
         self.app.include_router(bots.router)
-        self.app.include_router(dash.router)
+        #self.app.include_router(dash.router)
         self.app.include_router(misc.router)
         self.app.include_router(music.router)
 
