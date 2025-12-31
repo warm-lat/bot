@@ -59,7 +59,7 @@ class Mod:
 
             if not check:
                 await ctx.warn(
-                    f"Moderation isn't **enabled** in this server. Enable it using `{ctx.clean_prefix}setme` command"
+                    f"Moderation isn't **enabled** in this server. Enable it using `{ctx.clean_prefix}setup` command"
                 )
                 return False
                 
@@ -456,22 +456,13 @@ class ClearMod(discord.ui.View):
         role = interaction.guild.get_role(roleid)
         logs = interaction.guild.get_channel(logsid)
 
-        try:
-            await channel.delete()
-
-        except:
-            pass
-
-        try:
-            await role.delete()
-
-        except:
-            pass
-
-        try:
-            await logs.delete()
-
-        except:
+        if channel:
+            await channel.delete(reason="Clearing moderation configuration")
+        if role:
+            await role.delete(reason="Clearing moderation configuration")
+        if logs:
+            await logs.delete(reason="Clearing moderation configuration")
+        else:
             pass
 
         await interaction.client.db.execute(

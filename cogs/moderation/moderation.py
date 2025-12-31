@@ -4736,8 +4736,8 @@ class Moderation(Cog):
 
         try:
             try:
-                category = await ctx.guild.create_category(name="warm modd")
-                role = await ctx.guild.create_role(name="warm-jail")
+                category = await ctx.guild.create_category(name="warm moderation")
+                role = await ctx.guild.create_role(name="jailed")
 
                 for channel in ctx.guild.channels:
                     try:
