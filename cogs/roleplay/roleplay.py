@@ -40,7 +40,7 @@ BASE_URL1 = URL.build(
 
 BASE_URL2 = URL.build(
     scheme="https",
-    host="api. waifu.pics",
+    host="api.waifu.pics",
 )
 
 ACTIONS = {
