@@ -1022,7 +1022,7 @@ class Social(Alerts, Cog):
     @group(
         aliases=["tt"],
         invoke_without_command=True,
-        example="evictbot"
+        example="lostnxy"
     )
     @cooldown(1, 5, BucketType.user)
     async def tiktok(self, ctx: Context, user: TikTokUser) -> Message:
@@ -1333,7 +1333,7 @@ class Social(Alerts, Cog):
     @group(
         aliases=["sc"],
         invoke_without_command=True,
-        example="lostnxy"
+        example="nxyy"
     )
     async def soundcloud(self, ctx: Context, *, query: str) -> Message:
         """
@@ -1367,7 +1367,7 @@ class Social(Alerts, Cog):
     @soundcloud.command(
         name="add",
         aliases=["feed"],
-        example="#music prettybiglies"
+        example="#music nxyy"
     )
     @has_permissions(manage_channels=True)
     async def soundcloud_add(
@@ -1428,7 +1428,7 @@ class Social(Alerts, Cog):
     @soundcloud.command(
         name="remove",
         aliases=["delete", "del", "rm"],
-        example="#music prettybiglies"
+        example="#music nxyy"
     )
     @has_permissions(manage_channels=True)
     async def soundcloud_remove(
@@ -1464,7 +1464,7 @@ class Social(Alerts, Cog):
         name="message",
         aliases=["msg"],
         invoke_without_command=True,
-        example="#music prettybiglies Hello!"
+        example="#music nxyy Hello!"
     )
     @has_permissions(manage_channels=True)
     async def soundcloud_message(

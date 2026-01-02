@@ -1734,22 +1734,22 @@ class Fun(Cog):
             except Exception as e:
                 await ctx.warn(f"An error occurred: {str(e)}")
 
-    @filter.command(name="lsd", example="img.png")
-    @max_concurrency(1, BucketType.member)
-    async def filter_lsd(self, ctx: Context, attachment: discord.Attachment):
-        """
-        Apply a psychedelic color effect
-        """
-        async with ctx.typing():
-            url = await self._get_media_url(ctx, attachment, accept_image=True) or ctx.author.display_avatar.url
-            try:
-                jeyy_api = JeyyAPI()
-                buffer = await jeyy_api.lsd(url)
-                await ctx.send(file=File(BytesIO(buffer), "lsd.gif"))
-            except CommandOnCooldown as e:
-                await ctx.warn(f"This command is on cooldown. Try again in {e.retry_after:.1f}s")
-            except Exception as e:
-                await ctx.warn(f"An error occurred: {str(e)}")
+    #@filter.command(name="lsd", example="img.png")
+    #@max_concurrency(1, BucketType.member)
+    #async def filter_lsd(self, ctx: Context, attachment: discord.Attachment):
+    #    """
+    #    Apply a psychedelic color effect
+    #    """
+    #    async with ctx.typing():
+    #        url = await self._get_media_url(ctx, attachment, accept_image=True) or ctx.author.display_avatar.url
+    #        try:
+    #            jeyy_api = JeyyAPI()
+    #            buffer = await jeyy_api.lsd(url)
+    #            await ctx.send(file=File(BytesIO(buffer), "lsd.gif"))
+    #        except CommandOnCooldown as e:
+    #            await ctx.warn(f"This command is on cooldown. Try again in {e.retry_after:.1f}s")
+    #        except Exception as e:
+    #            await ctx.warn(f"An error occurred: {str(e)}")
 
     @filter.command(name="matrix", example="img.png")
     @max_concurrency(1, BucketType.member)
@@ -1821,7 +1821,7 @@ class Fun(Cog):
 
     @filter.command(name="pattern", example="img.png")
     @max_concurrency(1, BucketType.member)
-    async def filter_pattern(self, ctx: Context, attachment: Optional[str] = None):
+    async def filter_pattern(self, ctx: Context, attachment: discord.Attachment):
         """
         Create a repeating pattern from the image
         """
@@ -1836,9 +1836,9 @@ class Fun(Cog):
             except Exception as e:
                 await ctx.warn(f"An error occurred: {str(e)}")
 
-    @filter.command(name="sensitive", example="https://example.com/image.jpg")
+    @filter.command(name="sensitive", example="img.png")
     @max_concurrency(1, BucketType.member)
-    async def filter_sensitive(self, ctx: Context, attachment: Optional[str] = None):
+    async def filter_sensitive(self, ctx: Context, attachment: discord.Attachment):
         """
         Add a sensitive content warning overlay
         """
@@ -1853,9 +1853,9 @@ class Fun(Cog):
             except Exception as e:
                 await ctx.warn(f"An error occurred: {str(e)}")
 
-    @filter.command(name="stereo", example="https://example.com/image.jpg")
+    @filter.command(name="stereo", example="img.png")
     @max_concurrency(1, BucketType.member)
-    async def filter_stereo(self, ctx: Context, attachment: Optional[str] = None):
+    async def filter_stereo(self, ctx: Context, attachment: discord.Attachment):
         """
         Apply a stereoscopic 3D effect
         """
@@ -1875,9 +1875,9 @@ class Fun(Cog):
         if ctx.invoked_subcommand is None:
             await ctx.send_help(ctx.command)
 
-    @animate.command(name="shine", example="https://example.com/image.jpg")
+    @animate.command(name="shine", example="img.png")
     @max_concurrency(1, BucketType.member)
-    async def animate_shine(self, ctx: Context, attachment: Optional[str] = None):
+    async def animate_shine(self, ctx: Context, attachment: discord.Attachment):
         """
         Add a shining animation effect
         """
