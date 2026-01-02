@@ -131,7 +131,7 @@ class EmbedBuilder:
         if "{bot.avatar}" in params:
             params = params.replace(
                 "{bot.avatar}",
-                "https://images-ext-1.discordapp.net/external/gQinzaMi-EYOvq-VudfO8fWk21PD2NLefrk6QZyVyDs/%3Fsize%3D1024/https/cdn.discordapp.com/icons/1177424668328726548/a_229e85dbdae4f77c4accdf92ced9d822.gif",
+                "https://r2.warm.lat/bot.jpg",
             )
         if "{guild.icon}" in params:
             if user.guild.icon:

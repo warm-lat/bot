@@ -471,7 +471,7 @@ class Social(Alerts, Cog):
         return await ctx.send(embed=embed)
 
     @group(
-        aliases=["pint", "autopfp"],
+        aliases=["pint"],
         invoke_without_command=True,
         example="prettybiglies"
     )
@@ -861,7 +861,8 @@ class Social(Alerts, Cog):
                 else f"@{user.username}"
             ),
         )
-        embed.set_image(url=user.avatar.url)
+        embed.set_thumbnail(url=user.avatar.url)
+        embed.set_image(url=user.qr_code_url)
 
         return await ctx.send(embed=embed)
 
@@ -903,9 +904,9 @@ class Social(Alerts, Cog):
         embed.set_thumbnail(url=avatar)
         return await ctx.send(embed=embed)
 
-    @command(example="nxyylol", aliases=["instagramuser", "iguser"])
+    @command(example="nxyylol", aliases=["instagramu", "iguser"])
     @cooldown(1, 5, BucketType.guild)
-    async def instagramu(self, ctx: Context, *, user: str) -> Message:
+    async def instagramuser(self, ctx: Context, *, user: str) -> Message:
         """
         Fetch information about an Instagram user.
         """

@@ -14,6 +14,7 @@ from core.client.context import Context
 class Avatar(BaseModel):
     url: Optional[str] = Field(..., alias="image_url")
     accent_color: str
+    initial: str
 
     @property
     def color(self) -> Color:

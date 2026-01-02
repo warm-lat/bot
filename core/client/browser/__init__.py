@@ -66,7 +66,6 @@ class BrowserHandler:
             
             try:
                 self.playwright = await async_playwright().start()
-                log.info("Playwright started successfully")
             except NotImplementedError as e:
                 if sys.platform == "win32":
                     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
