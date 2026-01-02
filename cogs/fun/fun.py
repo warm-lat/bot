@@ -1632,9 +1632,9 @@ class Fun(Cog):
         if ctx.invoked_subcommand is None:
             await ctx.send_help(ctx.command)
 
-    @filter.command(name="bayer", example="https://example.com/image.jpg")
+    @filter.command(name="bayer", example="img.png")
     @max_concurrency(1, BucketType.member)
-    async def filter_bayer(self, ctx: Context, attachment: Optional[str] = None):
+    async def filter_bayer(self, ctx: Context, attachment: discord.Attachment):
         """
         Apply a Bayer matrix dithering effect
         """
@@ -1649,9 +1649,9 @@ class Fun(Cog):
             except Exception as e:
                 await ctx.warn(f"An error occurred: {str(e)}")
 
-    @filter.command(name="emojify", example="https://example.com/image.jpg")
+    @filter.command(name="emojify", example="img.png")
     @max_concurrency(1, BucketType.member)
-    async def filter_emojify(self, ctx: Context, attachment: Optional[str] = None):
+    async def filter_emojify(self, ctx: Context, attachment: discord.Attachment):
         """
         Convert image into emoji pixels
         """
@@ -1666,9 +1666,9 @@ class Fun(Cog):
             except Exception as e:
                 await ctx.warn(f"An error occurred: {str(e)}")
 
-    @filter.command(name="gameboy", example="https://example.com/image.jpg")
+    @filter.command(name="gameboy", example="img.png")
     @max_concurrency(1, BucketType.member)
-    async def filter_gameboy(self, ctx: Context, attachment: Optional[str] = None):
+    async def filter_gameboy(self, ctx: Context, attachment: discord.Attachment):
         """
         Apply a Gameboy-style effect
         """
@@ -1683,9 +1683,9 @@ class Fun(Cog):
             except Exception as e:
                 await ctx.warn(f"An error occurred: {str(e)}")
 
-    @filter.command(name="half_invert", example="https://example.com/image.jpg")
+    @filter.command(name="half_invert", example="img.png")
     @max_concurrency(1, BucketType.member)
-    async def filter_half_invert(self, ctx: Context, attachment: Optional[str] = None):
+    async def filter_half_invert(self, ctx: Context, attachment: discord.Attachment):
         """
         Invert half of the image
         """
@@ -1700,9 +1700,9 @@ class Fun(Cog):
             except Exception as e:
                 await ctx.warn(f"An error occurred: {str(e)}")
 
-    @filter.command(name="letters", example="https://example.com/image.jpg")
+    @filter.command(name="letters", example="img.png")
     @max_concurrency(1, BucketType.member)
-    async def filter_letters(self, ctx: Context, attachment: Optional[str] = None):
+    async def filter_letters(self, ctx: Context, attachment: discord.Attachment):
         """
         Convert image into ASCII letters
         """
@@ -1717,9 +1717,9 @@ class Fun(Cog):
             except Exception as e:
                 await ctx.warn(f"An error occurred: {str(e)}")
 
-    @filter.command(name="lines", example="https://example.com/image.jpg")
+    @filter.command(name="lines", example="img.png")
     @max_concurrency(1, BucketType.member)
-    async def filter_lines(self, ctx: Context, attachment: Optional[str] = None):
+    async def filter_lines(self, ctx: Context, attachment: discord.Attachment):
         """
         Apply a lined pattern effect
         """
@@ -1734,9 +1734,9 @@ class Fun(Cog):
             except Exception as e:
                 await ctx.warn(f"An error occurred: {str(e)}")
 
-    @filter.command(name="lsd", example="https://example.com/image.jpg")
+    @filter.command(name="lsd", example="img.png")
     @max_concurrency(1, BucketType.member)
-    async def filter_lsd(self, ctx: Context, attachment: Optional[str] = None):
+    async def filter_lsd(self, ctx: Context, attachment: discord.Attachment):
         """
         Apply a psychedelic color effect
         """
@@ -1751,9 +1751,9 @@ class Fun(Cog):
             except Exception as e:
                 await ctx.warn(f"An error occurred: {str(e)}")
 
-    @filter.command(name="matrix", example="https://example.com/image.jpg")
+    @filter.command(name="matrix", example="img.png")
     @max_concurrency(1, BucketType.member)
-    async def filter_matrix(self, ctx: Context, attachment: Optional[str] = None):
+    async def filter_matrix(self, ctx: Context, attachment: discord.Attachment):
         """
         Apply a Matrix-style effect
         """
@@ -1768,9 +1768,9 @@ class Fun(Cog):
             except Exception as e:
                 await ctx.warn(f"An error occurred: {str(e)}")
 
-    @filter.command(name="minecraft", example="https://example.com/image.jpg")
+    @filter.command(name="minecraft", example="img.png")
     @max_concurrency(1, BucketType.member)
-    async def filter_minecraft(self, ctx: Context, attachment: Optional[str] = None):
+    async def filter_minecraft(self, ctx: Context, attachment: discord.Attachment):
         """
         Convert image into Minecraft blocks
         """
@@ -1785,9 +1785,9 @@ class Fun(Cog):
             except Exception as e:
                 await ctx.warn(f"An error occurred: {str(e)}")
 
-    @filter.command(name="neon", example="https://example.com/image.jpg")
+    @filter.command(name="neon", example="img.png")
     @max_concurrency(1, BucketType.member)
-    async def filter_neon(self, ctx: Context, attachment: Optional[str] = None):
+    async def filter_neon(self, ctx: Context, attachment: discord.Attachment):
         """
         Add neon glow effects
         """
@@ -1802,9 +1802,9 @@ class Fun(Cog):
             except Exception as e:
                 await ctx.warn(f"An error occurred: {str(e)}")
 
-    @filter.command(name="optics", example="https://example.com/image.jpg")
+    @filter.command(name="optics", example="img.png")
     @max_concurrency(1, BucketType.member)
-    async def filter_optics(self, ctx: Context, attachment: Optional[str] = None):
+    async def filter_optics(self, ctx: Context, attachment: discord.Attachment):
         """
         Apply an optical distortion effect
         """
@@ -1819,7 +1819,7 @@ class Fun(Cog):
             except Exception as e:
                 await ctx.warn(f"An error occurred: {str(e)}")
 
-    @filter.command(name="pattern", example="https://example.com/image.jpg")
+    @filter.command(name="pattern", example="img.png")
     @max_concurrency(1, BucketType.member)
     async def filter_pattern(self, ctx: Context, attachment: Optional[str] = None):
         """

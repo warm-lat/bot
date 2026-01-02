@@ -40,7 +40,7 @@ BASE_URL1 = URL.build(
 
 BASE_URL2 = URL.build(
     scheme="https",
-    host="api.waifu.pics",
+    host="waifu.pics/api",
 )
 
 ACTIONS = {
@@ -1606,11 +1606,11 @@ class Roleplay(Cog):
                     ),
                 )
 
-            url = "https://nekos.best/api/v2/lick"
+            url = "https://waifu.pics/api/sfw/lick"
             async with self.bot.session.get(url) as resp:
                 if resp.status == 200:
                     data = await resp.json()
-                    gif_url = data["results"][0]["url"]
+                    gif_url = data["url"]
                     
                     async with self.bot.session.get(gif_url) as gif_resp:
                         if gif_resp.status == 200:
