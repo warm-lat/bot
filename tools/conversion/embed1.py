@@ -358,7 +358,6 @@ class EmbedScript(commands.Converter):
         
         Args:
             bot: Optional bot instance for template variable resolution (e.g., {botavatar}).
-                 Used when converting without a context (alt_convert).
         """
         self.bot = bot
 
