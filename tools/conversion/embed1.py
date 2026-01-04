@@ -5,8 +5,8 @@ import datetime
 from discord.ext import commands
 
 class EmbedBuilder:
-    def __init__(self):
-        self.bot = commands.Bot()
+    def __init__(self, bot=None):
+        self.bot = bot
         self.ok = "hi"
 
     def ordinal(self, num: int) -> str:
@@ -95,10 +95,13 @@ class EmbedBuilder:
         if "{botcolor}" in params:
             params = params.replace("{botcolor}", "e9d8b6")
         if "{botavatar}" in params:
-            params = params.replace(
-                "{botavatar}",
-                self.bot.user.display_avatar.url,
-            )
+            if self.bot and self.bot.user:
+                params = params.replace(
+                    "{botavatar}",
+                    self.bot.user.display_avatar.url,
+                )
+            else:
+                params = params.replace("{botavatar}", "")
         if "{guild.icon}" in params:
             if user.guild.icon:
                 params = params.replace("{guild.icon}", user.guild.icon.url)
@@ -349,11 +352,19 @@ class EmbedBuilder:
 
 
 class EmbedScript(commands.Converter):
+    def __init__(self, bot=None):
+        """
+        Initialize the EmbedScript converter.
+        
+        Args:
+            bot: Optional bot instance for template variable resolution (e.g., {botavatar}).
+        """
+        self.bot = bot
 
     async def convert(self, ctx: commands.Context, argument: str):
-        x = EmbedBuilder().to_object(
-            EmbedBuilder().embed_replacement(ctx.author, argument)
-        )
+        # Use ctx.bot (the active bot) rather than self.bot for context-based conversions
+        builder = EmbedBuilder(ctx.bot)
+        x = builder.to_object(builder.embed_replacement(ctx.author, argument))
         if x[0] or x[1]:
             if x[3]:
                 return {
@@ -365,12 +376,13 @@ class EmbedScript(commands.Converter):
             else:
                 return {"content": x[0], "embed": x[1], "view": x[2]}
 
-        return {"content": EmbedBuilder().embed_replacement(ctx.author, argument)}
+        return {"content": builder.embed_replacement(ctx.author, argument)}
 
     async def alt_convert(self, member: discord.Member, argument: str):
-        x = EmbedBuilder().to_object(EmbedBuilder().embed_replacement(member, argument))
+        builder = EmbedBuilder(self.bot)
+        x = builder.to_object(builder.embed_replacement(member, argument))
         response = {
-            "content": x[0] or EmbedBuilder().embed_replacement(member, argument),
+            "content": x[0] or builder.embed_replacement(member, argument),
             "embed": x[1],
             "view": x[2],
             "delete_after": x[3] if len(x) > 3 else None,

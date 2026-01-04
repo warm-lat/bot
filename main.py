@@ -303,7 +303,7 @@ class Evict(commands.AutoShardedBot):
         self.global_cooldown = CooldownMapping.from_cooldown(2, 3, BucketType.user)
         self.add_check(self.check_global_cooldown)
         self.uptime2 = time.time()
-        self.embed_build = EmbedScript()
+        self.embed_build = EmbedScript(self)
         self.cache = cache(self)
         self.process_pool = Pool(
             processes=min(4, logical_cpu_count),
