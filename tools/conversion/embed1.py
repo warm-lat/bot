@@ -353,12 +353,11 @@ class EmbedBuilder:
 
 class EmbedScript(commands.Converter):
     def __init__(self, bot=None):
-        super().__init__()
         self.bot = bot
 
     async def convert(self, ctx: commands.Context, argument: str):
-        # Use bot from context if available, otherwise use stored bot
-        bot_instance = ctx.bot if hasattr(ctx, 'bot') else self.bot
+        # Prefer context bot (which is always available) over stored bot
+        bot_instance = ctx.bot
         builder = EmbedBuilder(bot_instance)
         x = builder.to_object(builder.embed_replacement(ctx.author, argument))
         if x[0] or x[1]:
