@@ -353,10 +353,16 @@ class EmbedBuilder:
 
 class EmbedScript(commands.Converter):
     def __init__(self, bot=None):
+        """
+        Initialize the EmbedScript converter.
+        
+        Args:
+            bot: Optional bot instance for template variable resolution (e.g., {botavatar}).
+                 Used when converting without a context (alt_convert).
+        """
         self.bot = bot
 
     async def convert(self, ctx: commands.Context, argument: str):
-        # Use context bot as it's the active bot instance
         builder = EmbedBuilder(ctx.bot)
         x = builder.to_object(builder.embed_replacement(ctx.author, argument))
         if x[0] or x[1]:
