@@ -362,6 +362,7 @@ class EmbedScript(commands.Converter):
         self.bot = bot
 
     async def convert(self, ctx: commands.Context, argument: str):
+        # Use ctx.bot (the active bot) rather than self.bot for context-based conversions
         builder = EmbedBuilder(ctx.bot)
         x = builder.to_object(builder.embed_replacement(ctx.author, argument))
         if x[0] or x[1]:
