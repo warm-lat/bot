@@ -124,7 +124,6 @@ class EvictHelp(MinimalHelpCommand):
                     "Network",
                     "Owner",
                     "Listeners",
-                    "Hog",
                 ]
                 and "cogs" in cog.__module__
             ]

@@ -280,21 +280,20 @@ class Information(Cog):
         """
         await self._update_cache()
 
-        regular_cogs = len(self.bot.cogs)
+        cogs = len(self.bot.cogs)
         extensions = len(self.bot.extensions)
-        total_modules = regular_cogs + extensions
+        total_modules = cogs + extensions
 
         embed = Embed(
             description=(
-                f"Utilizing ``{self._cached_commands:,}`` commands across ``{len(self.bot.cogs)}`` cogs (`{total_modules}` total modules)"
+                f"Using ``{self._cached_commands:,}`` commands across ``{cogs}`` cogs (`{total_modules}` total modules)"
             ),
             color=config.COLORS.NEUTRAL,
         )
         embed.set_author(
             name=self.bot.user.name,
             icon_url=self.bot.user.display_avatar.url,
-            url=config.CLIENT.SUPPORT_URL
-            or oauth_url(self.bot.user.id, permissions=Permissions(permissions=8)),
+            url=config.CLIENT.SUPPORT_URL,
         )
 
         embed.add_field(
@@ -316,20 +315,7 @@ class Information(Cog):
                 [
                     f"**CPU:** `{self.process.cpu_percent()}%`",
                     f"**Memory:** `{format_size(self.process.memory_info().rss)}`",
-                    f"**Launched:** {format_dt(self.bot.uptime, 'R')}",
-                ]
-            ),
-        )
-
-        embed.add_field(
-            name="**Code**",
-            inline=True,
-            value="\n".join(
-                [
-                    f"**Lines:** `{self._cached_lines:,}`",
-                    f"**Files:** `{self._cached_files:,}`",
-                    f"**Imports:** `{self._cached_imports:,}`",
-                    f"**Functions:** `{self._cached_functions:,}`",
+                    f"**Started:** {format_dt(self.bot.uptime, 'R')}",
                 ]
             ),
         )
@@ -347,10 +333,17 @@ class Information(Cog):
             emoji=config.EMOJIS.SOCIAL.WEBSITE,
             url="https://warm.lat",
         )
+        
+        button3 = Button(
+            label="Invite",
+            style=discord.ButtonStyle.gray,
+            url=oauth_url(self.bot.user.id, permissions=Permissions(permissions=8)),
+        )
 
         view = discord.ui.View()
         view.add_item(button1)
         view.add_item(button2)
+        view.add_item(button3)
 
         embed.set_footer(
             text=f"warm/v{self.bot.version} • Latest Commit: {self._cached_commit}"

@@ -541,36 +541,27 @@ class Config(Extended, Cog):
     async def pingonjoin_listener(self, member: Member):
         if member.bot:
             return
-        
-        cache_key = f"poj:{member.guild.id}"
-        channels = await self.bot.redis.get(cache_key)
-        
-        if not channels:
-            records = await self.bot.db.fetch(
-                """
-                SELECT channel_id 
-                FROM public.pingonjoin 
-                WHERE guild_id = $1
-                """,
-                member.guild.id
-            )
-            channels = [record['channel_id'] for record in records]
-            await self.bot.redis.set(cache_key, channels, ex=60)
 
-        recent_joins = [
-            m for m in member.guild.members
-            if (datetime.datetime.now() - m.joined_at.replace(tzinfo=None)).total_seconds() < 180
-        ]
+        records = await self.bot.db.fetch(
+            """
+            SELECT channel_id 
+            FROM public.pingonjoin 
+            WHERE guild_id = $1
+            """,
+            member.guild.id
+        )
+        
+        if not records:
+            return
 
-        seen = set()
+        channels = [record['channel_id'] for record in records]
+
         for channel_id in channels:
             if channel := member.guild.get_channel(int(channel_id)):
                 try:
-                    for m in recent_joins:
-                        if m.id not in seen:
-                            await channel.send(m.mention, delete_after=6)
-                            seen.add(m.id)
-                except:
+                    await channel.send(member.mention, delete_after=5)
+                except Exception as e:
+                    self.bot.logger.warning(f"Failed to send pingonjoin message in {channel.id} for guild {member.guild.id}: {e}")
                     continue
 
     @group(invoke_without_command=True)

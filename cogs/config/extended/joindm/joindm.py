@@ -34,13 +34,10 @@ class InfoButton(Button):
             color=0x0a0a0a,
         )
         
-        embed.add_field(
-            name="Server Information",
-            value=f"🏷️ **Name:** {guild.name}\n"
-                  f"👑 **Owner:** {guild.owner}\n"
-                  f"📅 **Created:** <t:{int(guild.created_at.timestamp())}:R>\n"
-                  f"👥 **Members:** {guild.member_count:,}\n",
-            inline=False
+        embed.description = (
+            f"👑 **Owner:** {guild.owner}\n"
+            f"📅 **Created:** <t:{int(guild.created_at.timestamp())}:R>\n"
+            f"👥 **Members:** {guild.member_count:,}"
         )
 
         embed.add_field(

@@ -5330,7 +5330,7 @@ class Moderation(Cog):
 
         return await ctx.send(embed=embed)
 
-    @warn.command(name="remove", aliases=["delete", "del"], example="1 Resolved")
+    @warn.command(name="remove", aliases=["delete", "del", "unwarn"], example="1 Resolved")
     @has_permissions(moderate_members=True)
     async def warn_remove(
         self,

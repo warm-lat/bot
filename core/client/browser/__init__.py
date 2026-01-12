@@ -66,13 +66,6 @@ class BrowserHandler:
             
             try:
                 self.playwright = await async_playwright().start()
-            except NotImplementedError as e:
-                if sys.platform == "win32":
-                    asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
-                    log.info("Reset Windows event loop policy, restarting...")
-                    self.playwright = await async_playwright().start()
-                else:
-                    raise
             except Exception as e:
                 log.error(f"Failed to start Playwright: {e}")
                 raise
@@ -91,7 +84,7 @@ class BrowserHandler:
             self.context = await self.browser.new_context(
                 user_agent=(
                     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
-                    "(KHTML, like Gecko) Chrome/140.0.7339.16 Safari/537.36"
+                    "(KHTML, like Gecko) Chrome/143. Safari/537.36"
                 ),
             )
             log.info("Browser context created successfully")
