@@ -17,7 +17,7 @@ RUN apt-get update && apt-get install -y \
     git \
     curl \
     libssl-dev \
-    pkg-config \
+    pkg-config
 
 COPY requirements.txt .
 
