@@ -4300,7 +4300,7 @@ class Utility(Extended, Cog):
                     file_extension = "gif" if ctx.author.avatar.is_animated() else "png"
                     avatar_hash = str(ctx.author.avatar.key)
                     
-                    bunny_url = await self.bot.get_cog("Listeners").upload_to_bunny(
+                    r2_url = await self.bot.get_cog("Listeners").upload_to_cfr2(
                         avatar_bytes,
                         ctx.author.id,
                         avatar_hash,
@@ -4316,7 +4316,7 @@ class Utility(Extended, Cog):
                         """,
                         ctx.author.id,
                         avatar_hash,
-                        bunny_url
+                        r2_url
                     )
                 except Exception as e:
                     log.error(f"Failed to save initial avatar for user {ctx.author.id}: {e}")
@@ -4344,24 +4344,20 @@ class Utility(Extended, Cog):
             return await ctx.neutral("Cancelled avatar history deletion")
         
         try:
-            # List all objects under the user's folder in the S3 bucket
             response = await self.bot.s3.list_objects_v2(
                 Bucket=config.AUTHORIZATION.R2.BUCKET,
                 Prefix=f"{ctx.author.id}/"
             )
-            
-            # Check if there are objects to delete
+
             if "Contents" in response:
                 objects_to_delete = [{"Key": obj["Key"]} for obj in response["Contents"]]
                 
-                # Delete all objects under the user's folder
                 await self.bot.s3.delete_objects(
                     Bucket=config.AUTHORIZATION.R2.BUCKET,
                     Delete={"Objects": objects_to_delete}
                 )
             
-            # Delete the user's avatar history from the database
-            deleted = await self.bot.db.execute(
+            await self.bot.db.execute(
                 "DELETE FROM public.avatar_history WHERE user_id = $1",
                 ctx.author.id
             )
@@ -4459,70 +4455,42 @@ class Utility(Extended, Cog):
             ctx.author.id
         )
 
-        embed = Embed(
-            title="Vote & Donator Status",
-            description="Vote every 12 hours to get perks!\nVote perks last for 6 hours per vote."
-        )
-        
+        # Simplified embed: single description line with compact statuses
+        vote_available = True
+        perk_active = False
+
         if last_vote:
             time_since_vote = (datetime.now() - last_vote).total_seconds()
-            time_until_next = max(43200 - time_since_vote, 0) 
-            vote_hours = int(time_until_next / 3600)
-            vote_minutes = int((time_until_next % 3600) / 60)
-            
-            perk_time_left = max(21600 - time_since_vote, 0)  
-            perk_hours = int(perk_time_left / 3600)
-            perk_minutes = int((perk_time_left % 3600) / 60)
-            
-            if time_until_next > 0:
-                embed.add_field(
-                    name="Vote Status",
-                    value=f"{config.EMOJIS.CONTEXT.DENY} Next vote available in: **{vote_hours}h {vote_minutes}m**",
-                    inline=True
-                )
-            else:
-                embed.add_field(
-                    name="Vote Status",
-                    value=f"{config.EMOJIS.CONTEXT.APPROVE} You can vote now!",
-                    inline=True
-                )
-                
-            if perk_time_left > 0:
-                embed.add_field(
-                    name="Vote Perks",
-                    value=f"{config.EMOJIS.CONTEXT.APPROVE} Active for: **{perk_hours}h {perk_minutes}m**",
-                    inline=True
-                )
-            else:
-                embed.add_field(
-                    name="Vote Perks",
-                    value=f"{config.EMOJIS.CONTEXT.DENY} Expired",
-                    inline=True
-                )
-        else:
-            embed.add_field(
-                name="Vote Status",
-                value=f"{config.EMOJIS.CONTEXT.APPROVE} You can vote now!",
-                inline=False
+            time_until_next = max(43200 - time_since_vote, 0)
+            vote_available = time_until_next == 0
+            perk_time_left = max(21600 - time_since_vote, 0)
+            perk_active = perk_time_left > 0
+
+            vote_status_text = (
+                "You can vote now!"
+                if vote_available
+                else f"Next vote in {int(time_until_next // 3600)}h {int((time_until_next % 3600) // 60)}m"
             )
-            embed.add_field(
-                name="Vote Perks",
-                value=f"{config.EMOJIS.CONTEXT.DENY} No active perks",
-                inline=False
-            )
-            
-        if donator:
-            embed.add_field(
-                name="Donator Status",
-                value=f"{config.EMOJIS.CONTEXT.APPROVE} Active donator",
-                inline=False
+            perks_text = (
+                f"Active for {int(perk_time_left // 3600)}h {int((perk_time_left % 3600) // 60)}m"
+                if perk_active
+                else "No active perks"
             )
         else:
-            embed.add_field(
-                name="Donator Status",
-                value=f"{config.EMOJIS.CONTEXT.DENY} Not a donator",
-                inline=False
-            )
+            vote_status_text = "You can vote now!"
+            perks_text = "No active perks"
+
+        donator_text = "Active donator" if donator else "Not a donator"
+
+        embed = Embed(
+            title="Vote & Donator Status",
+            description=(
+                f"{config.EMOJIS.CONTEXT.APPROVE if vote_available else config.EMOJIS.CONTEXT.DENY} {vote_status_text}\n"
+                f"{config.EMOJIS.CONTEXT.APPROVE if perk_active else config.EMOJIS.CONTEXT.DENY} {perks_text}\n"
+                f"{config.EMOJIS.CONTEXT.APPROVE if donator else config.EMOJIS.CONTEXT.DENY} {donator_text}"
+            ),
+            color=ctx.color
+        )
 
         view = View()
         view.add_item(
@@ -4667,7 +4635,7 @@ class Utility(Extended, Cog):
         
         tiers = [
             {
-                "name": "Premium, Tier III",
+                "name": "Premium, Tier I",
                 "price": "US$4.99/Month",
                 "perks": [
                     f"{config.EMOJIS.MISC.EXTRA_SUPPORT} Dedicated Support",
@@ -4690,7 +4658,7 @@ class Utility(Extended, Cog):
                 "sku": "" 
             },
             {
-                "name": "Premium, Tier I",
+                "name": "Premium, Tier III",
                 "price": "US$8.99/Month",
                 "perks": [
                     f"{config.EMOJIS.MISC.SECURITY} Increased Security",
