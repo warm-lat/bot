@@ -166,13 +166,13 @@ class CLIENT:
     SHARDS: int = 2
     INVITE_URL: str = "https://discord.com/api/oauth2/authorize?client_id=1420609343283531776&permissions=8&scope=bot%20applications.commands"
     SUPPORT_URL: str = "https://discord.gg/apply"
-    TWITCH_URL: str = "https://twitch.tv/nxyyontop"
+    #TWITCH_URL: str = "https://twitch.tv/nxyyontop"
     OWNER_IDS: list = [1137513168965476352]
     DESCRIPTION: str = "A bot to manage your Discord server."
 
 class LAVALINK:
     NODE_COUNT: int = 2
-    HOST: str = "lavalink.rive.wtf"
+    HOST: str = "public.rive.wtf"
     PORT: int = 443
     PASSWORD: str = "youshallnotpass"
     SPOTIFY_CLIENT_ID: str = "4c3c2ba7ad6c4ef4a0c0d793cb979ce8"

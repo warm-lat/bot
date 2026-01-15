@@ -44,7 +44,7 @@ class Listeners(Cog):
             's3',
             endpoint_url=config.CLOUDFLARE.R2.ENDPOINT,
             aws_access_key_id=config.CLOUDFLARE.R2.ACCESS_KEY,
-            aws_secret_access_key=config.CLOUDFLARE.R2.SECRET_KEY,
+            aws_secret_access_key=config.CLOUDFLARE.R2.ACCESS_SECRET,
         ) as client:
             await client.put_object(
                 Bucket=config.CLOUDFLARE.R2.BUCKET,
