@@ -95,9 +95,6 @@ class Information(Cog):
         self.weather_key = "6a3ab4420afb487794d171848253009"
         self.description = "View information on various things."
         self._cached_commit = None
-        self._cached_lines = None
-        self._cached_files = None
-        self._cached_imports = None
         self._cached_functions = None
         self._cached_commands = None
         self._cached_member_count = None
@@ -107,9 +104,6 @@ class Information(Cog):
         current_time = time.time()
         if (current_time - self._last_cache_time < 7200 and 
             all(x is not None for x in [
-                self._cached_lines,
-                self._cached_files, 
-                self._cached_imports,
                 self._cached_functions,
                 self._cached_commit,
                 self._cached_commands,
@@ -141,7 +135,6 @@ class Information(Cog):
                 ])
             ])
             
-            self._cached_imports = len(set(sum([list(mod.__dict__.keys()) for mod in [discord, config]], [])))
             
             self._cached_functions = len([f for f in dir(self.bot) if callable(getattr(self.bot, f)) and not f.startswith('_')])
             
@@ -232,7 +225,7 @@ class Information(Cog):
                 value=f"**ping**: ``{round(self.bot.shards.get(shard).latency * 1000)}ms``\n**guilds**: ``{len(guilds)}``\n**users**: ``{users:,}``",
                 inline=True,
             )
-            embed.set_author(name=ctx.authordisplay_name, icon_url=ctx.author.display_avatar.url)
+            embed.set_author(name=ctx.author.display_name, icon_url=ctx.author.display_avatar.url)
             embed.set_footer(text=f"You are on Shard {ctx.guild.shard_id}.", icon_url=f"{self.bot.user.display_avatar.url}")
 
         await ctx.send(embed=embed)
