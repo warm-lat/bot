@@ -2814,7 +2814,7 @@ class Moderation(Cog):
             pass
         return await ctx.check()
 
-    @command(
+@command(
         example="@x bot owner",
         name="fn",
     )
@@ -2826,35 +2826,55 @@ class Moderation(Cog):
             Member,
             TouchableMember,
         ],
-        *,
-        nickname: Range[str, 1, 32],
+        nickname: Optional[Range[str, 1, 32]] = None,
     ) -> None:
         """
-        Force a member's nickname.
+        Force a member's nickname or reset it.
         """
         if await self.is_immune(ctx, member):
             return
         
-        await self.bot.db.execute(
-            """
-            INSERT INTO public.forcenick (guild_id, user_id, nickname)
-            VALUES ($1, $2, $3)
-            ON CONFLICT (guild_id, user_id)
-            DO UPDATE SET nickname = $3
-            """,
-            ctx.guild.id,
-            member.id,
-            nickname,
-        )
+        if nickname is None:
+            # Reset nickname and remove force
+            await self.bot.db.execute(
+                """
+                DELETE FROM public.forcenick
+                WHERE guild_id = $1 AND user_id = $2
+                """,
+                ctx.guild.id,
+                member.id,
+            )
 
-        await member.edit(
-            nick=nickname,
-            reason=f"{ctx.author} ({ctx.author.id})",
-        )
-        try:
-            await ModConfig.sendlogs(self.bot, "forcenick", ctx.author, member, "No reason provided")  # type: ignore
-        except:
-            pass
+            await member.edit(
+                nick=None,
+                reason=f"{ctx.author} ({ctx.author.id}) - Reset nickname",
+            )
+            try:
+                await ModConfig.sendlogs(self.bot, "forcenick", ctx.author, member, "Reset nickname")  # type: ignore
+            except:
+                pass
+        else:
+            # Force nickname
+            await self.bot.db.execute(
+                """
+                INSERT INTO public.forcenick (guild_id, user_id, nickname)
+                VALUES ($1, $2, $3)
+                ON CONFLICT (guild_id, user_id)
+                DO UPDATE SET nickname = $3
+                """,
+                ctx.guild.id,
+                member.id,
+                nickname,
+            )
+
+            await member.edit(
+                nick=nickname,
+                reason=f"{ctx.author} ({ctx.author.id})",
+            )
+            try:
+                await ModConfig.sendlogs(self.bot, "forcenick", ctx.author, member, "No reason provided")  # type: ignore
+            except:
+                pass
         return await ctx.check()
 
     @hybrid_command(
