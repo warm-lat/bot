@@ -2814,7 +2814,7 @@ class Moderation(Cog):
             pass
         return await ctx.check()
 
-@command(
+    @command(
         example="@x bot owner",
         name="fn",
     )
