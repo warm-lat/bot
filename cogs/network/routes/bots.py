@@ -191,5 +191,5 @@ async def avatar(request: Request):
     if bot is None:
         raise HTTPException(status_code=503, detail="Bot is not ready")
 
-    avatar_url = bot.user.avatar.read() if bot.user.avatar else None
+    avatar_url = bot.user.avatar
     return StreamingResponse(content=avatar_url, media_type="image/png", status_code=200)
