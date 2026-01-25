@@ -1,15 +1,15 @@
 import logging
 from fastapi import APIRouter, Request, HTTPException
 from fastapi.responses import StreamingResponse, JSONResponse
-from typing import List, Dict
+from typing import List
 from discord.ext.commands import FlagConverter, Group
-from ..models.bots import BotStatus
+from ..models.bots import Status, CommandsResponse, Commands, CommandParameter, CommandFlags, CommandFlag
 
 log = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/bot")
 
-@router.get("/status", response_model=BotStatus)
+@router.get("/status", response_model=Status)
 async def status(request: Request):
     bot = request.app.state.bot
     if bot is None:
@@ -49,7 +49,7 @@ async def status(request: Request):
     return JSONResponse(content=response_data)
 
 
-@router.get("/commands")
+@router.get("/commands", response_model=CommandsResponse)
 async def commands(request: Request):
     bot = request.app.state.bot
     if bot is None:
@@ -59,18 +59,17 @@ async def commands(request: Request):
         try:
             if isinstance(param.annotation, type) and issubclass(param.annotation, FlagConverter):
                 flags = param.annotation.get_flags()
-                return {
-                    "required": [
-                        {"name": name, "description": flag.description}
-                        for name, flag in flags.items()
-                        if not flag.default
-                    ],
-                    "optional": [
-                        {"name": name, "description": flag.description}
-                        for name, flag in flags.items()
-                        if flag.default
-                    ],
-                }
+                required_flags = [
+                    CommandFlag(name=name, description=flag.description)
+                    for name, flag in flags.items()
+                    if not flag.default
+                ]
+                optional_flags = [
+                    CommandFlag(name=name, description=flag.description)
+                    for name, flag in flags.items()
+                    if flag.default
+                ]
+                return CommandFlags(required=required_flags, optional=optional_flags)
         except Exception:
             pass
         return None
@@ -126,20 +125,20 @@ async def commands(request: Request):
         params = []
         for name, param in getattr(command, "clean_params", {}).items():
             default = None if param.default == param.empty else str(param.default)
-            params.append({
-                "name": name,
-                "type": clean_type(param.annotation),
-                "default": default,
-                "flags": get_flags(param),
-                "optional": param.default != param.empty
-            })
+            params.append(CommandParameter(
+                name=name,
+                type=clean_type(param.annotation),
+                default=default,
+                flags=get_flags(param),
+                optional=param.default != param.empty
+            ))
         return params
 
     IGNORED_CATEGORIES = {
         "Jishaku", "Network", "API", "Owner", "Status", "Listeners", "Hog"
     }
 
-    commands_info: List[Dict] = []
+    commands_info: List[Commands] = []
     categories = sorted(list({cog.qualified_name for cog in bot.cogs.values() if cog.qualified_name not in IGNORED_CATEGORIES and "cogs" in getattr(cog, "__module__", "")}))
 
     for cog in bot.cogs.values():
@@ -148,42 +147,42 @@ async def commands(request: Request):
 
         for command in cog.get_commands():
             if isinstance(command, Group):
-                commands_info.append({
-                    "name": command.qualified_name,
-                    "description": command.description or getattr(command, "help", None) or "No description",
-                    "aliases": getattr(command, "aliases", []),
-                    "parameters": format_parameters(command),
-                    "category": command.cog.qualified_name if command.cog else "No Category",
-                    "permissions": get_permissions(command),
-                    "donator": get_donator(command),
-                })
+                commands_info.append(Commands(
+                    name=command.qualified_name,
+                    description=command.description or getattr(command, "help", None) or "No description",
+                    aliases=getattr(command, "aliases", []),
+                    parameters=format_parameters(command),
+                    category=command.cog.qualified_name if command.cog else "No Category",
+                    permissions=get_permissions(command),
+                    donator=get_donator(command),
+                ))
 
                 seen = {command.qualified_name}
                 for sub in command.walk_commands():
                     if sub.qualified_name in seen:
                         continue
                     seen.add(sub.qualified_name)
-                    commands_info.append({
-                        "name": sub.qualified_name,
-                        "description": sub.description or getattr(sub, "help", None) or "No description",
-                        "aliases": getattr(sub, "aliases", []),
-                        "parameters": format_parameters(sub),
-                        "category": sub.cog.qualified_name if sub.cog else "No Category",
-                        "permissions": get_permissions(sub),
-                        "donator": get_donator(sub),
-                    })
+                    commands_info.append(Commands(
+                        name=sub.qualified_name,
+                        description=sub.description or getattr(sub, "help", None) or "No description",
+                        aliases=getattr(sub, "aliases", []),
+                        parameters=format_parameters(sub),
+                        category=sub.cog.qualified_name if sub.cog else "No Category",
+                        permissions=get_permissions(sub),
+                        donator=get_donator(sub),
+                    ))
             else:
-                commands_info.append({
-                    "name": command.qualified_name,
-                    "description": command.description or getattr(command, "help", None) or "No description",
-                    "aliases": getattr(command, "aliases", []),
-                    "parameters": format_parameters(command),
-                    "category": command.cog.qualified_name if command.cog else "No Category",
-                    "permissions": get_permissions(command),
-                    "donator": get_donator(command),
-                })
+                commands_info.append(Commands(
+                    name=command.qualified_name,
+                    description=command.description or getattr(command, "help", None) or "No description",
+                    aliases=getattr(command, "aliases", []),
+                    parameters=format_parameters(command),
+                    category=command.cog.qualified_name if command.cog else "No Category",
+                    permissions=get_permissions(command),
+                    donator=get_donator(command),
+                ))
 
-    return JSONResponse(content={"categories": categories, "commands": commands_info})
+    return CommandsResponse(categories=categories, commands=commands_info)
 
 @router.get("/avatar")
 async def avatar(request: Request):
