@@ -585,9 +585,7 @@ class Evict(commands.AutoShardedBot):
                     port=config.LAVALINK.PORT,
                     password=config.LAVALINK.PASSWORD,
                     secure=True,
-                    identifier=f"Listen [USA] {time.time()}",
-                    spotify_client_id=config.LAVALINK.SPOTIFY_CLIENT_ID,
-                    spotify_client_secret=config.LAVALINK.SPOTIFY_CLIENT_SECRET,
+                    identifier=f"Listen [GER] {time.time()}",
                 )
                 log.info(f"Successfully connected to node {identifier}")
             except Exception as e:
