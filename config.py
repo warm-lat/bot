@@ -172,7 +172,7 @@ class CLIENT:
 
 class LAVALINK:
     NODE_COUNT: int = 2
-    HOST: str = "onlyfan"
+    HOST: str = "we.honest.rocks"
     PORT: int = 443
     PASSWORD: str = "youshallnotpass"
     
