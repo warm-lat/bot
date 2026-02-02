@@ -1,6 +1,6 @@
-git+https://github.com/cloudwithax/pomice
+git+https://github.com/ParrotXray/lava-lyra
 git+https://github.com/Rapptz/discord.py
-git+https://github.com/ro-py/ro.py.git
+git+https://github.com/ro-py/ro.py
 git+https://github.com/wonbot/uwuipy
 aiobotocore
 aiofile
@@ -36,7 +36,6 @@ moviepy
 msgpack
 nudenet
 orjson
-oxapay-python
 parsedatetime
 playwright
 plotly
