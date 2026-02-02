@@ -18,8 +18,8 @@ from discord.ext.commands import (
 from discord.utils import as_chunks
 from humanfriendly import format_timespan
 from humanize import ordinal
-from pomice import LoopMode, Playlist, SearchType, Track, Player
-from pomice.enums import URLRegex as regex
+from lava_lyra import LoopMode, Playlist, SearchType, Track, Player
+from lava_lyra.enums import URLRegex as regex
 
 from cogs.audio import Client, Percentage, Position
 from main import Evict

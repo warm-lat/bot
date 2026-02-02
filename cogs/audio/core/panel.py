@@ -7,7 +7,7 @@ from discord.ui.item import Item
 import validators
 from discord import ButtonStyle, Color, Embed, HTTPException, Interaction
 from discord.ui import Button, Modal, TextInput, View, button
-from pomice import LoopMode, Playlist, QueueEmpty
+from lava_lyra import LoopMode, Playlist, QueueEmpty
 
 from config import EMOJIS
 from tools.formatter import plural, shorten

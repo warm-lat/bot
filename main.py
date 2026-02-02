@@ -20,7 +20,7 @@ from contextlib import suppress
 from aiobotocore.session import get_session
 from datetime import datetime, timedelta
 from pathlib import Path
-from pomice import NodePool
+from lava_lyra import NodePool
 from collections.abc import Mapping
 from typing import Any, Collection, Dict, Optional, cast
 from humanfriendly import format_timespan
@@ -48,13 +48,12 @@ from tools.conversion.embed1 import EmbedScript
 from tools.formatter import human_join, plural
 
 from processors.listeners import process_guild_data, process_jail_permissions, process_add_role
-from processors.backup import process_bunny_upload
 from processors.image_generation import process_image_effect
 
 from discord.ext import commands
 from discord.message import Message
 from discord.utils import utcnow
-from discord.http import Route
+from discord.http import Route, HTTPClient
 
 from discord import (
     AllowedMentions,
@@ -190,7 +189,7 @@ async def getprefix(bot, message):
 
     return guildprefix, selfprefix # type: ignore
 
-class MonitoredHTTPClient(discord.http.HTTPClient):
+class MonitoredHTTPClient(HTTPClient):
     """
     Custom HTTP client that monitors API calls.
     """
@@ -255,7 +254,7 @@ class Evict(commands.AutoShardedBot):
     redis: Redis
     user: ClientUser
     reddit: RedditClient
-    version: str = "3.2.0-beta"
+    version: str = "3.5.0-final"
     user_agent: str = f"Warm (DISCORD BOT/{version})"
     browser: BrowserHandler
     voice_join_times = {}
@@ -580,7 +579,7 @@ class Evict(commands.AutoShardedBot):
             identifier = "warm"
             try:
                 await NodePool().create_node(
-                    bot=self,
+                    bot=self, # type: ignore
                     host=config.LAVALINK.HOST,
                     port=config.LAVALINK.PORT,
                     password=config.LAVALINK.PASSWORD,
@@ -1274,7 +1273,7 @@ class Evict(commands.AutoShardedBot):
                 Key=file_name,
                 Body=json.dumps(data, indent=4).encode("utf-8"),
                 ContentType="application/json",
-            )
+            )"
     async def download_from_r2(self, file_name: str):
         """Downloads a file from Cloudflare R2 Storage."""
         session = get_session()

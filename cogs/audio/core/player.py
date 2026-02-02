@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING, Optional
 from colorama import Fore
 
 from discord import Color, Embed, HTTPException, Message
-from pomice import LoopMode, Player, QueueEmpty, Track
+from lava_lyra import LoopMode, Player, QueueEmpty, Track
 from .queue import Queue
 from tools.formatter import shorten
 

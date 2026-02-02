@@ -1,8 +1,8 @@
 from __future__ import annotations
 
 from typing import Optional
-from pomice import Queue as DefaultQueue
-from pomice.objects import Track
+from lava_lyra import Queue as DefaultQueue
+from lava_lyra.objects import Track
 
 
 class Queue(DefaultQueue):
