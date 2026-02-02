@@ -1273,7 +1273,7 @@ class Evict(commands.AutoShardedBot):
                 Key=file_name,
                 Body=json.dumps(data, indent=4).encode("utf-8"),
                 ContentType="application/json",
-            )"
+            )
     async def download_from_r2(self, file_name: str):
         """Downloads a file from Cloudflare R2 Storage."""
         session = get_session()
