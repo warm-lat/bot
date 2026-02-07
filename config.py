@@ -1,6 +1,3 @@
-from sre_parse import SPECIAL_CHARS
-from qtpy import API
-
 
 class COLORS:
     """
