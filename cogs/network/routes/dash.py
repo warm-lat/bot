@@ -1,4 +1,4 @@
-import logging, asyncio, os, hashlib
+import logging, asyncio, hashlib, config
 from datetime import datetime, timezone
 from fastapi import APIRouter, Request, Depends, Query, Header, HTTPException, Body
 from fastapi.responses import JSONResponse
@@ -239,7 +239,7 @@ async def login(request: Request, data: LoginPayload):
     try:
         timestamp = int(datetime.now(timezone.utc).timestamp())
         token_data = f"{data.user_id}-{timestamp}"
-        secret = os.getenv('TOKEN_SECRET')
+        secret = config.AUTHORIZATION.INTERNAL.SECRET
         token = hashlib.sha256(f"{token_data}-{secret}".encode()).hexdigest()
         
         await bot.db.execute(
@@ -258,7 +258,7 @@ async def login(request: Request, data: LoginPayload):
             data.access_token
         )
         log.info(f"Successfully generated new access token for user_id: {data.user_id}")
-        return LoginResponse(success=True, token=token)
+        return LoginResponse(success=True, token=token, expiresIn=1209600)
     
     except Exception as e:
         log.error(f"Error in login endpoint for user_id {data.user_id}: {e}", exc_info=True)

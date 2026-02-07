@@ -31,7 +31,6 @@ class Network(Cog):
         )
         self.app.state.limiter = self.limiter
         self.app.state.bot = bot
-        self.app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
         
         self.app.add_middleware(
             CORSMiddleware,

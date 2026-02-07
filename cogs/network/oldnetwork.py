@@ -1,14 +1,9 @@
-import os, json, logging, config, asyncio, time, discord, aiohttp, stripe, hashlib, functools, traceback, re, uuid
+import os, json, logging, config, asyncio, time, discord, aiohttp, stripe, hashlib, functools, traceback, re, uuid, config
 from discord import Embed
-from random import choice
-from typing import Any, Dict, List, Optional
-from urllib.parse import urlencode
-import dns.resolver
+from typing import Optional
 import secrets
 import random
 import string
-from Crypto.Cipher import AES
-from Crypto.Util.Padding import unpad
 
 from main import Evict
 from aiohttp import web, WSMsgType
@@ -16,10 +11,9 @@ from aiohttp.abc import AbstractAccessLogger
 from aiohttp_cors import setup as cors_setup, ResourceOptions
 from aiohttp.web import BaseRequest, Request, Response, StreamResponse
 
-from discord import ActivityType, Spotify, Streaming, Status
-from itertools import groupby
+from discord import Status
 
-from discord.ext.commands import Cog, command, group
+from discord.ext.commands import Cog
 
 from functools import wraps
 from typing import Callable, Optional
@@ -30,9 +24,6 @@ from pydantic import BaseModel
 from collections import defaultdict
 from discord import Status
 from discord.ext.commands import Group, FlagConverter
-
-import config
-from posthog import Posthog
 
 CONFIG = {
     "github_allowed_repos": [
@@ -2116,7 +2107,7 @@ class Network(Cog):
 
             timestamp = int(datetime.now(timezone.utc).timestamp())
             token_data = f"{user_id}-{timestamp}"
-            token = hashlib.sha256(f"{token_data}-{os.getenv('TOKEN_SECRET') or 'verymuchasecretforwarmlatbotfr'}".encode()
+            token = hashlib.sha256(f"{token_data}-{config.AUTHORIZATION.INTERNAL.SECRET}".encode()
             ).hexdigest()
 
             await self.bot.db.execute(

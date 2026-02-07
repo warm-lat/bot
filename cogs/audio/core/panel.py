@@ -18,7 +18,7 @@ if TYPE_CHECKING:
     from .player import Client
 
 
-class Queue(Modal, title="Queue"):
+class Queue(Modal, title="Add to Queue"):
     ctx: Context
     client: Client
 

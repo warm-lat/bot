@@ -1,3 +1,7 @@
+from sre_parse import SPECIAL_CHARS
+from qtpy import API
+
+
 class COLORS:
     """
     Changes the colors on context outputs.
@@ -135,6 +139,11 @@ class AUTHORIZATION:
     class TWITCH:
         CLIENT_ID: str = "jzkbprff40iqj646a697cyrvl0zt2m3"
         CLIENT_SECRET: str = "zj8b3n1t9m6b4g4f6vd5p3l4w1x9y0"
+    class INTERNAL:
+        API_KEY: str = "ShHdce3nXXaYmQ5PzBNKKsbtRoamqYc"
+        CALLBACK: str = "ekNbnGizmHtne3kapiod9GacoKABt3"
+        SPECIAL: str = "tgRJjgKjai6Eke4QdGc3xtjgXkbicX9"
+        SECRET: str = "verymuchasecretforwarmlatbotfr"
 
 class LOGGER:
     GUILD_JOIN_LOGGER: int = 1421685971308773447
