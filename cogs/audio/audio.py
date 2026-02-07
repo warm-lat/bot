@@ -1,4 +1,13 @@
-import asyncio, discord, io, re, psutil, hashlib, time, config, aiohttp, validators
+import asyncio
+import discord
+import io
+import re
+import psutil
+import hashlib
+import time
+import config
+import aiohttp
+import validators
 from contextlib import suppress
 from logging import getLogger
 from typing import Annotated, List, Literal, Optional, cast
@@ -55,19 +64,19 @@ SOURCE_PATTERNS = (
 #     posthog_selfhost.flush_interval = 0.5
 #     posthog_selfhost.debug = False
 
+
 class Context(DefaultContext):
     voice: Client
-
 
 class Audio(Cog):
     def __init__(self, bot: Evict):
         self.bot = bot
-        self.description="Audio commands for playing music in voice channels."
+        self.description = "Audio commands for playing music in voice channels."
         self.track_info = {}
-        self._last_track_time = {} 
-        self._track_spam_count = {} 
+        self._last_track_time = {}
+        self._track_spam_count = {}
         self.TRACK_COOLDOWN = 1.0
-        self.SPAM_THRESHOLD = 5 
+        self.SPAM_THRESHOLD = 5
         self.SPAM_WINDOW = 5.0
 
     async def cog_before_invoke(self, ctx: Context) -> None:
@@ -75,10 +84,10 @@ class Audio(Cog):
 
     async def get_player(self, ctx: Context) -> Client:
         log.info(f"{Fore.CYAN}Getting player for {ctx.author} in {ctx.guild}")
-        
+
         client = ctx.voice_client
         log.info(f"{Fore.CYAN}Current voice client: {client}")
-        
+
         author = cast(Member, ctx.author)
         log.info(f"{Fore.CYAN}Author voice state: {author.voice}")
 
@@ -98,10 +107,11 @@ class Audio(Cog):
                     "I don't have permission to connect to your voice channel!"
                 )
 
-            log.info(f"{Fore.CYAN}Connecting to voice channel: {author.voice.channel}")
+            log.info(
+                f"{Fore.CYAN}Connecting to voice channel: {author.voice.channel}")
             client = await author.voice.channel.connect(cls=Client, self_deaf=True)
             log.info(f"{Fore.CYAN}Connected, client: {client}")
-            
+
             volume = (
                 cast(
                     Optional[int],
@@ -129,32 +139,35 @@ class Audio(Cog):
         """
         current_time = time.time()
         track_key = f"{guild_id}:{track_title}"
-        
+
         if track_key in self._last_track_time:
             time_diff = current_time - self._last_track_time[track_key]
-            
+
             if time_diff < self.TRACK_COOLDOWN:
                 if track_key not in self._track_spam_count:
-                    self._track_spam_count[track_key] = {"count": 1, "first_time": current_time}
+                    self._track_spam_count[track_key] = {
+                        "count": 1, "first_time": current_time}
                 else:
                     spam_data = self._track_spam_count[track_key]
                     if current_time - spam_data["first_time"] <= self.SPAM_WINDOW:
                         spam_data["count"] += 1
                         if spam_data["count"] >= self.SPAM_THRESHOLD:
-                            log.warning(f"{Fore.RED}Track spam detected for {track_title} in guild {guild_id}")
+                            log.warning(
+                                f"{Fore.RED}Track spam detected for {track_title} in guild {guild_id}")
                             self._track_spam_count.pop(track_key, None)
                             self._last_track_time.pop(track_key, None)
                             return False
                     else:
-                        self._track_spam_count[track_key] = {"count": 1, "first_time": current_time}
-                
-                return False  
-        
+                        self._track_spam_count[track_key] = {
+                            "count": 1, "first_time": current_time}
+
+                return False
+
         self._last_track_time[track_key] = current_time
         return True
 
     @Cog.listener()
-    async def on_pomice_track_start(self, client: Client, track: Track):
+    async def on_lyra_track_start(self, client: Client, track: Track):
         """Track start event handler."""
         if not track:
             return
@@ -162,12 +175,12 @@ class Audio(Cog):
         try:
             if not await self._handle_track_start(client.guild.id, track.title):
                 return
-                
+
             log.info(f"{Fore.CYAN}Track started: {track.title}")
-            
+
             current_time = time.time()
             self._last_track_time = {
-                k: v for k, v in self._last_track_time.items() 
+                k: v for k, v in self._last_track_time.items()
                 if current_time - v <= self.TRACK_COOLDOWN * 2
             }
             self._track_spam_count = {
@@ -192,65 +205,77 @@ class Audio(Cog):
             if track.requester:
                 try:
                     track_info = self.track_info.get(track.uri, {})
-                    
+
                     await self.bot.db.execute("""
                         INSERT INTO audio.recently_played 
                         (guild_id, user_id, track_title, track_uri, track_author, artwork_url, playlist_name, playlist_url)
                         VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
                     """,
-                        client.guild.id,
-                        track.requester.id, 
-                        track.title,
-                        track.uri,
-                        track.author,
-                        getattr(track, 'artwork_url', None),
-                        getattr(track, 'playlist_name', track_info.get('playlist_name')),
-                        getattr(track, 'playlist_url', track_info.get('playlist_url'))
-                    )
-                    
+                                              client.guild.id,
+                                              track.requester.id,
+                                              track.title,
+                                              track.uri,
+                                              track.author,
+                                              getattr(
+                                                  track, 'artwork_url', None),
+                                              getattr(track, 'playlist_name',
+                                                      track_info.get('playlist_name')),
+                                              getattr(track, 'playlist_url',
+                                                      track_info.get('playlist_url'))
+                                              )
+
                     self.track_info.pop(track.uri, None)
-                    
+
                     existing_task = getattr(client, '_auto_queue_task', None)
                     if existing_task:
-                        log.info(f"{Fore.CYAN}Cancelling existing autoplay task")
+                        log.info(
+                            f"{Fore.CYAN}Cancelling existing autoplay task")
                         existing_task.cancel()
-                        client._auto_queue_task = None
-                    
-                    log.info(f"{Fore.CYAN}Checking autoplay conditions - Queue empty: {not client.queue}")
-                    
+                        client._auto_queue_task = None  # type: ignore
+
+                    log.info(
+                        f"{Fore.CYAN}Checking autoplay conditions - Queue empty: {not client.queue}")
+
                     if not client.queue:
                         remaining_duration = track.length - client.position
-                        log.info(f"{Fore.CYAN}Track length: {track.length}, Position: {client.position}, Remaining: {remaining_duration}")
-                        
+                        log.info(
+                            f"{Fore.CYAN}Track length: {track.length}, Position: {client.position}, Remaining: {remaining_duration}")
+
                         if remaining_duration > 15000:
-                            log.info(f"{Fore.CYAN}Scheduling autoplay task to run in {(remaining_duration - 15000)/1000} seconds")
+                            log.info(
+                                f"{Fore.CYAN}Scheduling autoplay task to run in {(remaining_duration - 15000)/1000} seconds")
                             try:
-                                client._auto_queue_task = asyncio.create_task(
-                                    self.schedule_autoplay(client, track, remaining_duration - 15000)
+                                client._auto_queue_task = asyncio.create_task(  # type: ignore
+                                    self.schedule_autoplay(
+                                        client, track, int(remaining_duration - 15000))
                                 )
-                                log.info(f"{Fore.GREEN}Successfully created autoplay task")
+                                log.info(
+                                    f"{Fore.GREEN}Successfully created autoplay task")
                             except Exception as e:
-                                log.error(f"{Fore.RED}Failed to create autoplay task: {e}", exc_info=True)
+                                log.error(
+                                    f"{Fore.RED}Failed to create autoplay task: {e}", exc_info=True)
                         else:
-                            log.info(f"{Fore.YELLOW}Not enough remaining duration for autoplay")
-                    
+                            log.info(
+                                f"{Fore.YELLOW}Not enough remaining duration for autoplay")
+
                 except Exception as e:
                     log.error(f"{Fore.RED}Failed to save recently played: {e}")
 
-            if track.uri not in self.track_info:  
+            if track.uri not in self.track_info:
                 clean_title, clean_artist = await self.clean_title_for_search(track.title, track.author)
                 artwork_url = ""
-                
+
                 async with aiohttp.ClientSession() as session:
                     search_query = f"{clean_title} {clean_artist}"
                     deezer_search = f"https://api.deezer.com/search?{urlencode({'q': search_query})}"
-                    
+
                     try:
                         async with session.get(deezer_search) as resp:
                             if resp.status == 200:
                                 data = await resp.json()
                                 if data.get('data') and len(data['data']) > 0:
-                                    artwork_url = data['data'][0].get('album', {}).get('cover_xl', '')
+                                    artwork_url = data['data'][0].get(
+                                        'album', {}).get('cover_xl', '')
                     except Exception:
                         pass
 
@@ -266,17 +291,18 @@ class Audio(Cog):
                     parts = title.split(" - ", 1)
                     if len(parts) == 2:
                         artist, title = parts
-                
+
                 elif "," in title:
-                    parts = title.split(",", 1)[0] 
+                    parts = title.split(",", 1)[0]
                     if " - " in parts:
                         artist, title = parts.split(" - ", 1)
 
                 artist = artist.strip()
                 title = title.strip()
-                
-                log.info(f"{Fore.LIGHTBLUE_EX}Initial track data: Artist='{artist}', Title='{title}'")
-                
+
+                log.info(
+                    f"{Fore.LIGHTBLUE_EX}Initial track data: Artist='{artist}', Title='{title}'")
+
                 async with AsyncClient(base_url=BASE_URL) as session:
                     search_params = {
                         "method": "track.search",
@@ -285,23 +311,25 @@ class Audio(Cog):
                         "api_key": config.AUTHORIZATION.LASTFM.KEY,
                         "format": "json"
                     }
-                        
+
             except Exception as e:
-                log.error(f"{Fore.RED}Failed to process track with Last.fm: {e}", exc_info=True)
+                log.error(
+                    f"{Fore.RED}Failed to process track with Last.fm: {e}", exc_info=True)
 
         except Exception as e:
-            log.error(f"{Fore.RED}Error in track start event: {e}", exc_info=True)
+            log.error(
+                f"{Fore.RED}Error in track start event: {e}", exc_info=True)
 
     @Cog.listener()
-    async def on_pomice_track_end(self, client: Client, track: Track, _):
+    async def on_lyra_track_end(self, client: Client, track: Track, _):
         await client.do_next()
 
     @Cog.listener()
-    async def on_pomice_track_stuck(self, client: Client, track: Track, _):
+    async def on_lyra_track_stuck(self, client: Client, track: Track, _):
         await client.do_next()
 
     @Cog.listener()
-    async def on_pomice_track_exception(self, client: Client, track: Track, _):
+    async def on_lyra_track_exception(self, client: Client, track: Track, _):
         await client.do_next()
 
     @Cog.listener()
@@ -322,25 +350,29 @@ class Audio(Cog):
         humans = sum(1 for m in channel.members if not m.bot)
 
         if humans == 0:
-            log.info(f"{Fore.YELLOW}No users left in voice channel, starting leave timer")
-            
+            log.info(
+                f"{Fore.YELLOW}No users left in voice channel, starting leave timer")
+
             if hasattr(voice_client, '_leave_timer'):
-                voice_client._leave_timer.cancel()
-            
-            voice_client._leave_timer = asyncio.create_task(self._leave_timeout(voice_client))
+                voice_client._leave_timer.cancel()  # type: ignore
+
+            object.__setattr__(voice_client, '_leave_timer', asyncio.create_task(
+                self._leave_timeout(voice_client)))
 
         else:
             if hasattr(voice_client, '_leave_timer'):
-                log.info(f"{Fore.GREEN}Users present in voice channel, cancelling leave timer")
-                voice_client._leave_timer.cancel()
-                voice_client._leave_timer = None
+                log.info(
+                    f"{Fore.GREEN}Users present in voice channel, cancelling leave timer")
+                voice_client._leave_timer.cancel()  # type: ignore
+                voice_client._leave_timer = None  # type: ignore
 
     async def _leave_timeout(self, voice_client: Player):
         """Handle the leave timeout"""
         try:
-            await asyncio.sleep(120)  
+            await asyncio.sleep(120)
             if voice_client and voice_client.is_connected:
-                log.info(f"{Fore.YELLOW}Leave timeout reached, disconnecting from voice")
+                log.info(
+                    f"{Fore.YELLOW}Leave timeout reached, disconnecting from voice")
                 await voice_client.destroy()
         except asyncio.CancelledError:
             pass
@@ -460,38 +492,39 @@ class Audio(Cog):
         return await paginator.start()
 
     async def clean_title_for_search(self, title: str, artist: str) -> tuple[str, str]:
-            """Clean up title and artist for better search results"""
-            
-            patterns = [
-                r'\[.*?\]',          
-                r'\(from .*?\)',      
-                r'\(Official.*?\)',  
-                r'\(feat\..*?\)',    
-                r'\(ft\..*?\)',      
-                r'\(Explicit\)',     
-                r'\(Official Video\)', 
-                r'\(Audio\)',         
-                r'\(Lyrics\)',   
-                r'\(Official Visualizer\)',
-                r'\(Official Music Video\)',
-                r'\(Official Audio\)',
-                r'\(Visualizer\)',
-            ]
-            
-            clean_title = title
-            for pattern in patterns:
-                clean_title = re.sub(pattern, '', clean_title, flags=re.IGNORECASE)
-            
-            if " - " in clean_title:
-                parts = clean_title.split(" - ", 1)
-                if len(parts) == 2:
-                    artist, clean_title = parts
-            
-            clean_title = clean_title.strip()
-            artist = artist.strip()
-            
-            log.info(f"{Fore.CYAN}Cleaned search query: '{clean_title}' by '{artist}'")
-            return clean_title, artist
+        """Clean up title and artist for better search results"""
+
+        patterns = [
+            r'\[.*?\]',
+            r'\(from .*?\)',
+            r'\(Official.*?\)',
+            r'\(feat\..*?\)',
+            r'\(ft\..*?\)',
+            r'\(Explicit\)',
+            r'\(Official Video\)',
+            r'\(Audio\)',
+            r'\(Lyrics\)',
+            r'\(Official Visualizer\)',
+            r'\(Official Music Video\)',
+            r'\(Official Audio\)',
+            r'\(Visualizer\)',
+        ]
+
+        clean_title = title
+        for pattern in patterns:
+            clean_title = re.sub(pattern, '', clean_title, flags=re.IGNORECASE)
+
+        if " - " in clean_title:
+            parts = clean_title.split(" - ", 1)
+            if len(parts) == 2:
+                artist, clean_title = parts
+
+        clean_title = clean_title.strip()
+        artist = artist.strip()
+
+        log.info(
+            f"{Fore.CYAN}Cleaned search query: '{clean_title}' by '{artist}'")
+        return clean_title, artist
 
     @queue.group(
         name="nowplaying",
@@ -508,10 +541,10 @@ class Audio(Cog):
         await ctx.typing()
 
         track = ctx.voice.current
-        
+
         position = ctx.voice.position
         length = track.length
-        
+
         formatted_position = duration(position)
         formatted_length = duration(length)
         percentage = int((position / length) * 100) if length > 0 else 0
@@ -521,24 +554,28 @@ class Audio(Cog):
         async with aiohttp.ClientSession() as session:
             search_query = f"{clean_title} {clean_artist}"
             deezer_search = f"https://api.deezer.com/search?{urlencode({'q': search_query})}"
-            
+
             log.info(f"{Fore.CYAN}Searching Deezer with URL: {deezer_search}")
             artwork_url = ""
-            
+
             try:
                 async with session.get(deezer_search) as resp:
                     if resp.status == 200:
                         data = await resp.json()
                         log.info(f"{Fore.CYAN}Deezer response: {data}")
                         if data.get('data') and len(data['data']) > 0:
-                            artwork_url = data['data'][0].get('album', {}).get('cover_xl', '')
-                            log.info(f"{Fore.CYAN}Found artwork URL: {artwork_url}")
+                            artwork_url = data['data'][0].get(
+                                'album', {}).get('cover_xl', '')
+                            log.info(
+                                f"{Fore.CYAN}Found artwork URL: {artwork_url}")
             except Exception as e:
                 log.error(f"{Fore.RED}Failed to fetch Deezer artwork: {e}")
 
             if not artwork_url:
-                artwork_url = track.artwork_url if hasattr(track, 'artwork_url') else ""
-                log.info(f"{Fore.YELLOW}Using fallback artwork URL: {artwork_url}")
+                artwork_url = getattr(track, 'artwork_url', "") if hasattr(
+                    track, 'artwork_url') else ""
+                log.info(
+                    f"{Fore.YELLOW}Using fallback artwork URL: {artwork_url}")
 
             lyrics_params = {
                 "title": track.title,
@@ -546,31 +583,35 @@ class Audio(Cog):
                 "key": "rudescore",
                 "duration": str(track.length),
             }
-            
+
             lyrics_url = f"https://listen.squareweb.app/lyrics?{urlencode(lyrics_params)}"
             log.info(f"{Fore.CYAN}Fetching lyrics with URL: {lyrics_url}")
-            
+
             async with session.get(lyrics_url) as response:
                 lyrics_data = await response.json()
 
             lyrics_lines = []
+            sorted_lyrics = []
             if lyrics_data and "results" in lyrics_data:
                 result = lyrics_data["results"][0]
                 if "lyrics" in result:
                     sorted_lyrics = sorted(
-                        result["lyrics"], 
-                        key=lambda x: float(x.get("milliseconds", 0)) if x.get("milliseconds") is not None else 0
+                        result["lyrics"],
+                        key=lambda x: float(x.get("milliseconds", 0)) if x.get(
+                            "milliseconds") is not None else 0
                     )
-                    lyrics_lines = [item["line"] for item in sorted_lyrics if item.get("line")]
+                    lyrics_lines = [item["line"]
+                                    for item in sorted_lyrics if item.get("line")]
                 elif "richSync" in result and result["richSync"]:
                     sorted_lyrics = sorted(
                         result["richSync"],
                         key=lambda x: x.get("startTime", 0)
                     )
-                    lyrics_lines = [item["text"] for item in sorted_lyrics if item.get("text")]
+                    lyrics_lines = [item["text"]
+                                    for item in sorted_lyrics if item.get("text")]
 
             log.info(f"{Fore.CYAN}ISRC: {getattr(track, 'isrc', '')}")
-            
+
             nowplaying_params = {
                 "title": track.title,
                 "artist": track.author,
@@ -581,7 +622,7 @@ class Audio(Cog):
                 "length": formatted_length,
                 "position": formatted_position,
                 "volume": str(ctx.voice.volume),
-                "isrc": getattr(track, 'isrc', ''),  
+                "isrc": getattr(track, 'isrc', ''),
             }
 
             if not lyrics_lines:
@@ -591,7 +632,8 @@ class Audio(Cog):
                 current_index = 0
                 for i, line in enumerate(lyrics_lines):
                     if i < len(lyrics_lines) - 1:
-                        next_ms = float(sorted_lyrics[i + 1].get("milliseconds", 0) if "milliseconds" in sorted_lyrics[i + 1] else sorted_lyrics[i + 1].get("startTime", 0))
+                        next_ms = float(sorted_lyrics[i + 1].get(
+                            "milliseconds", 0) if "milliseconds" in sorted_lyrics[i + 1] else sorted_lyrics[i + 1].get("startTime", 0))
                         if next_ms > current_position_ms:
                             current_index = i
                             break
@@ -601,7 +643,8 @@ class Audio(Cog):
                 nowplaying_params["lyrics"] = "§".join(selected_lyrics)
 
             nowplaying_url = f"https://images.listenbot.site/nowplaying?{urlencode(nowplaying_params)}"
-            log.info(f"{Fore.CYAN}Generating nowplaying image with URL: {nowplaying_url}")
+            log.info(
+                f"{Fore.CYAN}Generating nowplaying image with URL: {nowplaying_url}")
             async with session.get(nowplaying_url) as response:
                 if response.status == 200:
                     image_data = await response.read()
@@ -623,10 +666,10 @@ class Audio(Cog):
         await ctx.typing()
 
         track = ctx.voice.current
-        
+
         position = ctx.voice.position
         length = track.length
-        
+
         formatted_position = duration(position)
         formatted_length = duration(length)
         percentage = int((position / length) * 100) if length > 0 else 0
@@ -636,24 +679,28 @@ class Audio(Cog):
         async with aiohttp.ClientSession() as session:
             search_query = f"{clean_title} {clean_artist}"
             deezer_search = f"https://api.deezer.com/search?{urlencode({'q': search_query})}"
-            
+
             log.info(f"{Fore.CYAN}Searching Deezer with URL: {deezer_search}")
             artwork_url = ""
-            
+
             try:
                 async with session.get(deezer_search) as resp:
                     if resp.status == 200:
                         data = await resp.json()
                         log.info(f"{Fore.CYAN}Deezer response: {data}")
                         if data.get('data') and len(data['data']) > 0:
-                            artwork_url = data['data'][0].get('album', {}).get('cover_xl', '')
-                            log.info(f"{Fore.CYAN}Found artwork URL: {artwork_url}")
+                            artwork_url = data['data'][0].get(
+                                'album', {}).get('cover_xl', '')
+                            log.info(
+                                f"{Fore.CYAN}Found artwork URL: {artwork_url}")
             except Exception as e:
                 log.error(f"{Fore.RED}Failed to fetch Deezer artwork: {e}")
 
             if not artwork_url:
-                artwork_url = track.artwork_url if hasattr(track, 'artwork_url') else ""
-                log.info(f"{Fore.YELLOW}Using fallback artwork URL: {artwork_url}")
+                artwork_url = getattr(track, 'artwork_url', "") if hasattr(
+                    track, 'artwork_url') else ""
+                log.info(
+                    f"{Fore.YELLOW}Using fallback artwork URL: {artwork_url}")
 
             lyrics_params = {
                 "title": track.title,
@@ -661,31 +708,35 @@ class Audio(Cog):
                 "key": "rudescore",
                 "duration": str(track.length),
             }
-            
+
             lyrics_url = f"https://listen.squareweb.app/lyrics?{urlencode(lyrics_params)}"
             log.info(f"{Fore.CYAN}Fetching lyrics with URL: {lyrics_url}")
-            
+
             async with session.get(lyrics_url) as response:
                 lyrics_data = await response.json()
 
             lyrics_lines = []
+            sorted_lyrics = []
             if lyrics_data and "results" in lyrics_data:
                 result = lyrics_data["results"][0]
                 if "lyrics" in result:
                     sorted_lyrics = sorted(
-                        result["lyrics"], 
-                        key=lambda x: float(x.get("milliseconds", 0)) if x.get("milliseconds") is not None else 0
+                        result["lyrics"],
+                        key=lambda x: float(x.get("milliseconds", 0)) if x.get(
+                            "milliseconds") is not None else 0
                     )
-                    lyrics_lines = [item["line"] for item in sorted_lyrics if item.get("line")]
+                    lyrics_lines = [item["line"]
+                                    for item in sorted_lyrics if item.get("line")]
                 elif "richSync" in result and result["richSync"]:
                     sorted_lyrics = sorted(
                         result["richSync"],
                         key=lambda x: x.get("startTime", 0)
                     )
-                    lyrics_lines = [item["text"] for item in sorted_lyrics if item.get("text")]
+                    lyrics_lines = [item["text"]
+                                    for item in sorted_lyrics if item.get("text")]
 
             log.info(f"{Fore.CYAN}ISRC: {getattr(track, 'isrc', '')}")
-            
+
             nowplaying_params = {
                 "title": track.title,
                 "artist": track.author,
@@ -696,7 +747,7 @@ class Audio(Cog):
                 "length": formatted_length,
                 "position": formatted_position,
                 "volume": str(ctx.voice.volume),
-                "isrc": getattr(track, 'isrc', ''),  
+                "isrc": getattr(track, 'isrc', ''),
                 "vertical": 1
             }
 
@@ -707,7 +758,8 @@ class Audio(Cog):
                 current_index = 0
                 for i, line in enumerate(lyrics_lines):
                     if i < len(lyrics_lines) - 1:
-                        next_ms = float(sorted_lyrics[i + 1].get("milliseconds", 0) if "milliseconds" in sorted_lyrics[i + 1] else sorted_lyrics[i + 1].get("startTime", 0))
+                        next_ms = float(sorted_lyrics[i + 1].get(
+                            "milliseconds", 0) if "milliseconds" in sorted_lyrics[i + 1] else sorted_lyrics[i + 1].get("startTime", 0))
                         if next_ms > current_position_ms:
                             current_index = i
                             break
@@ -717,7 +769,8 @@ class Audio(Cog):
                 nowplaying_params["lyrics"] = "§".join(selected_lyrics)
 
             nowplaying_url = f"https://images.listenbot.site/nowplaying?{urlencode(nowplaying_params)}"
-            log.info(f"{Fore.CYAN}Generating nowplaying image with URL: {nowplaying_url}")
+            log.info(
+                f"{Fore.CYAN}Generating nowplaying image with URL: {nowplaying_url}")
             async with session.get(nowplaying_url) as response:
                 if response.status == 200:
                     image_data = await response.read()
@@ -820,7 +873,7 @@ class Audio(Cog):
             f"Moved [**{shorten(track.title)}**]({track.uri}) to `{ordinal(new_position)}` in the queue"
         )
 
-    @group(aliases=["p"], invoke_without_command=True, example="Never Gonna Give You Up")
+    @group(aliases=["p"], invoke_without_command=True, example="Never Gonna Give You Up")  # type: ignore
     async def play(
         self,
         ctx: Context,
@@ -830,7 +883,7 @@ class Audio(Cog):
         )
     ) -> Optional[Message]:
         """Play a track or playlist in the voice channel."""
-        
+
         if not query:
             if not ctx.message.attachments:
                 return await ctx.send_help(ctx.command)
@@ -840,48 +893,58 @@ class Audio(Cog):
 
         try:
             client = await self.get_player(ctx)
-            
+
             if not client:
                 return await ctx.warn("Failed to connect to voice channel")
-            
+
             if regex.SPOTIFY_URL.match(query):
                 log.info(f"{Fore.CYAN}Processing Spotify URL: {query}")
                 try:
-                    log.info(f"{Fore.CYAN}Attempting to get tracks from Spotify URL")
+                    log.info(
+                        f"{Fore.CYAN}Attempting to get tracks from Spotify URL")
                     spotify_tracks = await client.get_tracks(query)
-                    
+
                     if not spotify_tracks:
-                        log.error(f"{Fore.RED}No tracks returned from Spotify URL")
+                        log.error(
+                            f"{Fore.RED}No tracks returned from Spotify URL")
                         return await ctx.warn("Failed to get track info from Spotify!")
-                    
-                    log.info(f"{Fore.CYAN}Successfully got tracks from Spotify. Type: {type(spotify_tracks)}")
-                    
+
+                    log.info(
+                        f"{Fore.CYAN}Successfully got tracks from Spotify. Type: {type(spotify_tracks)}")
+
                     if isinstance(spotify_tracks, Playlist):
                         playlist_name = spotify_tracks.name
                         all_tracks = []
-                        
-                        log.info(f"{Fore.CYAN}Processing Spotify playlist: {playlist_name} with {len(spotify_tracks.tracks)} tracks")
-                        
+
+                        log.info(
+                            f"{Fore.CYAN}Processing Spotify playlist: {playlist_name} with {spotify_tracks.track_count} tracks")
+
                         for spotify_track in spotify_tracks.tracks:
                             search_query = f"ytmsearch:{spotify_track.author} - {spotify_track.title}"
-                            log.info(f"{Fore.CYAN}Searching SoundCloud for: {search_query}")
-                            
+                            log.info(
+                                f"{Fore.CYAN}Searching SoundCloud for: {search_query}")
+
                             results = await client.get_tracks(search_query)
                             if results:
-                                track = results[0]
+                                if isinstance(results, Playlist):
+                                    track = results.tracks[0]
+                                else:
+                                    track = results[0]
                                 track.requester = ctx.author
                                 all_tracks.append(track)
                                 self.track_info[track.uri] = {
                                     'playlist_name': playlist_name,
                                     'playlist_url': query
                                 }
-                                log.info(f"{Fore.GREEN}Found SoundCloud match: {track.title}")
+                                log.info(
+                                    f"{Fore.GREEN}Found SoundCloud match: {track.title}")
                             else:
-                                log.warning(f"{Fore.YELLOW}No SoundCloud match found for: {search_query}")
-                        
+                                log.warning(
+                                    f"{Fore.YELLOW}No SoundCloud match found for: {search_query}")
+
                         if not all_tracks:
                             return await ctx.warn("Couldn't find any matching tracks on SoundCloud!")
-                        
+
                         if not ctx.voice.is_playing:
                             await ctx.voice.play(all_tracks[0])
                             for track in all_tracks[1:]:
@@ -899,15 +962,19 @@ class Audio(Cog):
                     else:
                         spotify_track = spotify_tracks[0]
                         search_query = f"ytmsearch:{spotify_track.author} - {spotify_track.title}"
-                        log.info(f"{Fore.CYAN}Searching Youtube for single track: {search_query}")
-                        
+                        log.info(
+                            f"{Fore.CYAN}Searching Youtube for single track: {search_query}")
+
                         results = await client.get_tracks(search_query)
                         if not results:
                             return await ctx.warn("Couldn't find a matching track on SoundCloud!")
-                        
-                        track = results[0]
+
+                        if isinstance(results, Playlist):
+                            track = results.tracks[0]
+                        else:
+                            track = results[0]
                         track.requester = ctx.author
-                        
+
                         if not ctx.voice.is_playing:
                             await ctx.voice.play(track)
                             response = await ctx.approve(
@@ -918,35 +985,40 @@ class Audio(Cog):
                             response = await ctx.approve(
                                 f"Added [**{shorten(track.title)}**]({track.uri}) to the queue"
                             )
-                    
+
                     return response
-                    
+
                 except Exception as e:
-                    log.error(f"{Fore.RED}Error processing Spotify URL: {e}", exc_info=True)
+                    log.error(
+                        f"{Fore.RED}Error processing Spotify URL: {e}", exc_info=True)
                     return await ctx.warn(f"Failed to process Spotify URL: {str(e)}")
-            
+
             if not any(regex.match(query) for regex in SOURCE_PATTERNS):
                 log.info(f"{Fore.YELLOW}Searching for track: {query}")
                 try:
                     log.info(f"{Fore.CYAN}Trying Youtube Music search")
                     results = await client.get_tracks(f"ytmsearch:{query}")
-                    
+
                     if not results:
                         log.info(f"{Fore.CYAN}Trying Deezer search")
                         results = await client.get_tracks(f"dzsearch:{query}")
-                        
+
                     if not results:
                         log.info(f"{Fore.CYAN}Trying SoundCloud search")
                         results = await client.get_tracks(f"scsearch:{query}")
-                    
+
                     if not results:
                         return await ctx.warn("No results found!")
-                    
-                    track = results[0]
+
+                    if isinstance(results, Playlist):
+                        track = results.tracks[0]
+                    else:
+                        track = results[0]
                     track.requester = ctx.author
-                    
-                    log.info(f"{Fore.CYAN}Found track: {track.title} ({track.uri})")
-                    
+
+                    log.info(
+                        f"{Fore.CYAN}Found track: {track.title} ({track.uri})")
+
                     if not ctx.voice.is_playing:
                         await ctx.voice.play(track)
                         response = await ctx.approve(
@@ -971,22 +1043,22 @@ class Audio(Cog):
                 if isinstance(results, Playlist):
                     tracks = results.tracks
                     playlist_name = results.name
-                    
+
                     first_track = tracks[0]
                     first_track.requester = ctx.author
-                    
+
                     self.track_info[first_track.uri] = {
                         'playlist_name': playlist_name,
                         'playlist_url': query
                     }
-                    
+
                     for track in tracks[1:]:
                         track.requester = ctx.author
                         self.track_info[track.uri] = {
-                            'playlist_name': playlist_name, 
+                            'playlist_name': playlist_name,
                             'playlist_url': query
                         }
-                    
+
                     asyncio.create_task(self.process_playlist_data(
                         ctx.guild.id,
                         ctx.author.id,
@@ -994,12 +1066,12 @@ class Audio(Cog):
                         query,
                         tracks
                     ))
-                    
+
                     if not ctx.voice.is_playing:
-                        await ctx.voice.play(first_track)  
+                        await ctx.voice.play(first_track)
                         for track in tracks[1:]:
                             ctx.voice.queue.put(track)
-                        
+
                         response = await ctx.approve(
                             f"Now playing [{shorten(first_track.title)}]({first_track.uri})\n"
                             f"Added {plural(len(tracks)-1):track} from playlist **{playlist_name}** to the queue"
@@ -1011,14 +1083,17 @@ class Audio(Cog):
                             f"Added {plural(len(tracks)):track} from playlist **{playlist_name}** to the queue"
                         )
                 else:
-                    track = results[0]
+                    if isinstance(results, Playlist):
+                        track = results.tracks[0]
+                    else:
+                        track = results[0]
                     track.requester = ctx.author
                     self.track_info[track.uri] = {
                         'playlist_name': None,
                         'playlist_url': None
                     }
                     tracks = [track]
-                    
+
                     if not ctx.voice.is_playing:
                         await ctx.voice.play(tracks[0])
                         response = await ctx.approve(
@@ -1044,7 +1119,7 @@ class Audio(Cog):
                         description="Click the button below to show your currently playing track on Discord",
                         color=0x0d0d0d
                     )
-                    
+
                     view = discord.ui.View()
                     view.add_item(
                         discord.ui.Button(
@@ -1054,16 +1129,17 @@ class Audio(Cog):
                             emoji=config.EMOJIS.SOCIAL.WEBSITE
                         )
                     )
-                    
+
                     await ctx.send(
                         content=f"{invite.url}",
                         embed=embed,
                         view=view
                     )
                 except Exception as e:
-                    log.error(f"{Fore.RED}Failed to set activity: {e}", exc_info=True)
+                    log.error(
+                        f"{Fore.RED}Failed to set activity: {e}", exc_info=True)
                     await ctx.warn("Failed to connect to Discord's music activity")
-            
+
             return response
 
         except Exception as e:
@@ -1077,36 +1153,37 @@ class Audio(Cog):
         """
 
         response = await self.play(ctx, query=f"{query} bump")
-        
-        try:
-                    invite = await ctx.author.voice.channel.create_invite(
-                        target_type=discord.InviteTarget.embedded_application,
-                        target_application_id=1420609343283531776
-                    )
-                    embed = Embed(
-                        title="Discord Activity",
-                        description="Click the button below to show your currently playing track on Discord",
-                        color=0x0d0d0d
-                    )
 
-                    view = discord.ui.View()
-                    view.add_item(
-                        discord.ui.Button(
-                            label="Using Activities",
-                            url="https://docs.warm.lat/activity/setup",
-                            style=discord.ButtonStyle.link,
-                            emoji=config.EMOJIS.SOCIAL.WEBSITE
-                        )
-                    )
-                    
-                    await ctx.send(
-                        content=f"{invite.url}",
-                        embed=embed,
-                        view=view
-                    )
+        try:
+            invite = await ctx.author.voice.channel.create_invite(
+                target_type=discord.InviteTarget.embedded_application,
+                target_application_id=1420609343283531776
+            )
+            embed = Embed(
+                title="Discord Activity",
+                description="Click the button below to show your currently playing track on Discord",
+                color=0x0d0d0d
+            )
+
+            view = discord.ui.View()
+            view.add_item(
+                discord.ui.Button(
+                    label="Using Activities",
+                    url="https://docs.warm.lat/activity/setup",
+                    style=discord.ButtonStyle.link,
+                    emoji=config.EMOJIS.SOCIAL.WEBSITE
+                )
+            )
+
+            await ctx.send(
+                content=f"{invite.url}",
+                embed=embed,
+                view=view
+            )
         except Exception as e:
-            log.error(f"{Fore.RED}Failed to create activity invite: {e}", exc_info=True)
-        
+            log.error(
+                f"{Fore.RED}Failed to create activity invite: {e}", exc_info=True)
+
         return response
 
     @play.command(name="panel", aliases=["interface"])
@@ -1159,39 +1236,44 @@ class Audio(Cog):
 
         existing_task = getattr(ctx.voice, '_auto_queue_task', None)
         if existing_task:
-            log.info(f"{Fore.CYAN}Cancelling existing autoplay task due to seek")
+            log.info(
+                f"{Fore.CYAN}Cancelling existing autoplay task due to seek")
             existing_task.cancel()
-            ctx.voice._auto_queue_task = None
+            ctx.voice._auto_queue_task = None  # type: ignore
 
         await ctx.voice.seek(position)
-        
+
         if not ctx.voice.queue:
             remaining_duration = ctx.voice.current.length - position
-            log.info(f"{Fore.CYAN}After seek - Remaining duration: {remaining_duration}")
-            
+            log.info(
+                f"{Fore.CYAN}After seek - Remaining duration: {remaining_duration}")
+
             if remaining_duration > 15000:
                 log.info(f"{Fore.CYAN}Scheduling new autoplay task after seek")
                 try:
-                    ctx.voice._auto_queue_task = asyncio.create_task(
-                        self.schedule_autoplay(ctx.voice, ctx.voice.current, remaining_duration - 15000)
+                    ctx.voice._auto_queue_task = asyncio.create_task(  # type: ignore
+                        self.schedule_autoplay(
+                            ctx.voice, ctx.voice.current, int(remaining_duration - 15000))
                     )
-                    log.info(f"{Fore.GREEN}Successfully created new autoplay task after seek")
+                    log.info(
+                        f"{Fore.GREEN}Successfully created new autoplay task after seek")
                 except Exception as e:
-                    log.error(f"{Fore.RED}Failed to create autoplay task after seek: {e}", exc_info=True)
+                    log.error(
+                        f"{Fore.RED}Failed to create autoplay task after seek: {e}", exc_info=True)
 
         return await ctx.approve(
             f"Seeked to `{duration(position)}` in [{ctx.voice.current}]({ctx.voice.current.uri})"
         )
 
-    @command(aliases=["ap", "auto"], example="5")
+    @command(aliases=["ap", "auto"], example="5")  # type: ignore
     async def autoplay(self, ctx: Context, amount: int = 5):
         """Add autoplay recommendations to the queue"""
         if amount < 1 or amount > 10:
             return await ctx.warn("Please specify a number between 1 and 10")
-            
+
         if not ctx.voice or not ctx.voice.is_playing:
             return await ctx.warn("Nothing is currently playing!")
-            
+
         current_track = ctx.voice.current
         clean_title, clean_artist = await self.clean_title_for_search(current_track.title, current_track.author)
 
@@ -1201,58 +1283,70 @@ class Audio(Cog):
             'algorithm': 'DYNAMIC',
             'key': 'rudescore'
         }
-        
+
         async with ctx.typing():
             async with aiohttp.ClientSession() as session:
                 url = f"https://listen.squareweb.app/autoplay?{urlencode(params)}"
                 log.info(f"{Fore.CYAN}Fetching recommendations from: {url}")
-                
+
                 async with session.get(url) as resp:
                     if resp.status != 200:
-                        log.error(f"{Fore.RED}Failed to fetch recommendations: {resp.status}")
+                        log.error(
+                            f"{Fore.RED}Failed to fetch recommendations: {resp.status}")
                         return await ctx.warn("Failed to fetch recommendations")
-                        
+
                     recommendations = await resp.json()
                     if not recommendations:
                         return await ctx.warn("No recommendations found")
-                        
-                    log.info(f"{Fore.CYAN}Received {len(recommendations)} recommendations")
+
+                    log.info(
+                        f"{Fore.CYAN}Received {len(recommendations)} recommendations")
                     added = 0
-                    
+
                     for track_data in recommendations:
                         if added >= amount:
                             break
-                            
+
                         try:
                             results = None
                             source_name = track_data.get('sourceName', '')
                             search_query = f"{track_data['title']} {track_data['author']}"
-                            
-                            log.info(f"{Fore.CYAN}Trying YouTube Music search for: {search_query}")
+
+                            log.info(
+                                f"{Fore.CYAN}Trying YouTube Music search for: {search_query}")
                             results = await ctx.voice.get_tracks(f"ytmsearch:{search_query}")
-                            
+
                             if not results:
                                 if source_name == 'deezer':
-                                    log.info(f"{Fore.CYAN}Trying Deezer track: {track_data['uri']}")
+                                    log.info(
+                                        f"{Fore.CYAN}Trying Deezer track: {track_data['uri']}")
                                     results = await ctx.voice.get_tracks(track_data['uri'])
                                 if not results:
-                                    log.info(f"{Fore.CYAN}Trying Deezer search for: {search_query}")
+                                    log.info(
+                                        f"{Fore.CYAN}Trying Deezer search for: {search_query}")
                                     results = await ctx.voice.get_tracks(f"dzsearch:{search_query}")
-                            
+
                             if not results:
-                                log.info(f"{Fore.CYAN}Trying SoundCloud search for: {search_query}")
+                                log.info(
+                                    f"{Fore.CYAN}Trying SoundCloud search for: {search_query}")
                                 results = await ctx.voice.get_tracks(f"scsearch:{search_query}")
-                            
+
                             if results:
-                                track = results[0]
+                                if isinstance(results, Playlist):
+                                    track = results.tracks[0]
+                                else:
+                                    track = results[0]
                                 track.requester = None
-                                track.author = track.author.replace(" - Topic", "")
+                                track.author = track.author.replace(
+                                    " - Topic", "")
                                 ctx.voice.queue.put(track)
                                 added += 1
-                                log.info(f"{Fore.GREEN}Added track: {track.title}")
-                                
+                                log.info(
+                                    f"{Fore.GREEN}Added track: {track.title}")
+
                         except Exception as e:
-                            log.error(f"{Fore.RED}Failed to process recommendation: {e}")
+                            log.error(
+                                f"{Fore.RED}Failed to process recommendation: {e}")
                             continue
 
                     if added == 0:
@@ -1260,7 +1354,7 @@ class Audio(Cog):
 
                     return await ctx.approve(f"Added {plural(added):recommendation} to the queue based on **{clean_title}**")
 
-    @command(aliases=["vol"], example="50")
+    @command(aliases=["vol"], example="50")  # type: ignore
     async def volume(
         self,
         ctx: Context,
@@ -1311,36 +1405,37 @@ class Audio(Cog):
             return await ctx.warn("The track is not paused!")
 
         await ctx.voice.set_pause(False)  # type: ignore
-        
-        try:
-                    invite = await ctx.author.voice.channel.create_invite(
-                        target_type=discord.InviteTarget.embedded_application,
-                        target_application_id=1420609343283531776
-                    )
-                    embed = Embed(
-                        title="Discord Activity",
-                        description="Click the button below to show your currently playing track on Discord",
-                        color=0x0d0d0d
-                    )
 
-                    view = discord.ui.View()
-                    view.add_item(
-                        discord.ui.Button(
-                            label="Using Activities",
-                            url="https://docs.warm.lat/activity/setup",
-                            style=discord.ButtonStyle.link,
-                            emoji=config.EMOJIS.SOCIAL.WEBSITE
-                        )
-                    )
-                    
-                    await ctx.send(
-                        content=f"{invite.url}",
-                        embed=embed,
-                        view=view
-                    )
+        try:
+            invite = await ctx.author.voice.channel.create_invite(
+                target_type=discord.InviteTarget.embedded_application,
+                target_application_id=1420609343283531776
+            )
+            embed = Embed(
+                title="Discord Activity",
+                description="Click the button below to show your currently playing track on Discord",
+                color=0x0d0d0d
+            )
+
+            view = discord.ui.View()
+            view.add_item(
+                discord.ui.Button(
+                    label="Using Activities",
+                    url="https://docs.warm.lat/activity/setup",
+                    style=discord.ButtonStyle.link,
+                    emoji=config.EMOJIS.SOCIAL.WEBSITE
+                )
+            )
+
+            await ctx.send(
+                content=f"{invite.url}",
+                embed=embed,
+                view=view
+            )
         except Exception as e:
-            log.error(f"{Fore.RED}Failed to create activity invite: {e}", exc_info=True)
-        
+            log.error(
+                f"{Fore.RED}Failed to create activity invite: {e}", exc_info=True)
+
         return await ctx.message.add_reaction("✅")
 
     @command(aliases=["next", "sk"])
@@ -1360,7 +1455,7 @@ class Audio(Cog):
 
         return await self.queue_shuffle(ctx)
 
-    @command(aliases=["loop"], example="track")
+    @command(aliases=["loop"], example="track")  # type: ignore
     async def repeat(
         self,
         ctx: Context,
@@ -1395,19 +1490,20 @@ class Audio(Cog):
 
     async def generate_api_signature(self, params: dict) -> str:
         """Generate Last.fm API call signature"""
-        
+
         API_SECRET = config.AUTHORIZATION.LASTFM.SECRET
-        
+
         sorted_keys = sorted(params.keys())
-        
+
         signature_string = ''
         for key in sorted_keys:
             signature_string += key + str(params[key])
-        
+
         signature_string += API_SECRET
-        
-        log.info(f"{Fore.CYAN}Signature string (first 50 chars): {signature_string[:50]}...")
-        
+
+        log.info(
+            f"{Fore.CYAN}Signature string (first 50 chars): {signature_string[:50]}...")
+
         return hashlib.md5(signature_string.encode('utf-8')).hexdigest()
 
     async def process_playlist_data(self, guild_id: int, user_id: int, playlist_name: str, playlist_url: str, tracks: List[Track]):
@@ -1422,30 +1518,32 @@ class Audio(Cog):
                     track_count = EXCLUDED.track_count,
                     added_at = CURRENT_TIMESTAMP
             """,
-                guild_id,
-                user_id,
-                playlist_name,
-                playlist_url,
-                len(tracks)
-            )
+                                      guild_id,
+                                      user_id,
+                                      playlist_name,
+                                      playlist_url,
+                                      len(tracks)
+                                      )
 
             async with aiohttp.ClientSession() as session:
                 for track in tracks:
                     clean_title, clean_artist = await self.clean_title_for_search(track.title, track.author)
                     artwork_url = ""
                     album_name = None
-                    
+
                     search_query = f"{clean_title} {clean_artist}"
                     deezer_search = f"https://api.deezer.com/search?{urlencode({'q': search_query})}"
-                    
+
                     try:
                         async with session.get(deezer_search) as resp:
                             if resp.status == 200:
                                 data = await resp.json()
                                 if data.get('data') and len(data['data']) > 0:
                                     first_result = data['data'][0]
-                                    artwork_url = first_result.get('album', {}).get('cover_xl', '')
-                                    album_name = first_result.get('album', {}).get('title')
+                                    artwork_url = first_result.get(
+                                        'album', {}).get('cover_xl', '')
+                                    album_name = first_result.get(
+                                        'album', {}).get('title')
                     except Exception:
                         pass
 
@@ -1459,18 +1557,18 @@ class Audio(Cog):
                             artwork_url = EXCLUDED.artwork_url,
                             added_at = CURRENT_TIMESTAMP
                     """,
-                        guild_id,
-                        user_id,
-                        playlist_url,
-                        track.title,
-                        track.uri,
-                        track.author,
-                        album_name,
-                        artwork_url or None
-                    )
-                    
+                                              guild_id,
+                                              user_id,
+                                              playlist_url,
+                                              track.title,
+                                              track.uri,
+                                              track.author,
+                                              album_name,
+                                              artwork_url or None
+                                              )
+
                     await asyncio.sleep(0.1)
-                    
+
         except Exception as e:
             log.error(f"{Fore.RED}Failed to process playlist data: {e}")
 
@@ -1505,7 +1603,7 @@ class Audio(Cog):
 
             gain = (percentage / 100) * 0.25
             bands = [{"band": i, "gain": gain} for i in range(2)]
-            
+
             async with session.patch(
                 f"https://{config.LAVALINK.HOST}/v4/sessions/pomice/players/{ctx.guild.id}",
                 headers={"Authorization": {config.LAVALINK.PASSWORD}},
@@ -1535,7 +1633,7 @@ class Audio(Cog):
 
             speed = 1 + (percentage / 100) * 0.5
             pitch = 1 + (percentage / 100) * 0.5
-            
+
             async with session.patch(
                 f"https://{config.LAVALINK.HOST}/v4/sessions/pomice/players/{ctx.guild.id}",
                 headers={"Authorization": {config.LAVALINK.PASSWORD}},
@@ -1608,13 +1706,14 @@ class Audio(Cog):
                     await response.read()
                 return await ctx.approve("Reset vibrato filter")
 
-            frequency = 2 + (percentage / 100) * 12  
-            depth = 0.2 + (percentage / 100) * 0.5   
-            
+            frequency = 2 + (percentage / 100) * 12
+            depth = 0.2 + (percentage / 100) * 0.5
+
             async with session.patch(
                 f"https://{config.LAVALINK.HOST}/v4/sessions/pomice/players/{ctx.guild.id}",
                 headers={"Authorization": {config.LAVALINK.PASSWORD}},
-                json={"filters": {"vibrato": {"frequency": frequency, "depth": depth}}}
+                json={"filters": {"vibrato": {
+                    "frequency": frequency, "depth": depth}}}
             ) as response:
                 await response.read()
             return await ctx.approve(f"Set vibrato to `{percentage}%`")
@@ -1638,11 +1737,12 @@ class Audio(Cog):
 
             frequency = 2 + (percentage / 100) * 12
             depth = 0.2 + (percentage / 100) * 0.5
-            
+
             async with session.patch(
                 f"https://{config.LAVALINK.HOST}/v4/sessions/pomice/players/{ctx.guild.id}",
                 headers={"Authorization": {config.LAVALINK.PASSWORD}},
-                json={"filters": {"tremolo": {"frequency": frequency, "depth": depth}}}
+                json={"filters": {"tremolo": {
+                    "frequency": frequency, "depth": depth}}}
             ) as response:
                 await response.read()
             return await ctx.approve(f"Set tremolo to `{percentage}%`")
@@ -1699,7 +1799,7 @@ class Audio(Cog):
                     await response.read()
                 return await ctx.approve("Reset rotation filter")
 
-            speed = (percentage / 100) * 0.5 
+            speed = (percentage / 100) * 0.5
             async with session.patch(
                 f"https://{config.LAVALINK.HOST}/v4/sessions/pomice/players/{ctx.guild.id}",
                 headers={"Authorization": "youwillnotpass"},
@@ -1711,13 +1811,15 @@ class Audio(Cog):
     async def schedule_autoplay(self, client: Client, current_track: Track, delay_ms: int):
         """Schedule fetching and queueing of autoplay recommendations"""
         try:
-            log.info(f"{Fore.CYAN}Autoplay task started - waiting {delay_ms/1000} seconds")
+            log.info(
+                f"{Fore.CYAN}Autoplay task started - waiting {delay_ms/1000} seconds")
             await asyncio.sleep(delay_ms / 1000)
-            
+
             if not client.is_playing:
-                log.info(f"{Fore.YELLOW}Autoplay cancelled - client no longer playing")
+                log.info(
+                    f"{Fore.YELLOW}Autoplay cancelled - client no longer playing")
                 return
-                
+
             clean_title, clean_artist = await self.clean_title_for_search(current_track.title, current_track.author)
             params = {
                 'title': clean_title,
@@ -1725,56 +1827,71 @@ class Audio(Cog):
                 'algorithm': 'DYNAMIC',
                 'key': 'rudescore'
             }
-            
-            log.info(f"{Fore.CYAN}Fetching autoplay recommendations for: {clean_title}")
-            
+
+            log.info(
+                f"{Fore.CYAN}Fetching autoplay recommendations for: {clean_title}")
+
             async with aiohttp.ClientSession() as session:
                 url = f"https://listen.squareweb.app/autoplay?{urlencode(params)}"
                 log.info(f"{Fore.CYAN}Autoplay API URL: {url}")
-                
+
                 async with session.get(url) as resp:
-                    log.info(f"{Fore.CYAN}Autoplay API response status: {resp.status}")
+                    log.info(
+                        f"{Fore.CYAN}Autoplay API response status: {resp.status}")
                     if resp.status == 200:
                         recommendations = await resp.json()
-                        log.info(f"{Fore.CYAN}Received {len(recommendations)} recommendations")
-                        
+                        log.info(
+                            f"{Fore.CYAN}Received {len(recommendations)} recommendations")
+
                         for track_data in recommendations:
                             if not client.is_playing:
-                                log.info(f"{Fore.YELLOW}Stopping recommendations - client no longer playing")
+                                log.info(
+                                    f"{Fore.YELLOW}Stopping recommendations - client no longer playing")
                                 break
-                                
+
                             try:
                                 results = None
                                 search_query = f"{track_data['title']} {track_data['author']}"
                                 source_name = track_data.get('sourceName', '')
-                                
-                                log.info(f"{Fore.CYAN}Trying YouTube Music search for: {search_query}")
+
+                                log.info(
+                                    f"{Fore.CYAN}Trying YouTube Music search for: {search_query}")
                                 results = await client.get_tracks(f"ytmsearch:{search_query}")
-                                
+
                                 if not results:
                                     if source_name == 'deezer':
-                                        log.info(f"{Fore.CYAN}Trying Deezer track: {track_data['uri']}")
+                                        log.info(
+                                            f"{Fore.CYAN}Trying Deezer track: {track_data['uri']}")
                                         results = await client.get_tracks(track_data['uri'])
                                     if not results:
-                                        log.info(f"{Fore.CYAN}Trying Deezer search for: {search_query}")
+                                        log.info(
+                                            f"{Fore.CYAN}Trying Deezer search for: {search_query}")
                                         results = await client.get_tracks(f"dzsearch:{search_query}")
-                                
+
                                 if not results:
-                                    log.info(f"{Fore.CYAN}Trying SoundCloud search for: {search_query}")
+                                    log.info(
+                                        f"{Fore.CYAN}Trying SoundCloud search for: {search_query}")
                                     results = await client.get_tracks(f"scsearch:{search_query}")
-                                
+
                                 if results:
-                                    track = results[0]
+                                    if isinstance(results, Playlist):
+                                        track = results.tracks[0]
+                                    else:
+                                        track = results[0]
                                     track.requester = None
-                                    track.author = track.author.replace(" - Topic", "")
+                                    track.author = track.author.replace(
+                                        " - Topic", "")
                                     client.queue.put(track)
-                                    log.info(f"{Fore.GREEN}Added recommendation to queue: {track.title}")
+                                    log.info(
+                                        f"{Fore.GREEN}Added recommendation to queue: {track.title}")
                             except Exception as e:
-                                log.error(f"{Fore.RED}Failed to process recommendation: {e}")
+                                log.error(
+                                    f"{Fore.RED}Failed to process recommendation: {e}")
                                 continue
-                                
+
         except Exception as e:
-            log.error(f"{Fore.RED}Error in autoplay scheduling: {e}", exc_info=True)
+            log.error(
+                f"{Fore.RED}Error in autoplay scheduling: {e}", exc_info=True)
         finally:
             if hasattr(client, '_auto_queue_task'):
                 del client._auto_queue_task
@@ -1787,10 +1904,11 @@ class Audio(Cog):
 
         lastfm_key = config.AUTHORIZATION.LASTFM.KEY
         lastfm_secret = config.AUTHORIZATION.LASTFM.SECRET
-        
+
         method = "track.scrobble"
         api_sig = hashlib.md5(
-            f"api_key{lastfm_key}artist[0]{clean_artist}method{method}sk{lastfm_config['access_token']}timestamp[0]{timestamp}track[0]{clean_title}{lastfm_secret}".encode('utf-8')
+            f"api_key{lastfm_key}artist[0]{clean_artist}method{method}sk{lastfm_config['access_token']}timestamp[0]{timestamp}track[0]{clean_title}{lastfm_secret}".encode(
+                'utf-8')
         ).hexdigest()
 
         params = {
@@ -1807,17 +1925,19 @@ class Audio(Cog):
             async with aiohttp.ClientSession() as session:
                 async with session.post("http://ws.audioscrobbler.com/2.0/", data=params) as response:
                     if response.status == 200:
-                        member = client.guild.get_member(int(lastfm_config['user_id']))
-                        log.info(f"{Fore.GREEN}Successfully scrobbled track for {member}")
-                        
+                        member = client.guild.get_member(
+                            int(lastfm_config['user_id']))
+                        log.info(
+                            f"{Fore.GREEN}Successfully scrobbled track for {member}")
+
                         if not hasattr(client, '_scrobble_users'):
-                            client._scrobble_users = set()
-                        
+                            client._scrobble_users = set()  # type: ignore
+
                         if member:
-                            client._scrobble_users.add(member.display_name)
-                            
+                            client._scrobble_users.add(member.display_name)  # type: ignore
+
                             if not hasattr(client, '_scrobble_notified'):
-                                mentions = ', '.join(member.mention for member in client.channel.members if member.display_name in client._scrobble_users)
+                                mentions = ', '.join(member.mention for member in client.channel.members if member.display_name in client._scrobble_users) # type: ignore
                                 embed = Embed(
                                     title="Last.fm Scrobbling",
                                     description=f"{mentions}, The music you're listening to is being scrobbled to [Last.FM](https://www.last.fm)!",
@@ -1825,7 +1945,7 @@ class Audio(Cog):
                                     timestamp=discord.utils.utcnow()
                                 )
                                 await client.channel.send(embed=embed, delete_after=60)
-                                client._scrobble_notified = True
+                                client._scrobble_notified = True  # type: ignore
                     else:
                         log.error(f"{Fore.RED}Failed to scrobble track: {await response.text()}")
         except Exception as e:
@@ -1838,7 +1958,7 @@ class AsyncClient:
         self.session = None
 
     async def __aenter__(self):
-        self.session = aiohttp.ClientSession(base_url=self.base_url)
+        self.session = aiohttp.ClientSession()
         return self.session
 
     async def __aexit__(self, exc_type, exc_val, exc_tb):
