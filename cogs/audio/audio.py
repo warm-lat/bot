@@ -26,7 +26,7 @@ from main import Evict
 from core.client import Context as DefaultContext
 from tools.formatter import duration, plural, shorten
 from managers.paginator import Paginator
-from processors.audio import process_track_data, process_playlist_data
+from processors.audio import process_playlist_data
 
 BASE_URL = "http://ws.audioscrobbler.com"
 
@@ -739,7 +739,7 @@ class Audio(Cog):
             return await ctx.warn("The queue is empty!")
 
         queue.clear()
-        return await ctx.message.add_reaction("✅")
+        return await ctx.check()
 
     @queue.command(
         name="shuffle",
@@ -755,7 +755,7 @@ class Audio(Cog):
             return await ctx.warn("The queue is empty!")
 
         queue.shuffle()
-        return await ctx.message.add_reaction("✅")
+        return await ctx.check()
 
     @queue.command(
         name="remove",
@@ -1350,7 +1350,7 @@ class Audio(Cog):
         """
 
         await ctx.voice.stop()
-        return await ctx.message.add_reaction("✅")
+        return await ctx.check()
 
     @command(aliases=["mix"])
     async def shuffle(self, ctx: Context) -> Optional[Message]:

@@ -60,13 +60,13 @@ class EMOJIS:
         INVIS: str = ""
         
     class AUDIO:
-        PREVIOUS: str = ""
-        PAUSE: str = ""
-        SKIP: str = ""
-        REPEAT: str = ""
+        PREVIOUS: str = "<:sp_previous:1424090755030454284>"
+        PAUSE: str = "<:sp_pause:1424091848900739213>"
+        RESUME: str = "<:sp_resume:1424169876544819262>"
+        SKIP: str = "<:sp_next:1424090799355986021>"
+        REPEAT: str = "<:sp_repeat:1424090908365946982>"
         REPEAT_TRACK: str = ""
-        RESUME: str = ""
-        QUEUE: str = ""
+        QUEUE: str = "<:queue:1469695803005079583>"
         
     class CONTEXT:
         APPROVE: str = "<:approve:1455782858370322553>"
@@ -94,26 +94,7 @@ class EMOJIS:
         DONOR: str = ""
         INSTANCE: str = ""
         STAFF: str = "<:staff:1423372682430251138>"
-        
-    class SPOTIFY:
-        ICON: str = "<:spotify:1423375028447215656>"
-        LEFT: str = ""
-        RIGHT: str = ""
-        BLACK: str = ""
-        WHITE: str = ""
-        BLACK_RIGHT: str = ""
-        EXPLCIT: str = "<:sp_explicit:1424091696718807070>"
-        LISTENING: str = "<:sp_listening:1424090597211377714>"
-        SHUFFLE: str = "<:sp_shuffle:1424089926777049312>"
-        REPEAT: str = "<:sp_repeat:1424090908365946982>"
-        DEVICE: str = "<:sp_devices:1424089840752005190>"
-        FAVORITE: str = "<:sp_added:1424090546452041981>"
-        REMOVE: str = "<:sp_remove:1424089885312286720>"
-        PREVIOUS: str = "<:sp_previous:1424090755030454284>"
-        PAUSE: str = "<:sp_pause:1424091848900739213>"
-        NEXT: str = "<:sp_next:1424090799355986021>"
-        VOLUME: str = "<:sp_volume:1424089962730754159>"
-        PLAY: str = "<:sp_play:1424169876544819262>"
+
         
     class INTERFACE:
         LOCK: str = "<:vm_lock:1423361217891799140>"

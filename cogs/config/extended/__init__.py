@@ -19,7 +19,6 @@ from .publisher import Publisher
 from .recording import Recording
 from .roles import Roles
 from .security import AntiNuke, AntiRaid
-from .spotify import Spotify
 from .starboard import Starboard
 from .statistics import Statistics
 from .sticky import Sticky
@@ -55,7 +54,6 @@ class Extended(
     Publisher,
     Recording,
     Roles,
-    #Spotify,
     Starboard,
     Statistics,
     Sticky,
