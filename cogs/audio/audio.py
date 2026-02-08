@@ -326,7 +326,54 @@ class Audio(Cog):
 
     @Cog.listener()
     async def on_lyra_track_stuck(self, client: Client, track: Track, _):
+        """Enhanced track stuck handler with NodeLink.js recovery strategies."""
+        log.warning(f"Track stuck: {track.title} - attempting recovery")
+        
+        try:
+            # Log the stuck track for debugging
+            if hasattr(client, '_session_stats'):
+                client._session_stats['stuck_tracks'] = client._session_stats.get('stuck_tracks', 0) + 1 # type: ignore
+            
+            # Attempt 1: Skip to next track immediately
+            if client.queue and not client.queue.is_empty:
+                await client.do_next()
+                if client.context:
+                    await client.context.send("⚠️ Track got stuck, skipping to next one...")
+                return
+                
+            # Attempt 2: If no more tracks, try to restart current track
+            if client.current:
+                log.info("No more tracks in queue, attempting to restart current track")
+                await client.play(client.current)
+                if client.context:
+                    await client.context.send("🔄 Track was stuck, restarting...")
+                return
+                
+            # Attempt 3: If still stuck, seek to a slightly different position
+            if client.current and hasattr(client, 'seek'):
+                try:
+                    current_position = getattr(client.current, 'position', 0)
+                    await client.seek(max(0, current_position - 1000))  # Seek back 1 second
+                    if client.context:
+                        await client.context.send("🔧 Attempting to fix stuck track...")
+                    return
+                except Exception as seek_error:
+                    log.warning(f"Seek failed: {seek_error}")
+                    
+            # Attempt 4: Clear filters that might be causing issues
+            if hasattr(client, 'set_filter'):
+                await client.set_filter({})
+                log.info("Cleared all filters to resolve stuck track")
+                if client.context:
+                    await client.context.send("🔧 Cleared audio filters to resolve issue...")
+                    
+        except Exception as e:
+            log.error(f"Error handling stuck track: {e}")
+            
+        # Final fallback: Move to next track
         await client.do_next()
+        if client.context:
+            await client.context.send("Track recovery failed, moving to next track...")
 
     @Cog.listener()
     async def on_lyra_track_exception(self, client: Client, track: Track, _):

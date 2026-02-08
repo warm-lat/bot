@@ -14,7 +14,7 @@ from tools.formatter import shorten
 from .panel import Panel
 
 if TYPE_CHECKING:
-    from cogs.audio.audio import Context
+    from ..audio import Context
 
 log = getLogger("warm/audio")
 
@@ -82,7 +82,8 @@ class Client(Player):
                     description=f"Now playing [**{shorten(track.title)}**]({track.uri}) via {track.requester.mention if track.requester else self.channel.mention}",
                     color=Color.dark_embed(),
                 ),
-                view=Panel(self.context) if self.context.settings.play_panel else None,  # type: ignore
+                view=Panel(
+                    self.context) if self.context.settings.play_panel else None,
             )
 
     async def set_pause(self, pause: bool) -> bool:
@@ -120,14 +121,14 @@ class Client(Player):
     async def set_filter(self, filter_type=None):
         if filter_type is None:
             filter_type = {}
-            
+
         await self.node._send(op="filters", **filter_type, guildId=str(self.guild_id))
         return self
 
     async def set_equalizer(self, bands=None):
         if not bands:
             return await self.set_filter()
-        
+
         payload = [(i, gain) for i, gain in bands]
         return await self.set_filter({"equalizer": {"bands": payload}})
 
