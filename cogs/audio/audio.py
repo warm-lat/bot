@@ -31,6 +31,10 @@ from lava_lyra import LoopMode, Playlist, SearchType, Track, Player
 from lava_lyra.enums import URLRegex as regex
 
 from cogs.audio import Client, Percentage, Position
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from discord.ext.commands import Context as DiscordContext
 from main import Evict
 from core.client import Context as DefaultContext
 from tools.formatter import duration, plural, shorten
@@ -79,10 +83,10 @@ class Audio(Cog):
         self.SPAM_THRESHOLD = 5
         self.SPAM_WINDOW = 5.0
 
-    async def cog_before_invoke(self, ctx: Context) -> None:
+    async def cog_before_invoke(self, ctx: DiscordContext) -> None:
         ctx.voice = await self.get_player(ctx)
 
-    async def get_player(self, ctx: Context) -> Client:
+    async def get_player(self, ctx: DefaultContext) -> Client:
         log.info(f"{Fore.CYAN}Getting player for {ctx.author} in {ctx.guild}")
 
         client = ctx.voice_client
@@ -98,7 +102,7 @@ class Audio(Cog):
             raise CommandError("You're not in my voice channel!")
 
         elif not client:
-            log.info(f"{Fore.CYAN}No client found, attempting to connect")
+            log.info(f"{Fore.CYAN} No client found, attempting to connect")
             if ctx.command != self.play:
                 raise CommandError("I'm not in a voice channel!")
 
@@ -108,9 +112,9 @@ class Audio(Cog):
                 )
 
             log.info(
-                f"{Fore.CYAN}Connecting to voice channel: {author.voice.channel}")
+                f"{Fore.CYAN} Connecting to voice channel: {author.voice.channel}")
             client = await author.voice.channel.connect(cls=Client, self_deaf=True)
-            log.info(f"{Fore.CYAN}Connected, client: {client}")
+            log.info(f"{Fore.CYAN} Connected, client: {client}")
 
             volume = (
                 cast(
@@ -211,18 +215,15 @@ class Audio(Cog):
                         (guild_id, user_id, track_title, track_uri, track_author, artwork_url, playlist_name, playlist_url)
                         VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
                     """,
-                                              client.guild.id,
-                                              track.requester.id,
-                                              track.title,
-                                              track.uri,
-                                              track.author,
-                                              getattr(
-                                                  track, 'artwork_url', None),
-                                              getattr(track, 'playlist_name',
-                                                      track_info.get('playlist_name')),
-                                              getattr(track, 'playlist_url',
-                                                      track_info.get('playlist_url'))
-                                              )
+                                            client.guild.id,
+                                            track.requester.id,
+                                            track.title,
+                                            track.uri,
+                                            track.author,
+                                            getattr(track, 'artwork_url', None),
+                                            getattr(track, 'playlist_name', track_info.get('playlist_name')),
+                                            getattr(track, 'playlist_url', track_info.get('playlist_url'))
+                                            )
 
                     self.track_info.pop(track.uri, None)
 

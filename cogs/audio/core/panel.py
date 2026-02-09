@@ -99,7 +99,7 @@ class Panel(View):
         self.toggle.emoji = (
             EMOJIS.AUDIO.RESUME if self.client.is_paused else EMOJIS.AUDIO.PAUSE
         )
-        # self.previous.disabled = not bool(self.client.queue.history)
+        self.previous.disabled = not bool(self.client.queue.history)
 
     async def on_error(
         self, interaction: Interaction, error: Exception, item: Item[Any]
@@ -168,7 +168,7 @@ class Panel(View):
                     color=Color.dark_embed(),
                 ),
                 ephemeral=True,
-                delete_after=7,
+                delete_after=5,
             )
 
         try:
@@ -180,7 +180,7 @@ class Panel(View):
                     color=Color.dark_embed(),
                 ),
                 ephemeral=True,
-                delete_after=7,
+                delete_after=5,
             )
 
         self.client.insert(track, bump=True)
@@ -202,7 +202,7 @@ class Panel(View):
             wait=True,
         )
         with suppress(HTTPException):
-            await message.delete(delay=3)
+            await message.delete(delay=5)
 
     @button(custom_id="SKIP", emoji=EMOJIS.AUDIO.SKIP)
     async def skip(self, interaction: Interaction, button: Button):
