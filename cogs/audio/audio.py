@@ -31,10 +31,8 @@ from lava_lyra import LoopMode, Playlist, SearchType, Track, Player
 from lava_lyra.enums import URLRegex as regex
 
 from cogs.audio import Client, Percentage, Position
-from typing import TYPE_CHECKING
 
-if TYPE_CHECKING:
-    from discord.ext.commands import Context as DiscordContext
+from discord.ext.commands import Context as DiscordContext
 from main import Evict
 from core.client import Context as DefaultContext
 from tools.formatter import duration, plural, shorten

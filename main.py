@@ -18,7 +18,7 @@ if sys.platform == "win32":
 
 from contextlib import suppress
 from aiobotocore.session import get_session
-from datetime import datetime, timedelta
+from datetime import datetime
 from pathlib import Path
 from lava_lyra import NodePool
 from collections.abc import Mapping
