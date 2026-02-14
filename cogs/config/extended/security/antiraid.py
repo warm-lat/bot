@@ -858,14 +858,15 @@ class AntiRaid(MixinMeta, metaclass=CompositeMetaClass):
         """
         patterns = {
             "invites": [
-                r"(?:https?://)?(?:www\.)?(?:discord\.(?:gg|com/invite))/[a-zA-Z0-9-]+"
+                r"(?:https?://)?(?:www\.)?(?:discord|discordapp\.(?:gg|com/invite))/[a-zA-Z0-9-]+"
+                
             ],
             "external": [
                 r"(?:https?://)?(?:[a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(?:/[^\s]*)?",
                 r"(?:https?://)?(?:\d{1,3}\.){3}\d{1,3}(?:/[^\s]*)?"
             ],
             "all": [
-                r"(?:https?://)?(?:www\.)?(?:discord\.(?:gg|com/invite))/[a-zA-Z0-9-]+",
+                r"(?:https?://)?(?:www\.)?(?:discord|discordapp\.(?:gg|com/invite))/[a-zA-Z0-9-]+",
                 r"(?:https?://)?(?:[a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(?:/[^\s]*)?",
                 r"(?:https?://)?(?:\d{1,3}\.){3}\d{1,3}(?:/[^\s]*)?"
             ]
