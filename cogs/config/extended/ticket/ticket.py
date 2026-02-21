@@ -915,7 +915,7 @@ class Ticket(MixinMeta, metaclass=CompositeMetaClass):
         message = await self.get_ticket_message(ctx.guild, record)
         if not message:
             return await ctx.warn(
-                "The ticket panel no longer exists!",
+                "The ticket panel no longer exists!"
                 f"Use `{ctx.clean_prefix}ticket panel <message>` to set it",
             )
 
@@ -1561,7 +1561,8 @@ class Ticket(MixinMeta, metaclass=CompositeMetaClass):
         )
 
         if not channel_config:
-            return await ctx.warn(f"Ticket logs haven't been set, run ``{ctx.clean_prefix}ticket logs`` to set it.")
+            await ctx.warn(f"Ticket logs haven't been set, run ``{ctx.clean_prefix}ticket logs`` to set it.")
+            return
 
         log_id = secrets.token_hex(8)
         ticket_path = f"tickets/{log_id}.json"
@@ -1571,8 +1572,8 @@ class Ticket(MixinMeta, metaclass=CompositeMetaClass):
         log_channel = self.bot.get_channel(log_channel_id)
 
         await asyncio.gather(
-            self.upload_to_r2(ticket_path, transcript),
-            self.upload_to_r2(member_ids_path, member_ids)
+            self.bot.upload_to_r2(ticket_path, transcript),
+            self.bot.upload_to_r2(member_ids_path, member_ids)
         )
 
         await ctx.approve(
