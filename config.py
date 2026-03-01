@@ -179,8 +179,8 @@ class CLOUDFLARE:
         BUCKET: str = "warm"
 
 class DATABASE:
-    DSN: str = "postgresql://postgres:puhzwjesauvz3mir@warm-db-tuhfga:5432/postgres"
-    REDIS: str = "redis://default:zulqlpzsdxreypju@warm-cache-cbte4a:6379"
+    DSN: str = "postgresql://postgres:531c1mppevhbxuge@warm-newdb-4x8poj:5432/postgres"
+    REDIS: str = "redis://default:gptvwxbze7yrxaww@warm-cache-mefna3:6379"
 
 class POSTHOG:
     TRACK_SELF: bool = False
