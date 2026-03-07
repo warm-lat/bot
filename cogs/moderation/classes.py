@@ -1,5 +1,5 @@
 from main import Evict
-from typing import Union
+from typing import Optional, Union
 from core.client.context import Context
 from discord.ext import commands
 from discord.ext.commands.core import has_permissions
@@ -76,7 +76,7 @@ class ModConfig:
         victim: Union[Member, User],
         reason: str,
         duration: Union[timedelta, int, None] = None,
-        role: discord.Role = None
+        role: Optional[discord.Role] = None
     ):
         try:  
             settings = await bot.db.fetchrow(
@@ -519,7 +519,7 @@ class AppealButton(Button):
 
     async def callback(self, interaction: discord.Interaction):
         if self.modal:
-            config_cog = interaction.client.get_cog("Config")
+            config_cog = interaction.client.get_cog("Config")  # type: ignore[attr-defined]
             if not config_cog:
                 await interaction.response.send_message("Appeal system unavailable", ephemeral=True)
                 return

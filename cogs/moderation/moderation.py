@@ -4677,19 +4677,22 @@ class Moderation(Cog):
             ctx.guild.id
         )
 
+        if not mod_config:
+            return await ctx.warn("Jail system is not configured for this server!")
+
         jail_role_id = mod_config["role_id"]
         jailed_roles_json = jail_entry["roles"]
         jailed_roles = json.loads(jailed_roles_json)
         jail_role = ctx.guild.get_role(jail_role_id)
-
         if not jail_role:
             return await ctx.warn("Could not find the jail role!")
 
-        roles_to_add = [
-            ctx.guild.get_role(role_id)
-            for role_id in jailed_roles
-            if ctx.guild.get_role(role_id) and ctx.guild.get_role(role_id).is_assignable()
-        ]
+        # build a list of actual Role objects, ignoring any `None` results
+        roles_to_add: List[Role] = []
+        for role_id in jailed_roles:
+            role = ctx.guild.get_role(role_id)
+            if role and role.is_assignable():
+                roles_to_add.append(role)
 
         if roles_to_add:
             try:
