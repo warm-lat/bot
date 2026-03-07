@@ -329,12 +329,6 @@ class Moderation(Cog):
         Generate a Redis key for forced nicknames.
         """
         return xxh64_hexdigest(f"forcenick:{guild.id}:{member.id}")
-    
-    def restore_key(self, guild: Guild, member: Member) -> str:
-        """
-        Generate a Redis key for role restoration.
-        """
-        return f"restore:{guild.id}:{member.id}"
 
     @Cog.listener()
     async def on_member_remove(self, member: Member):
