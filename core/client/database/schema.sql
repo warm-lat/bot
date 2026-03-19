@@ -1238,14 +1238,6 @@ CREATE TABLE public.jail (
     roles text
 );
 
-CREATE TABLE public.jaill (
-    guild_id bigint,
-    channel_id bigint,
-    jail_id bigint,
-    role text,
-    log_id bigint
-);
-
 CREATE TABLE public.job_applications (
     application_id integer NOT NULL,
     job_id integer,
@@ -1324,46 +1316,7 @@ CREATE SEQUENCE public.lottery_history_id_seq
 
 ALTER SEQUENCE public.lottery_history_id_seq OWNED BY public.lottery_history.id;
 
-CREATE TABLE public.lovense_config (
-    guild_id bigint NOT NULL,
-    is_enabled boolean DEFAULT false,
-    log_channel_id bigint,
-    created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP
-);
 
-CREATE TABLE public.lovense_connections (
-    token text NOT NULL,
-    guild_id bigint,
-    user_id bigint,
-    created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
-    completed_at timestamp without time zone,
-    device_id text,
-    expires_at timestamp without time zone DEFAULT (CURRENT_TIMESTAMP + '00:10:00'::interval)
-);
-
-CREATE TABLE public.lovense_consent (
-    user_id bigint NOT NULL,
-    agreed boolean,
-    agreed_at timestamp without time zone,
-    locked boolean DEFAULT false
-);
-
-CREATE TABLE public.lovense_devices (
-    guild_id bigint NOT NULL,
-    user_id bigint NOT NULL,
-    device_id text,
-    device_type text,
-    access_token text,
-    last_active timestamp without time zone DEFAULT CURRENT_TIMESTAMP
-);
-
-CREATE TABLE public.lovense_shares (
-    guild_id bigint NOT NULL,
-    owner_id bigint NOT NULL,
-    target_id bigint NOT NULL,
-    device_id text NOT NULL,
-    shared_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP
-);
 
 CREATE TABLE public.mod (
     guild_id bigint NOT NULL,
