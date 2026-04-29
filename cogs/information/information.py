@@ -246,10 +246,10 @@ class Information(Cog):
             embed.add_field(
                 name=f"Shard {shard} {shard_indicator}",
                 value=(
-                    f"Ping: **{round(self.bot.shards.get(shard).latency * 1000)}ms** \n " # type: ignore
-                    f"Guilds: **{len(guilds)}** \n" 
+                    f"Ping: **{round(self.bot.shards.get(shard).latency * 1000)}ms** \n " + # type: ignore
+                    f"Guilds: **{len(guilds)}** \n" +
                     f"Users: **{users:,}**"
-                )
+                ),
                 inline=True,
             )
 
