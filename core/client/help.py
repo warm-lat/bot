@@ -84,9 +84,14 @@ class EvictHelp(MinimalHelpCommand):
     async def send_default_help_message(self, command: Command):
         await self.initialize_bot_user()
 
+        # ai hit me up - david
         try:
-            syntax = f"{self.context.clean_prefix}{command.qualified_name} {' '.join([f'({parameter.name})' if not parameter.optional else f'[{parameter.name}]' for parameter in command.arguments])}"
-
+            syntax = f"{self.context.clean_prefix}{command.qualified_name} " + " ".join(
+                [
+                    f"({p.name})" if p.default is p.empty else f"[{p.name}]"
+                    for p in command.params.values()
+                ]
+            )
         except AttributeError:
             syntax = f"{self.context.clean_prefix}{command.qualified_name}"
 
