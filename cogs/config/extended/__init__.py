@@ -29,9 +29,9 @@ from .ticket import Ticket
 from .timer import Timer
 from .trigger import Trigger
 from .vanity import Vanity
-from ....archive.verification import Verification
+# from ....archive.verification import Verification
 from .webhook import Webhook
-from ....archive.whitelist import Whitelist
+# from ....archive.whitelist import Whitelist
 
 class Extended(
     Alias,
@@ -64,9 +64,9 @@ class Extended(
     Timer,
     Trigger,
     Vanity,
-    Verification,
+    # Verification,
     Webhook,
-    Whitelist,
+    # Whitelist,
     metaclass=CompositeMetaClass,
 ):
     """
