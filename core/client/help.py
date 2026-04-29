@@ -14,7 +14,7 @@ from discord.ext.commands import Context
 from tools.conversion import Status
 from managers.paginator import Paginator
 
-from typing import List, Mapping, Union, Any, Callable, Coroutine
+from typing import List, Mapping, Union, Any, Callable, Coroutine, cast
 from core.client.context import Embed
 
 
@@ -197,16 +197,21 @@ class EvictHelp(MinimalHelpCommand):
 
         await self.context.reply(embed=embed, view=view)
 
+
     async def send_group_help(self, group: Group):
         await self.initialize_bot_user()
         bot = self.context.bot
         embeds = []
 
+        def build_syntax(cmd):
+            params = [
+                f"({p.name})" if p.default is p.empty else f"[{p.name}]"
+                for p in cmd.params.values()
+            ]
+            return f"{self.context.clean_prefix}{cmd.qualified_name} {' '.join(params)}".strip()
+
         if group.help or group.description:
-            try:
-                syntax = f"{self.context.clean_prefix}{group.qualified_name} {' '.join([f'({parameter.name})' if not parameter.optional else f'[{parameter.name}]' for parameter in group.arguments])}"
-            except AttributeError:
-                syntax = f"{self.context.clean_prefix}{group.qualified_name}"
+            syntax = build_syntax(group)
 
             brief = group.brief or ""
             permissions = self.format_permissions(group, brief)
@@ -215,14 +220,15 @@ class EvictHelp(MinimalHelpCommand):
                 title=f"Group: {group.qualified_name} • {group.cog_name} module",
                 description=f"> {group.description.capitalize() if group.description else (group.help.capitalize() if group.help else None)}",
             )
-            
+
             embed.set_author(
-                name=f"{bot.user.name} help", icon_url=bot.user.display_avatar.url
+                name=f"{bot.user.name} help",
+                icon_url=bot.user.display_avatar.url
             )
 
             embed.add_field(
                 name="Usage",
-                value=f"```Ruby\nSyntax: {syntax}\nExample: {self.context.clean_prefix}{group.qualified_name} {group.example or ''}```",
+                value=f"```Ruby\nSyntax: {syntax}\nExample: {self.context.clean_prefix}{group.qualified_name} {getattr(group, 'example', '')}```",
                 inline=False,
             )
 
@@ -233,17 +239,14 @@ class EvictHelp(MinimalHelpCommand):
             )
 
             embed.set_footer(
-                text=f"Aliases: {', '.join(a for a in group.aliases) if len(group.aliases) > 0 else 'none'} • warm.lat",
+                text=f"Aliases: {', '.join(group.aliases) if group.aliases else 'none'} • warm.lat",
                 icon_url=self.context.author.display_avatar.url,
             )
 
             embeds.append(embed)
 
         for command in group.commands:
-            try:
-                syntax = f"{self.context.clean_prefix}{command.qualified_name} {' '.join([f'({parameter.name})' if not parameter.optional else f'[{parameter.name}]' for parameter in command.arguments])}"
-            except AttributeError:
-                syntax = f"{self.context.clean_prefix}{command.qualified_name}"
+            syntax = build_syntax(command)
 
             brief = command.brief or ""
             permissions = self.format_permissions(command, brief)
@@ -254,12 +257,13 @@ class EvictHelp(MinimalHelpCommand):
             )
 
             embed.set_author(
-                name=f"{bot.user.name} help", icon_url=bot.user.display_avatar.url
+                name=f"{bot.user.name} help",
+                icon_url=bot.user.display_avatar.url
             )
 
             embed.add_field(
                 name="Usage",
-                value=f"```Ruby\nSyntax: {syntax}\nExample: {self.context.clean_prefix}{command.qualified_name} {command.example or ''}```",
+                value=f"```Ruby\nSyntax: {syntax}\nExample: {self.context.clean_prefix}{command.qualified_name} {getattr(command, 'example', '')}```",
                 inline=False,
             )
 
@@ -270,18 +274,22 @@ class EvictHelp(MinimalHelpCommand):
             )
 
             for param in command.clean_params.values():
-                if isinstance(param.annotation, FlagsMeta):
-                    self._add_flag_formatting(param.annotation, embed)
+                annotation = param.annotation
+                if isinstance(annotation, type) and issubclass(annotation, FlagConverter):
+                    self._add_flag_formatting(annotation, embed)
 
             embed.set_footer(
-                text=f"Aliases: {', '.join(a for a in command.aliases) if len(command.aliases) > 0 else 'none'} ",
+                text=f"Aliases: {', '.join(command.aliases) if command.aliases else 'none'}",
                 icon_url=self.context.author.display_avatar.url,
             )
 
             embeds.append(embed)
 
         if embeds:
-            paginator_instance = Paginator(ctx=self.context, entries=embeds)
+            paginator_instance = Paginator(
+                ctx=cast(Context, self.context),
+                entries=embeds
+            )
             await paginator_instance.start()
         else:
             await self.context.reply("No commands available in this group.")
