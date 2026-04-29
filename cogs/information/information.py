@@ -236,7 +236,7 @@ class Information(Cog):
         View the bot shard latency.
         """
 
-        embed = Embed(title=f"Total shards [{self.bot.shard_count}]")
+        embed = Embed()
 
         for shard in self.bot.shards:
             guilds = [g for g in self.bot.guilds if g.shard_id == shard]
@@ -254,7 +254,7 @@ class Information(Cog):
             )
 
             embed.set_author(name=ctx.author.display_name, icon_url=ctx.author.display_avatar.url)
-            embed.set_footer(text=f"You are on Shard {ctx.guild.shard_id}.", icon_url=f"{self.bot.user.display_avatar.url}")
+            embed.set_footer(text=f"You are on Shard {ctx.guild.shard_id} out of {self.bot.shard_count}.", icon_url=f"{self.bot.user.display_avatar.url}")
 
         await ctx.send(embed=embed)
 
