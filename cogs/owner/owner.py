@@ -858,7 +858,7 @@ class Owner(
         
         await self.bot.db.execute(
             """
-            UPDATE public.economy SET balance = $1, earnings = $2 
+            UPDATE public.economy SET balance = $1, wallet = $2 
             WHERE user_id = $3
             """,
             amount,
@@ -965,638 +965,638 @@ class Owner(
                 pass
             return await ctx.check()
 
-    @sudo.group(name="instances", invoke_without_command=True)
-    async def sudo_instances(self, ctx: Context) -> None:
-        """
-        Instance management commands.
-        """
-        async with ctx.typing():
-            try:
-                api_key = "t76oev5UkeMyo8XQwv5Ozwo3amVsi"
-                timestamp = str(int(time.time()))
-                data = {}  
+    # @sudo.group(name="instances", invoke_without_command=True)
+    # async def sudo_instances(self, ctx: Context) -> None:
+    #     """
+    #     Instance management commands.
+    #     """
+    #     async with ctx.typing():
+    #         try:
+    #             api_key = "t76oev5UkeMyo8XQwv5Ozwo3amVsi"
+    #             timestamp = str(int(time.time()))
+    #             data = {}  
 
-                message = f"{timestamp}:{json.dumps(data, sort_keys=True)}"
-                signature = hmac.new(
-                    api_key.encode(),
-                    message.encode(),
-                    hashlib.sha256
-                ).hexdigest()
+    #             message = f"{timestamp}:{json.dumps(data, sort_keys=True)}"
+    #             signature = hmac.new(
+    #                 api_key.encode(),
+    #                 message.encode(),
+    #                 hashlib.sha256
+    #             ).hexdigest()
 
-                headers = {
-                    "Content-Type": "application/json",
-                    "X-Timestamp": timestamp,
-                    "X-Signature": signature,
-                    "X-API-Key": api_key
-                }
+    #             headers = {
+    #                 "Content-Type": "application/json",
+    #                 "X-Timestamp": timestamp,
+    #                 "X-Signature": signature,
+    #                 "X-API-Key": api_key
+    #             }
 
-                async with self.bot.session.get(
-                    url="https://evict.kyron.dev/instances",
-                    headers=headers,
-                    timeout=30
-                ) as response:
-                    if response.status != 200:
-                        response_text = await response.text()
-                        return await ctx.warn(f"Failed to fetch instances: {response_text}")
+    #             async with self.bot.session.get(
+    #                 url="https://evict.kyron.dev/instances",
+    #                 headers=headers,
+    #                 timeout=30
+    #             ) as response:
+    #                 if response.status != 200:
+    #                     response_text = await response.text()
+    #                     return await ctx.warn(f"Failed to fetch instances: {response_text}")
 
-                    data = await response.json()
-                    instances = data['instances']
+    #                 data = await response.json()
+    #                 instances = data['instances']
 
-                    if not instances:
-                        return await ctx.warn("No instances found running")
+    #                 if not instances:
+    #                     return await ctx.warn("No instances found running")
 
-                    entries = []
-                    for instance in instances:
-                        uptime_ts = instance['uptime']
-                        if uptime_ts:
-                            uptime = datetime.fromtimestamp(uptime_ts/1000, timezone.utc)
-                            uptime_str = format_dt(uptime, 'R')
-                        else:
-                            uptime_str = 'N/A'
+    #                 entries = []
+    #                 for instance in instances:
+    #                     uptime_ts = instance['uptime']
+    #                     if uptime_ts:
+    #                         uptime = datetime.fromtimestamp(uptime_ts/1000, timezone.utc)
+    #                         uptime_str = format_dt(uptime, 'R')
+    #                     else:
+    #                         uptime_str = 'N/A'
                             
-                        memory_mb = f"{instance['memory']/1024/1024:.1f}MB" if instance['memory'] else 'N/A'
+    #                     memory_mb = f"{instance['memory']/1024/1024:.1f}MB" if instance['memory'] else 'N/A'
                         
-                        entries.append(
-                            f"**{instance['name']}**\n"
-                            f"Status: `{instance['status']}`\n"
-                            f"Uptime: {uptime_str}\n"
-                            f"Restarts: `{instance['restarts']}`\n"
-                            f"CPU: `{instance['cpu']}%`\n"
-                            f"Memory: `{memory_mb}`\n"
-                            f"Path: `{instance['path']}`"
-                        )
+    #                     entries.append(
+    #                         f"**{instance['name']}**\n"
+    #                         f"Status: `{instance['status']}`\n"
+    #                         f"Uptime: {uptime_str}\n"
+    #                         f"Restarts: `{instance['restarts']}`\n"
+    #                         f"CPU: `{instance['cpu']}%`\n"
+    #                         f"Memory: `{memory_mb}`\n"
+    #                         f"Path: `{instance['path']}`"
+    #                     )
 
-                    paginator = Paginator(
-                        ctx,
-                        entries=entries,
-                        embed=Embed(
-                            title="Instance Status Overview",
-                            description=(
-                                "Available commands:\n"
-                                f"`{ctx.clean_prefix}sudo instance start <name>` - Start an instance\n"
-                                f"`{ctx.clean_prefix}sudo instance stop <name>` - Stop an instance\n"
-                                f"`{ctx.clean_prefix}sudo instance delete <name>` - Delete an instance"
-                            ),
-                            color=0x2ecc71
-                        )
-                    )
-                    return await paginator.start()
+    #                 paginator = Paginator(
+    #                     ctx,
+    #                     entries=entries,
+    #                     embed=Embed(
+    #                         title="Instance Status Overview",
+    #                         description=(
+    #                             "Available commands:\n"
+    #                             f"`{ctx.clean_prefix}sudo instance start <name>` - Start an instance\n"
+    #                             f"`{ctx.clean_prefix}sudo instance stop <name>` - Stop an instance\n"
+    #                             f"`{ctx.clean_prefix}sudo instance delete <name>` - Delete an instance"
+    #                         ),
+    #                         color=0x2ecc71
+    #                     )
+    #                 )
+    #                 return await paginator.start()
 
-            except Exception as e:
-                log.error(f"Error fetching instances: {e}", exc_info=True)
-                return await ctx.warn(f"An error occurred: {e}")
+    #         except Exception as e:
+    #             log.error(f"Error fetching instances: {e}", exc_info=True)
+    #             return await ctx.warn(f"An error occurred: {e}")
 
-    @sudo_instances.command(name="stop")
-    async def sudo_instance_stop(self, ctx: Context, bot_name: str) -> Message:
-        """
-        Stop a running instance.
-        """
-        async with ctx.typing():
-            try:
-                api_key = "t76oev5UkeMyo8XQwv5Ozwo3amVsi"
-                timestamp = str(int(time.time()))
-                data = {"bot_name": bot_name}
+    # @sudo_instances.command(name="stop")
+    # async def sudo_instance_stop(self, ctx: Context, bot_name: str) -> Message:
+    #     """
+    #     Stop a running instance.
+    #     """
+    #     async with ctx.typing():
+    #         try:
+    #             api_key = "t76oev5UkeMyo8XQwv5Ozwo3amVsi"
+    #             timestamp = str(int(time.time()))
+    #             data = {"bot_name": bot_name}
 
-                message = f"{timestamp}:{json.dumps(data, sort_keys=True)}"
-                signature = hmac.new(
-                    api_key.encode(),
-                    message.encode(),
-                    hashlib.sha256
-                ).hexdigest()
+    #             message = f"{timestamp}:{json.dumps(data, sort_keys=True)}"
+    #             signature = hmac.new(
+    #                 api_key.encode(),
+    #                 message.encode(),
+    #                 hashlib.sha256
+    #             ).hexdigest()
 
-                headers = {
-                    "Content-Type": "application/json",
-                    "X-Timestamp": timestamp,
-                    "X-Signature": signature,
-                    "X-API-Key": api_key
-                }
+    #             headers = {
+    #                 "Content-Type": "application/json",
+    #                 "X-Timestamp": timestamp,
+    #                 "X-Signature": signature,
+    #                 "X-API-Key": api_key
+    #             }
 
-                async with self.bot.session.post(
-                    url=f"https://evict.kyron.dev/instance/{bot_name}/stop",
-                    headers=headers,
-                    json=data,
-                    timeout=30
-                ) as response:
-                    if response.status != 200:
-                        response_text = await response.text()
-                        return await ctx.warn(f"Failed to stop instance: {response_text}")
+    #             async with self.bot.session.post(
+    #                 url=f"https://evict.kyron.dev/instance/{bot_name}/stop",
+    #                 headers=headers,
+    #                 json=data,
+    #                 timeout=30
+    #             ) as response:
+    #                 if response.status != 200:
+    #                     response_text = await response.text()
+    #                     return await ctx.warn(f"Failed to stop instance: {response_text}")
 
-                    return await ctx.approve(f"Successfully stopped instance `{bot_name}`")
+    #                 return await ctx.approve(f"Successfully stopped instance `{bot_name}`")
 
-            except Exception as e:
-                log.error(f"Error stopping instance: {e}", exc_info=True)
-                return await ctx.warn(f"An error occurred: {e}")
+    #         except Exception as e:
+    #             log.error(f"Error stopping instance: {e}", exc_info=True)
+    #             return await ctx.warn(f"An error occurred: {e}")
 
-    @sudo_instances.command(name="start")
-    async def sudo_instance_start(self, ctx: Context, bot_name: str) -> Message:
-        """
-        Start a stopped instance.
-        """
-        async with ctx.typing():
-            try:
-                api_key = "t76oev5UkeMyo8XQwv5Ozwo3amVsi"
-                timestamp = str(int(time.time()))
-                data = {"bot_name": bot_name}
+    # @sudo_instances.command(name="start")
+    # async def sudo_instance_start(self, ctx: Context, bot_name: str) -> Message:
+    #     """
+    #     Start a stopped instance.
+    #     """
+    #     async with ctx.typing():
+    #         try:
+    #             api_key = "t76oev5UkeMyo8XQwv5Ozwo3amVsi"
+    #             timestamp = str(int(time.time()))
+    #             data = {"bot_name": bot_name}
 
-                message = f"{timestamp}:{json.dumps(data, sort_keys=True)}"
-                signature = hmac.new(
-                    api_key.encode(),
-                    message.encode(),
-                    hashlib.sha256
-                ).hexdigest()
+    #             message = f"{timestamp}:{json.dumps(data, sort_keys=True)}"
+    #             signature = hmac.new(
+    #                 api_key.encode(),
+    #                 message.encode(),
+    #                 hashlib.sha256
+    #             ).hexdigest()
 
-                headers = {
-                    "Content-Type": "application/json",
-                    "X-Timestamp": timestamp,
-                    "X-Signature": signature,
-                    "X-API-Key": api_key
-                }
+    #             headers = {
+    #                 "Content-Type": "application/json",
+    #                 "X-Timestamp": timestamp,
+    #                 "X-Signature": signature,
+    #                 "X-API-Key": api_key
+    #             }
 
-                async with self.bot.session.post(
-                    url=f"https://evict.kyron.dev/instance/{bot_name}/start",
-                    headers=headers,
-                    json=data,
-                    timeout=30
-                ) as response:
-                    if response.status != 200:
-                        response_text = await response.text()
-                        return await ctx.warn(f"Failed to start instance: {response_text}")
+    #             async with self.bot.session.post(
+    #                 url=f"https://evict.kyron.dev/instance/{bot_name}/start",
+    #                 headers=headers,
+    #                 json=data,
+    #                 timeout=30
+    #             ) as response:
+    #                 if response.status != 200:
+    #                     response_text = await response.text()
+    #                     return await ctx.warn(f"Failed to start instance: {response_text}")
 
-                    return await ctx.approve(f"Successfully started instance `{bot_name}`")
+    #                 return await ctx.approve(f"Successfully started instance `{bot_name}`")
 
-            except Exception as e:
-                log.error(f"Error starting instance: {e}", exc_info=True)
-                return await ctx.warn(f"An error occurred: {e}")
+    #         except Exception as e:
+    #             log.error(f"Error starting instance: {e}", exc_info=True)
+    #             return await ctx.warn(f"An error occurred: {e}")
 
-    @sudo_instances.command(name="delete")
-    async def sudo_instance_delete(self, ctx: Context, bot_name: str) -> Message:
-        """
-        Delete an instance.
-        """
-        await ctx.prompt(f"Are you sure you want to delete instance `{bot_name}`?")
+    # @sudo_instances.command(name="delete")
+    # async def sudo_instance_delete(self, ctx: Context, bot_name: str) -> Message:
+    #     """
+    #     Delete an instance.
+    #     """
+    #     await ctx.prompt(f"Are you sure you want to delete instance `{bot_name}`?")
         
-        async with ctx.typing():
-            try:
-                api_key = "t76oev5UkeMyo8XQwv5Ozwo3amVsi"
-                timestamp = str(int(time.time()))
-                data = {"bot_name": bot_name}
+    #     async with ctx.typing():
+    #         try:
+    #             api_key = "t76oev5UkeMyo8XQwv5Ozwo3amVsi"
+    #             timestamp = str(int(time.time()))
+    #             data = {"bot_name": bot_name}
 
-                message = f"{timestamp}:{json.dumps(data, sort_keys=True)}"
-                signature = hmac.new(
-                    api_key.encode(),
-                    message.encode(),
-                    hashlib.sha256
-                ).hexdigest()
+    #             message = f"{timestamp}:{json.dumps(data, sort_keys=True)}"
+    #             signature = hmac.new(
+    #                 api_key.encode(),
+    #                 message.encode(),
+    #                 hashlib.sha256
+    #             ).hexdigest()
 
-                headers = {
-                    "Content-Type": "application/json",
-                    "X-Timestamp": timestamp,
-                    "X-Signature": signature,
-                    "X-API-Key": api_key
-                }
+    #             headers = {
+    #                 "Content-Type": "application/json",
+    #                 "X-Timestamp": timestamp,
+    #                 "X-Signature": signature,
+    #                 "X-API-Key": api_key
+    #             }
 
-                async with self.bot.session.delete(
-                    url=f"https://evict.kyron.dev/instance/{bot_name}",
-                    headers=headers,
-                    timeout=30
-                ) as response:
-                    if response.status != 200:
-                        response_text = await response.text()
-                        return await ctx.warn(f"Failed to delete instance: {response_text}")
+    #             async with self.bot.session.delete(
+    #                 url=f"https://evict.kyron.dev/instance/{bot_name}",
+    #                 headers=headers,
+    #                 timeout=30
+    #             ) as response:
+    #                 if response.status != 200:
+    #                     response_text = await response.text()
+    #                     return await ctx.warn(f"Failed to delete instance: {response_text}")
 
-                    return await ctx.approve(f"Successfully deleted instance `{bot_name}`")
+    #                 return await ctx.approve(f"Successfully deleted instance `{bot_name}`")
 
-            except Exception as e:
-                log.error(f"Error deleting instance: {e}", exc_info=True)
-                return await ctx.warn(f"An error occurred: {e}")
+    #         except Exception as e:
+    #             log.error(f"Error deleting instance: {e}", exc_info=True)
+    #             return await ctx.warn(f"An error occurred: {e}")
 
-    @sudo.command(name="subscriptions", aliases=["subs"])
-    async def sudo_subscriptions(self, ctx: Context, *, user: User) -> Message:
-        """
-        Check instance subscriptions for a user.
-        """
-        instances = await self.bot.db.fetch(
-            """
-            SELECT * FROM public.instances 
-            WHERE user_id = $1
-            ORDER BY purchased_at DESC
-            """,
-            user.id
-        )
+    # @sudo.command(name="subscriptions", aliases=["subs"])
+    # async def sudo_subscriptions(self, ctx: Context, *, user: User) -> Message:
+    #     """
+    #     Check instance subscriptions for a user.
+    #     """
+    #     instances = await self.bot.db.fetch(
+    #         """
+    #         SELECT * FROM public.instances 
+    #         WHERE user_id = $1
+    #         ORDER BY purchased_at DESC
+    #         """,
+    #         user.id
+    #     )
         
-        if not instances:
-            return await ctx.warn(f"No instances found for {user.mention}")
+    #     if not instances:
+    #         return await ctx.warn(f"No instances found for {user.mention}")
             
-        entries = []
-        for instance in instances:
-            expires = instance['expires_at']
-            status = instance['status']
-            purchased = instance['purchased_at']
+    #     entries = []
+    #     for instance in instances:
+    #         expires = instance['expires_at']
+    #         status = instance['status']
+    #         purchased = instance['purchased_at']
             
-            entries.append(
-                f"**Instance ID:** `{instance['id']}`\n"
-                f"Status: `{status}`\n"
-                f"Purchased: {format_dt(purchased, 'R')}\n"
-                f"Expires: {format_dt(expires, 'R')}\n"
-                f"Email: `{instance['email']}`"
-            )
+    #         entries.append(
+    #             f"**Instance ID:** `{instance['id']}`\n"
+    #             f"Status: `{status}`\n"
+    #             f"Purchased: {format_dt(purchased, 'R')}\n"
+    #             f"Expires: {format_dt(expires, 'R')}\n"
+    #             f"Email: `{instance['email']}`"
+    #         )
             
-        paginator = Paginator(
-            ctx,
-            entries=entries,
-            embed=Embed(
-                title=f"Instance Subscriptions for {user}",
-                color=0x2ecc71
-            )
-        )
-        return await paginator.start()
+    #     paginator = Paginator(
+    #         ctx,
+    #         entries=entries,
+    #         embed=Embed(
+    #             title=f"Instance Subscriptions for {user}",
+    #             color=0x2ecc71
+    #         )
+    #     )
+    #     return await paginator.start()
 
-    @sudo.command(name="analytics", aliases=["stats", "metrics"])
-    async def sudo_analytics(self, ctx: Context):
-        """
-        View detailed bot analytics and performance metrics.
-        """
-        api_stats = await self.bot.get_api_stats()
-        system_health = await self.bot.get_system_health()
+    # @sudo.command(name="analytics", aliases=["stats", "metrics"])
+    # async def sudo_analytics(self, ctx: Context):
+    #     """
+    #     View detailed bot analytics and performance metrics.
+    #     """
+    #     api_stats = await self.bot.get_api_stats()
+    #     system_health = await self.bot.get_system_health()
         
-        top_endpoints = sorted(
-            api_stats.items(),
-            key=lambda x: x[1]['calls'],
-            reverse=True
-        )[:10] 
+    #     top_endpoints = sorted(
+    #         api_stats.items(),
+    #         key=lambda x: x[1]['calls'],
+    #         reverse=True
+    #     )[:10] 
         
-        embed = Embed(title="Bot Analytics")
+    #     embed = Embed(title="Bot Analytics")
         
-        embed.add_field(
-            name="System Health",
-            value="\n".join([
-                f"**CPU Usage:** `{system_health.get('cpu_percent', 0)}%`",
-                f"**Memory:** `{system_health.get('memory_mb', 0):.1f}MB`",
-                f"**Threads:** `{system_health.get('threads', 0)}`",
-                f"**Commands/sec:** `{system_health.get('commands_per_second', 0):.2f}`",
-                f"**Uptime:** {format_dt(datetime.fromtimestamp(time.time() - system_health.get('uptime', 0)), 'R')}"
-            ]),
-            inline=False
-        )
+    #     embed.add_field(
+    #         name="System Health",
+    #         value="\n".join([
+    #             f"**CPU Usage:** `{system_health.get('cpu_percent', 0)}%`",
+    #             f"**Memory:** `{system_health.get('memory_mb', 0):.1f}MB`",
+    #             f"**Threads:** `{system_health.get('threads', 0)}`",
+    #             f"**Commands/sec:** `{system_health.get('commands_per_second', 0):.2f}`",
+    #             f"**Uptime:** {format_dt(datetime.fromtimestamp(time.time() - system_health.get('uptime', 0)), 'R')}"
+    #         ]),
+    #         inline=False
+    #     )
         
-        api_summary = []
-        for endpoint, stats in top_endpoints:
-            api_summary.append(
-                f"**{endpoint}**\n"
-                f"Calls: `{stats['calls']}`\n"
-                f"Avg Time: `{stats['avg_response_time']}ms`\n"
-                f"Errors: `{stats['errors']}`\n"
-                f"Rate Limits: `{stats['rate_limits']}`"
-            )
+    #     api_summary = []
+    #     for endpoint, stats in top_endpoints:
+    #         api_summary.append(
+    #             f"**{endpoint}**\n"
+    #             f"Calls: `{stats['calls']}`\n"
+    #             f"Avg Time: `{stats['avg_response_time']}ms`\n"
+    #             f"Errors: `{stats['errors']}`\n"
+    #             f"Rate Limits: `{stats['rate_limits']}`"
+    #         )
         
-        paginator = Paginator(
-            ctx,
-            entries=api_summary,
-            embed=embed,
-            title="API Endpoint Stats",
-            per_page=5
-        )
+    #     paginator = Paginator(
+    #         ctx,
+    #         entries=api_summary,
+    #         embed=embed,
+    #         title="API Endpoint Stats",
+    #         per_page=5
+    #     )
         
-        return await paginator.start()
+    #     return await paginator.start()
 
-    @sudo.command(name="slowest")
-    async def sudo_slowest(self, ctx: Context):
-        """
-        View the slowest API endpoints.
-        """
-        api_stats = await self.bot.get_api_stats()
+    # @sudo.command(name="slowest")
+    # async def sudo_slowest(self, ctx: Context):
+    #     """
+    #     View the slowest API endpoints.
+    #     """
+    #     api_stats = await self.bot.get_api_stats()
         
-        slowest_endpoints = sorted(
-            api_stats.items(),
-            key=lambda x: x[1]['avg_response_time'],
-            reverse=True
-        )[:15] 
+    #     slowest_endpoints = sorted(
+    #         api_stats.items(),
+    #         key=lambda x: x[1]['avg_response_time'],
+    #         reverse=True
+    #     )[:15] 
         
-        entries = [
-            f"**{endpoint}**\n"
-            f"Avg Time: `{stats['avg_response_time']}ms`\n"
-            f"Calls: `{stats['calls']}`\n"
-            f"Errors: `{stats['errors']}`"
-            for endpoint, stats in slowest_endpoints
-        ]
+    #     entries = [
+    #         f"**{endpoint}**\n"
+    #         f"Avg Time: `{stats['avg_response_time']}ms`\n"
+    #         f"Calls: `{stats['calls']}`\n"
+    #         f"Errors: `{stats['errors']}`"
+    #         for endpoint, stats in slowest_endpoints
+    #     ]
         
-        paginator = Paginator(
-            ctx,
-            entries=entries,
-            embed=Embed(title="Slowest API Endpoints"),
-            per_page=5
-        )
+    #     paginator = Paginator(
+    #         ctx,
+    #         entries=entries,
+    #         embed=Embed(title="Slowest API Endpoints"),
+    #         per_page=5
+    #     )
         
-        return await paginator.start()
+    #     return await paginator.start()
 
-    @group(name="incident", aliases=["inc"])
-    async def incident(self, ctx: Context):
-        """
-        Manage bot incidents and status updates.
-        """
-        if ctx.invoked_subcommand is None:
-            return await ctx.send_help(ctx.command)
+    # @group(name="incident", aliases=["inc"])
+    # async def incident(self, ctx: Context):
+    #     """
+    #     Manage bot incidents and status updates.
+    #     """
+    #     if ctx.invoked_subcommand is None:
+    #         return await ctx.send_help(ctx.command)
 
-    @incident.command(name="create")
-    async def incident_create(
-        self, 
-        ctx: Context, 
-        severity: Literal["minor", "major", "critical"],
-        *,
-        title: str
-    ):
-        """Create a new incident.
+    # @incident.command(name="create")
+    # async def incident_create(
+    #     self, 
+    #     ctx: Context, 
+    #     severity: Literal["minor", "major", "critical"],
+    #     *,
+    #     title: str
+    # ):
+    #     """Create a new incident.
         
-        Severity levels:
-        - minor: Small issues affecting few users
-        - major: Significant issues affecting many users
-        - critical: Complete outage or severe degradation
-        """
-        incident_id = f"INC_{int(time.time())}"
-        current_ts = int(time.time() * 1000)
+    #     Severity levels:
+    #     - minor: Small issues affecting few users
+    #     - major: Significant issues affecting many users
+    #     - critical: Complete outage or severe degradation
+    #     """
+    #     incident_id = f"INC_{int(time.time())}"
+    #     current_ts = int(time.time() * 1000)
         
-        await ctx.prompt("Please provide the initial status message for this incident:")
-        initial_message = await self.bot.wait_for(
-            "message",
-            check=lambda m: m.author == ctx.author and m.channel == ctx.channel,
-            timeout=300
-        )
+    #     await ctx.prompt("Please provide the initial status message for this incident:")
+    #     initial_message = await self.bot.wait_for(
+    #         "message",
+    #         check=lambda m: m.author == ctx.author and m.channel == ctx.channel,
+    #         timeout=300
+    #     )
         
-        services_prompt = "Which services are affected? Select numbers (comma-separated):\n"
-        services_prompt += "1. Bot (Discord bot service)\n"
-        services_prompt += "2. API (REST API service)\n"
-        services_prompt += "3. Database\n"
-        services_prompt += "4. Website"
+    #     services_prompt = "Which services are affected? Select numbers (comma-separated):\n"
+    #     services_prompt += "1. Bot (Discord bot service)\n"
+    #     services_prompt += "2. API (REST API service)\n"
+    #     services_prompt += "3. Database\n"
+    #     services_prompt += "4. Website"
         
-        await ctx.send(services_prompt)
-        services_msg = await self.bot.wait_for(
-            "message",
-            check=lambda m: m.author == ctx.author and m.channel == ctx.channel,
-            timeout=300
-        )
+    #     await ctx.send(services_prompt)
+    #     services_msg = await self.bot.wait_for(
+    #         "message",
+    #         check=lambda m: m.author == ctx.author and m.channel == ctx.channel,
+    #         timeout=300
+    #     )
         
-        service_map = {
-            "1": "bot",
-            "2": "api",
-            "3": "database",
-            "4": "website"
-        }
+    #     service_map = {
+    #         "1": "bot",
+    #         "2": "api",
+    #         "3": "database",
+    #         "4": "website"
+    #     }
         
-        affected_services = [
-            service_map[num.strip()] 
-            for num in services_msg.content.split(",")
-            if num.strip() in service_map
-        ]
+    #     affected_services = [
+    #         service_map[num.strip()] 
+    #         for num in services_msg.content.split(",")
+    #         if num.strip() in service_map
+    #     ]
         
-        affected_shards = None
-        if "bot" in affected_services:
-            await ctx.send(
-                "Enter affected shard IDs (comma-separated) or 'all' for all shards:"
-            )
-            shards_msg = await self.bot.wait_for(
-                "message",
-                check=lambda m: m.author == ctx.author and m.channel == ctx.channel,
-                timeout=300
-            )
+    #     affected_shards = None
+    #     if "bot" in affected_services:
+    #         await ctx.send(
+    #             "Enter affected shard IDs (comma-separated) or 'all' for all shards:"
+    #         )
+    #         shards_msg = await self.bot.wait_for(
+    #             "message",
+    #             check=lambda m: m.author == ctx.author and m.channel == ctx.channel,
+    #             timeout=300
+    #         )
             
-            if shards_msg.content.lower() == "all":
-                affected_shards = [str(shard.id) for shard in self.bot.shards.values()]
-            else:
-                affected_shards = [
-                    num.strip() 
-                    for num in shards_msg.content.split(",")
-                    if num.strip().isdigit()
-                ]
+    #         if shards_msg.content.lower() == "all":
+    #             affected_shards = [str(shard.id) for shard in self.bot.shards.values()]
+    #         else:
+    #             affected_shards = [
+    #                 num.strip() 
+    #                 for num in shards_msg.content.split(",")
+    #                 if num.strip().isdigit()
+    #             ]
         
-        await self.bot.db.execute(
-            """
-            INSERT INTO public.incidents (
-                id, title, start_time, status, severity,
-                affected_services, affected_shards, updates
-            )
-            VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-            """,
-            incident_id,
-            title,
-            current_ts,
-            "investigating",
-            severity,
-            affected_services,
-            affected_shards,
-            json.dumps([{
-                "status": "Investigating",
-                "timestamp": current_ts,
-                "message": initial_message.content
-            }])
-        )
+    #     await self.bot.db.execute(
+    #         """
+    #         INSERT INTO public.incidents (
+    #             id, title, start_time, status, severity,
+    #             affected_services, affected_shards, updates
+    #         )
+    #         VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+    #         """,
+    #         incident_id,
+    #         title,
+    #         current_ts,
+    #         "investigating",
+    #         severity,
+    #         affected_services,
+    #         affected_shards,
+    #         json.dumps([{
+    #             "status": "Investigating",
+    #             "timestamp": current_ts,
+    #             "message": initial_message.content
+    #         }])
+    #     )
         
-        embed = Embed(
-            title="🚨 New Incident Created",
-            description=(
-                f"**ID:** {incident_id}\n"
-                f"**Title:** {title}\n"
-                f"**Severity:** {severity}\n"
-                f"**Status:** investigating\n"
-                f"**Services:** {', '.join(affected_services)}\n"
-                f"**Shards:** {', '.join(affected_shards) if affected_shards else 'N/A'}\n\n"
-                f"**Initial Update:**\n{initial_message.content}"
-            ),
-            color=0xFF0000 if severity == "critical" else 0xFFA500
-        )
+    #     embed = Embed(
+    #         title="🚨 New Incident Created",
+    #         description=(
+    #             f"**ID:** {incident_id}\n"
+    #             f"**Title:** {title}\n"
+    #             f"**Severity:** {severity}\n"
+    #             f"**Status:** investigating\n"
+    #             f"**Services:** {', '.join(affected_services)}\n"
+    #             f"**Shards:** {', '.join(affected_shards) if affected_shards else 'N/A'}\n\n"
+    #             f"**Initial Update:**\n{initial_message.content}"
+    #         ),
+    #         color=0xFF0000 if severity == "critical" else 0xFFA500
+    #     )
         
-        return await ctx.send(embed=embed)
+    #     return await ctx.send(embed=embed)
 
-    @incident.command(name="update")
-    async def incident_update(
-        self,
-        ctx: Context,
-        incident_id: str,
-        status: Literal["investigating", "identified", "monitoring", "resolved"],
-        *,
-        message: str
-    ):
-        """Add an update to an existing incident."""
-        incident = await self.bot.db.fetchrow(
-            """
-            SELECT * FROM public.incidents WHERE id = $1
-            """,
-            incident_id
-        )
+    # @incident.command(name="update")
+    # async def incident_update(
+    #     self,
+    #     ctx: Context,
+    #     incident_id: str,
+    #     status: Literal["investigating", "identified", "monitoring", "resolved"],
+    #     *,
+    #     message: str
+    # ):
+    #     """Add an update to an existing incident."""
+    #     incident = await self.bot.db.fetchrow(
+    #         """
+    #         SELECT * FROM public.incidents WHERE id = $1
+    #         """,
+    #         incident_id
+    #     )
         
-        if not incident:
-            return await ctx.warn(f"No incident found with ID: {incident_id}")
+    #     if not incident:
+    #         return await ctx.warn(f"No incident found with ID: {incident_id}")
             
-        current_ts = int(time.time() * 1000)
-        updates = json.loads(incident["updates"])
-        updates.append({
-            "status": status.capitalize(),
-            "timestamp": current_ts,
-            "message": message
-        })
+    #     current_ts = int(time.time() * 1000)
+    #     updates = json.loads(incident["updates"])
+    #     updates.append({
+    #         "status": status.capitalize(),
+    #         "timestamp": current_ts,
+    #         "message": message
+    #     })
         
-        if status == "resolved":
-            await self.bot.db.execute(
-                """
-                UPDATE public.incidents 
-                SET updates = $1, status = $2, end_time = $3
-                WHERE id = $4
-                """,
-                json.dumps(updates),
-                status,
-                current_ts,
-                incident_id
-            )
-        else:
-            await self.bot.db.execute(
-                """
-                UPDATE public.incidents 
-                SET updates = $1, status = $2
-                WHERE id = $3
-                """,
-                json.dumps(updates),
-                status,
-                incident_id
-            )
+    #     if status == "resolved":
+    #         await self.bot.db.execute(
+    #             """
+    #             UPDATE public.incidents 
+    #             SET updates = $1, status = $2, end_time = $3
+    #             WHERE id = $4
+    #             """,
+    #             json.dumps(updates),
+    #             status,
+    #             current_ts,
+    #             incident_id
+    #         )
+    #     else:
+    #         await self.bot.db.execute(
+    #             """
+    #             UPDATE public.incidents 
+    #             SET updates = $1, status = $2
+    #             WHERE id = $3
+    #             """,
+    #             json.dumps(updates),
+    #             status,
+    #             incident_id
+    #         )
             
-        embed = Embed(
-            title=f"📝 Incident Update: {incident['title']}",
-            description=(
-                f"**ID:** {incident_id}\n"
-                f"**Status:** {status}\n"
-                f"**Update:**\n{message}"
-            ),
-            color=0x00FF00 if status == "resolved" else 0xFFA500
-        )
+    #     embed = Embed(
+    #         title=f"📝 Incident Update: {incident['title']}",
+    #         description=(
+    #             f"**ID:** {incident_id}\n"
+    #             f"**Status:** {status}\n"
+    #             f"**Update:**\n{message}"
+    #         ),
+    #         color=0x00FF00 if status == "resolved" else 0xFFA500
+    #     )
         
-        return await ctx.send(embed=embed)
+    #     return await ctx.send(embed=embed)
 
-    @incident.command(name="list")
-    async def incident_list(self, ctx: Context, status: Optional[str] = None):
-        """List all incidents or filter by status."""
-        query = """
-            SELECT 
-                id, title, start_time, end_time, 
-                status, severity, affected_services
-            FROM public.incidents
-        """
+    # @incident.command(name="list")
+    # async def incident_list(self, ctx: Context, status: Optional[str] = None):
+    #     """List all incidents or filter by status."""
+    #     query = """
+    #         SELECT 
+    #             id, title, start_time, end_time, 
+    #             status, severity, affected_services
+    #         FROM public.incidents
+    #     """
         
-        if status:
-            query += " WHERE status = $1"
-            incidents = await self.bot.db.fetch(query, status)
-        else:
-            incidents = await self.bot.db.fetch(query)
+    #     if status:
+    #         query += " WHERE status = $1"
+    #         incidents = await self.bot.db.fetch(query, status)
+    #     else:
+    #         incidents = await self.bot.db.fetch(query)
             
-        if not incidents:
-            return await ctx.warn(
-                f"No incidents found{f' with status: {status}' if status else ''}"
-            )
+    #     if not incidents:
+    #         return await ctx.warn(
+    #             f"No incidents found{f' with status: {status}' if status else ''}"
+    #         )
             
-        entries = []
-        for inc in incidents:
-            duration = (
-                f" - {format_dt(datetime.fromtimestamp(inc['end_time']/1000), 'R')}"
-                if inc['end_time']
-                else " (Ongoing)"
-            )
+    #     entries = []
+    #     for inc in incidents:
+    #         duration = (
+    #             f" - {format_dt(datetime.fromtimestamp(inc['end_time']/1000), 'R')}"
+    #             if inc['end_time']
+    #             else " (Ongoing)"
+    #         )
             
-            entries.append(
-                f"**{inc['id']}** - {inc['severity'].upper()}\n"
-                f"**{inc['title']}**\n"
-                f"Started: {format_dt(datetime.fromtimestamp(inc['start_time']/1000), 'R')}"
-                f"{duration}\n"
-                f"Status: {inc['status']}\n"
-                f"Services: {', '.join(inc['affected_services'])}"
-            )
+    #         entries.append(
+    #             f"**{inc['id']}** - {inc['severity'].upper()}\n"
+    #             f"**{inc['title']}**\n"
+    #             f"Started: {format_dt(datetime.fromtimestamp(inc['start_time']/1000), 'R')}"
+    #             f"{duration}\n"
+    #             f"Status: {inc['status']}\n"
+    #             f"Services: {', '.join(inc['affected_services'])}"
+    #         )
             
-        paginator = Paginator(
-            ctx,
-            entries=entries,
-            embed=Embed(title="Incident List"),
-            per_page=5
-        )
+    #     paginator = Paginator(
+    #         ctx,
+    #         entries=entries,
+    #         embed=Embed(title="Incident List"),
+    #         per_page=5
+    #     )
         
-        return await paginator.start()
+    #     return await paginator.start()
 
-    @incident.command(name="view")
-    async def incident_view(self, ctx: Context, incident_id: str):
-        """View detailed information about a specific incident."""
-        incident = await self.bot.db.fetchrow(
-            """
-            SELECT * FROM public.incidents WHERE id = $1
-            """,
-            incident_id
-        )
+    # @incident.command(name="view")
+    # async def incident_view(self, ctx: Context, incident_id: str):
+    #     """View detailed information about a specific incident."""
+    #     incident = await self.bot.db.fetchrow(
+    #         """
+    #         SELECT * FROM public.incidents WHERE id = $1
+    #         """,
+    #         incident_id
+    #     )
         
-        if not incident:
-            return await ctx.warn(f"No incident found with ID: {incident_id}")
+    #     if not incident:
+    #         return await ctx.warn(f"No incident found with ID: {incident_id}")
             
-        updates = json.loads(incident["updates"])
+    #     updates = json.loads(incident["updates"])
         
-        embed = Embed(
-            title=f"🔍 Incident Details: {incident['title']}",
-            description=(
-                f"**ID:** {incident['id']}\n"
-                f"**Severity:** {incident['severity']}\n"
-                f"**Status:** {incident['status']}\n"
-                f"**Services:** {', '.join(incident['affected_services'])}\n"
-                f"**Shards:** {', '.join(incident['affected_shards']) if incident['affected_shards'] else 'N/A'}\n"
-                f"**Started:** {format_dt(datetime.fromtimestamp(incident['start_time']/1000))}\n"
-                f"**Ended:** {format_dt(datetime.fromtimestamp(incident['end_time']/1000)) if incident['end_time'] else 'Ongoing'}\n\n"
-                "**Updates:**"
-            ),
-            color=0x2b2d31
-        )
+    #     embed = Embed(
+    #         title=f"🔍 Incident Details: {incident['title']}",
+    #         description=(
+    #             f"**ID:** {incident['id']}\n"
+    #             f"**Severity:** {incident['severity']}\n"
+    #             f"**Status:** {incident['status']}\n"
+    #             f"**Services:** {', '.join(incident['affected_services'])}\n"
+    #             f"**Shards:** {', '.join(incident['affected_shards']) if incident['affected_shards'] else 'N/A'}\n"
+    #             f"**Started:** {format_dt(datetime.fromtimestamp(incident['start_time']/1000))}\n"
+    #             f"**Ended:** {format_dt(datetime.fromtimestamp(incident['end_time']/1000)) if incident['end_time'] else 'Ongoing'}\n\n"
+    #             "**Updates:**"
+    #         ),
+    #         color=0x2b2d31
+    #     )
         
-        for update in updates:
-            embed.add_field(
-                name=f"{update['status']} - {format_dt(datetime.fromtimestamp(update['timestamp']/1000), 'R')}",
-                value=update['message'],
-                inline=False
-            )
+    #     for update in updates:
+    #         embed.add_field(
+    #             name=f"{update['status']} - {format_dt(datetime.fromtimestamp(update['timestamp']/1000), 'R')}",
+    #             value=update['message'],
+    #             inline=False
+    #         )
             
-        return await ctx.send(embed=embed)
+    #     return await ctx.send(embed=embed)
 
-    @incident.command(name="delete", aliases=["remove"])
-    async def incident_delete(self, ctx: Context, incident_id: str):
-        """Delete an incident from the database."""
-        incident = await self.bot.db.fetchrow(
-            """
-            SELECT title, status, severity 
-            FROM public.incidents 
-            WHERE id = $1
-            """,
-            incident_id
-        )
+    # @incident.command(name="delete", aliases=["remove"])
+    # async def incident_delete(self, ctx: Context, incident_id: str):
+    #     """Delete an incident from the database."""
+    #     incident = await self.bot.db.fetchrow(
+    #         """
+    #         SELECT title, status, severity 
+    #         FROM public.incidents 
+    #         WHERE id = $1
+    #         """,
+    #         incident_id
+    #     )
         
-        if not incident:
-            return await ctx.warn(f"No incident found with ID: {incident_id}")
+    #     if not incident:
+    #         return await ctx.warn(f"No incident found with ID: {incident_id}")
         
-        await ctx.prompt(
-            f"Are you sure you want to delete this incident?\n\n"
-            f"**Title:** {incident['title']}\n"
-            f"**Status:** {incident['status']}\n"
-            f"**Severity:** {incident['severity']}"
-        )
+    #     await ctx.prompt(
+    #         f"Are you sure you want to delete this incident?\n\n"
+    #         f"**Title:** {incident['title']}\n"
+    #         f"**Status:** {incident['status']}\n"
+    #         f"**Severity:** {incident['severity']}"
+    #     )
         
-        await self.bot.db.execute(
-            """
-            DELETE FROM incidents 
-            WHERE id = $1
-            """,
-            incident_id
-        )
+    #     await self.bot.db.execute(
+    #         """
+    #         DELETE FROM incidents 
+    #         WHERE id = $1
+    #         """,
+    #         incident_id
+    #     )
         
-        embed = Embed(
-            title="🗑️ Incident Deleted",
-            description=(
-                f"Successfully deleted incident:\n"
-                f"**ID:** {incident_id}\n"
-                f"**Title:** {incident['title']}"
-            ),
-            color=0x00FF00
-        )
+    #     embed = Embed(
+    #         title="🗑️ Incident Deleted",
+    #         description=(
+    #             f"Successfully deleted incident:\n"
+    #             f"**ID:** {incident_id}\n"
+    #             f"**Title:** {incident['title']}"
+    #         ),
+    #         color=0x00FF00
+    #     )
         
-        return await ctx.send(embed=embed)
+    #     return await ctx.send(embed=embed)
 
     @group(name="docket")
     async def docket(self, ctx: Context):
@@ -2015,165 +2015,165 @@ class Owner(
             except (discord.NotFound, discord.Forbidden, discord.HTTPException):
                 continue
 
-    @sudo.group(name="beta")
-    async def beta(self, ctx: Context):
-        """Manage beta dashboard access"""
-        if ctx.invoked_subcommand is None:
-            return await ctx.send_help(ctx.command)
+    # @sudo.group(name="beta")
+    # async def beta(self, ctx: Context):
+    #     """Manage beta dashboard access"""
+    #     if ctx.invoked_subcommand is None:
+    #         return await ctx.send_help(ctx.command)
 
-    @beta.command(name="add")
-    async def beta_add(self, ctx: Context, user: discord.User, *, notes: str = None):
-        """Add a user to beta dashboard access"""
-        try:
-            await self.bot.db.execute(
-                """
-                INSERT INTO public.beta_dashboard (user_id, status, added_by, notes)
-                VALUES ($1, 'approved', $2, $3)
-                ON CONFLICT (user_id) 
-                DO UPDATE SET 
-                    status = 'approved',
-                    added_by = $2,
-                    notes = $3,
-                    added_at = CURRENT_TIMESTAMP
-                """,
-                user.id, ctx.author.id, notes
-            )
+    # @beta.command(name="add")
+    # async def beta_add(self, ctx: Context, user: discord.User, *, notes: str = None):
+    #     """Add a user to beta dashboard access"""
+    #     try:
+    #         await self.bot.db.execute(
+    #             """
+    #             INSERT INTO public.beta_dashboard (user_id, status, added_by, notes)
+    #             VALUES ($1, 'approved', $2, $3)
+    #             ON CONFLICT (user_id) 
+    #             DO UPDATE SET 
+    #                 status = 'approved',
+    #                 added_by = $2,
+    #                 notes = $3,
+    #                 added_at = CURRENT_TIMESTAMP
+    #             """,
+    #             user.id, ctx.author.id, notes
+    #         )
             
-            try:
-                user_embed = Embed(
-                    title="🎉 Beta Dashboard Access Granted",
-                    description=(
-                        "You've been **granted** access to Warm's beta dashboard!\n"
-                        "Moderator: {ctx.author.mention}`{ctx.author.id}`\n"
-                        "Here's everything you need to know:"
-                    ),
-                    color=0x2B2D31
-                )
-                user_embed.add_field(
-                    name=f"{config.EMOJIS.SOCIAL.WEBSITE} Dashboard URL",
-                    value="https://warm.lat/dashboard",
-                    inline=False
-                )
-                user_embed.add_field(
-                    name="🔑 How to Access",
-                    value=(
-                        "1. Visit the dashboard\n"
-                        "2. Login with Discord\n"
-                        "3. Select your server\n"
-                        "4. Start configuring!"
-                    ),
-                    inline=True
-                )
-                user_embed.add_field(
-                    name=f"{config.EMOJIS.SOCIAL.DISCORD} Need Help?",
-                    value=f"Join our [support server](https://discord.gg/apply) for assistance\n or contact <@1137513168965476352>",
-                    inline=True
-                )
-                user_embed.set_footer(text="Thank you for helping test our new dashboard!")
-                user_embed.color = 0x00FF00
+    #         try:
+    #             user_embed = Embed(
+    #                 title="🎉 Beta Dashboard Access Granted",
+    #                 description=(
+    #                     "You've been **granted** access to Warm's beta dashboard!\n"
+    #                     "Moderator: {ctx.author.mention}`{ctx.author.id}`\n"
+    #                     "Here's everything you need to know:"
+    #                 ),
+    #                 color=0x2B2D31
+    #             )
+    #             user_embed.add_field(
+    #                 name=f"{config.EMOJIS.SOCIAL.WEBSITE} Dashboard URL",
+    #                 value="https://warm.lat/dashboard",
+    #                 inline=False
+    #             )
+    #             user_embed.add_field(
+    #                 name="🔑 How to Access",
+    #                 value=(
+    #                     "1. Visit the dashboard\n"
+    #                     "2. Login with Discord\n"
+    #                     "3. Select your server\n"
+    #                     "4. Start configuring!"
+    #                 ),
+    #                 inline=True
+    #             )
+    #             user_embed.add_field(
+    #                 name=f"{config.EMOJIS.SOCIAL.DISCORD} Need Help?",
+    #                 value=f"Join our [support server](https://discord.gg/apply) for assistance\n or contact <@1137513168965476352>",
+    #                 inline=True
+    #             )
+    #             user_embed.set_footer(text="Thank you for helping test our new dashboard!")
+    #             user_embed.color = 0x00FF00
                 
-                await user.send(embed=user_embed)
-                await ctx.approve(f"Added {user.mention} to beta dashboard access and sent them information")
+    #             await user.send(embed=user_embed)
+    #             await ctx.approve(f"Added {user.mention} to beta dashboard access and sent them information")
             
-            except discord.Forbidden:
-                await ctx.approve(
-                    f"Added {user.mention} to beta dashboard access but couldn't send them information (DMs closed)"
-                )
+    #         except discord.Forbidden:
+    #             await ctx.approve(
+    #                 f"Added {user.mention} to beta dashboard access but couldn't send them information (DMs closed)"
+    #             )
                 
-        except Exception as e:
-            return await ctx.warn(f"Failed to add user: {e}")
+    #     except Exception as e:
+    #         return await ctx.warn(f"Failed to add user: {e}")
 
-    @beta.command(name="remove")
-    async def beta_remove(self, ctx: Context, user: discord.User):
-        """Remove a user from beta dashboard access"""
-        try:
-            result = await self.bot.db.execute(
-                """
-                DELETE FROM public.beta_dashboard
-                WHERE user_id = $1
-                """,
-                user.id
-            )
-            if result == "DELETE 0":
-                return await ctx.warn(f"{user.mention} was not in beta dashboard")
-            return await ctx.approve(f"Removed {user.mention} from beta dashboard access")
-        except Exception as e:
-            return await ctx.warn(f"Failed to remove user: {e}")
+    # @beta.command(name="remove")
+    # async def beta_remove(self, ctx: Context, user: discord.User):
+    #     """Remove a user from beta dashboard access"""
+    #     try:
+    #         result = await self.bot.db.execute(
+    #             """
+    #             DELETE FROM public.beta_dashboard
+    #             WHERE user_id = $1
+    #             """,
+    #             user.id
+    #         )
+    #         if result == "DELETE 0":
+    #             return await ctx.warn(f"{user.mention} was not in beta dashboard")
+    #         return await ctx.approve(f"Removed {user.mention} from beta dashboard access")
+    #     except Exception as e:
+    #         return await ctx.warn(f"Failed to remove user: {e}")
 
-    @beta.command(name="pending")
-    async def beta_pending(self, ctx: Context):
-        """List pending beta dashboard requests"""
-        try:
-            entries = []
-            records = await self.bot.db.fetch(
-                """
-                SELECT user_id, added_at, added_by, notes
-                FROM public.beta_dashboard
-                WHERE status = 'pending'
-                ORDER BY added_at DESC
-                """
-            )
-            for record in records:
-                user = self.bot.get_user(record['user_id'])
-                added_by = self.bot.get_user(record['added_by'])
-                entries.append(
-                    f"**User:** {user.mention if user else record['user_id']}\n"
-                    f"**Added by:** {added_by.mention if added_by else record['added_by']}\n"
-                    f"**Added:** {format_dt(record['added_at'])}\n"
-                    f"**Notes:** {record['notes'] or 'No notes'}"
-                )
+    # @beta.command(name="pending")
+    # async def beta_pending(self, ctx: Context):
+    #     """List pending beta dashboard requests"""
+    #     try:
+    #         entries = []
+    #         records = await self.bot.db.fetch(
+    #             """
+    #             SELECT user_id, added_at, added_by, notes
+    #             FROM public.beta_dashboard
+    #             WHERE status = 'pending'
+    #             ORDER BY added_at DESC
+    #             """
+    #         )
+    #         for record in records:
+    #             user = self.bot.get_user(record['user_id'])
+    #             added_by = self.bot.get_user(record['added_by'])
+    #             entries.append(
+    #                 f"**User:** {user.mention if user else record['user_id']}\n"
+    #                 f"**Added by:** {added_by.mention if added_by else record['added_by']}\n"
+    #                 f"**Added:** {format_dt(record['added_at'])}\n"
+    #                 f"**Notes:** {record['notes'] or 'No notes'}"
+    #             )
 
-            if not entries:
-                return await ctx.warn("No pending beta requests")
+    #         if not entries:
+    #             return await ctx.warn("No pending beta requests")
 
-            paginator = Paginator(
-                ctx,
-                entries=entries,
-                embed=Embed(title="Pending Beta Requests"),
-                per_page=5
-            )
-            return await paginator.start()
+    #         paginator = Paginator(
+    #             ctx,
+    #             entries=entries,
+    #             embed=Embed(title="Pending Beta Requests"),
+    #             per_page=5
+    #         )
+    #         return await paginator.start()
 
-        except Exception as e:
-            return await ctx.warn(f"Failed to fetch pending requests: {e}")
+    #     except Exception as e:
+    #         return await ctx.warn(f"Failed to fetch pending requests: {e}")
 
-    @beta.command(name="list")
-    async def beta_list(self, ctx: Context):
-        """List all beta dashboard users"""
-        try:
-            records = await self.bot.db.fetch(
-                """
-                SELECT user_id, status, added_at, added_by, notes
-                FROM public.beta_dashboard
-                ORDER BY added_at DESC
-                """
-            )
+    # @beta.command(name="list")
+    # async def beta_list(self, ctx: Context):
+    #     """List all beta dashboard users"""
+    #     try:
+    #         records = await self.bot.db.fetch(
+    #             """
+    #             SELECT user_id, status, added_at, added_by, notes
+    #             FROM public.beta_dashboard
+    #             ORDER BY added_at DESC
+    #             """
+    #         )
             
-            entries = []
-            for record in records:
-                user = self.bot.get_user(record['user_id'])
-                added_by = self.bot.get_user(record['added_by'])
-                entries.append(
-                    f"**User:** {user.mention if user else record['user_id']}\n"
-                    f"**Status:** {record['status']}\n"
-                    f"**Added by:** {added_by.mention if added_by else record['added_by']}\n"
-                    f"**Added:** {format_dt(record['added_at'])}\n"
-                    f"**Notes:** {record['notes'] or 'No notes'}"
-                )
+    #         entries = []
+    #         for record in records:
+    #             user = self.bot.get_user(record['user_id'])
+    #             added_by = self.bot.get_user(record['added_by'])
+    #             entries.append(
+    #                 f"**User:** {user.mention if user else record['user_id']}\n"
+    #                 f"**Status:** {record['status']}\n"
+    #                 f"**Added by:** {added_by.mention if added_by else record['added_by']}\n"
+    #                 f"**Added:** {format_dt(record['added_at'])}\n"
+    #                 f"**Notes:** {record['notes'] or 'No notes'}"
+    #             )
 
-            if not entries:
-                return await ctx.warn("No beta users found")
+    #         if not entries:
+    #             return await ctx.warn("No beta users found")
 
-            paginator = Paginator(
-                ctx,
-                entries=entries,
-                embed=Embed(title="Beta Dashboard Users"),
-                per_page=5
-            )
-            return await paginator.start()
+    #         paginator = Paginator(
+    #             ctx,
+    #             entries=entries,
+    #             embed=Embed(title="Beta Dashboard Users"),
+    #             per_page=5
+    #         )
+    #         return await paginator.start()
 
-        except Exception as e:
-            return await ctx.warn(f"Failed to fetch beta users: {e}")
+    #     except Exception as e:
+    #         return await ctx.warn(f"Failed to fetch beta users: {e}")
 
     @sudo.group(name="reports", invoke_without_command=True)
     async def reports(self, ctx: Context):
