@@ -295,7 +295,6 @@ class EvictHelp(MinimalHelpCommand):
             await self.context.reply("No commands available in this group.")
 
     async def send_command_help(self, command: Command):
-
         await self.initialize_bot_user()
 
         if command.cog is None or "cogs" not in getattr(command.cog, "__module__", ""):
@@ -304,11 +303,14 @@ class EvictHelp(MinimalHelpCommand):
 
         bot = self.context.bot
 
-        try:
-            syntax = f"{self.context.clean_prefix}{command.qualified_name} {' '.join([f'({parameter.name})' if not parameter.optional else f'[{parameter.name}]' for parameter in command.arguments])}"
+        def build_syntax(cmd):
+            params = [
+                f"({p.name})" if p.default is p.empty else f"[{p.name}]"
+                for p in cmd.params.values()
+            ]
+            return f"{self.context.clean_prefix}{cmd.qualified_name} {' '.join(params)}".strip()
 
-        except AttributeError:
-            syntax = f"{self.context.clean_prefix}{command.qualified_name}"
+        syntax = build_syntax(command)
 
         brief = command.brief or ""
         permissions = self.format_permissions(command, brief)
@@ -319,11 +321,12 @@ class EvictHelp(MinimalHelpCommand):
                 description=f"> {command.description.capitalize() if command.description else (command.help.capitalize() if command.help else None)}",
             )
             .set_author(
-                name=f"{bot.user.name} help", icon_url=bot.user.display_avatar.url
+                name=f"{bot.user.name} help",
+                icon_url=bot.user.display_avatar.url
             )
             .add_field(
                 name="Usage",
-                value=f"```Ruby\nSyntax: {syntax}\nExample: {self.context.clean_prefix}{command.qualified_name} {command.example or ''}```",
+                value=f"```Ruby\nSyntax: {syntax}\nExample: {self.context.clean_prefix}{command.qualified_name} {getattr(command, 'example', '')}```",
                 inline=False,
             )
             .add_field(
@@ -334,11 +337,12 @@ class EvictHelp(MinimalHelpCommand):
         )
 
         for param in command.clean_params.values():
-            if isinstance(param.annotation, FlagsMeta):
-                self._add_flag_formatting(param.annotation, embed)  # type: ignore
+            annotation = param.annotation
+            if isinstance(annotation, type) and issubclass(annotation, FlagConverter):
+                self._add_flag_formatting(annotation, embed)
 
         embed.set_footer(
-            text=f"Aliases: {', '.join(a for a in command.aliases) if len(command.aliases) > 0 else 'none'} • warm.lat",
+            text=f"Aliases: {', '.join(command.aliases) if command.aliases else 'none'} • warm.lat",
             icon_url=self.context.author.display_avatar.url,
         )
 
