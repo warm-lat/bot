@@ -847,7 +847,7 @@ class Owner(
         """
         current_earnings = await self.bot.db.fetchval(
             """
-            SELECT earnings 
+            SELECT wallet 
             FROM public.economy 
             WHERE user_id = $1
             """,
