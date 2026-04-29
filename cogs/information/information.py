@@ -208,7 +208,29 @@ class Information(Cog):
         
         return await ctx.neutral(message=f"`{latency}ms` (edit: `{edit_latency}ms`)", patch=message)
 
-    @hybrid_command()
+    # @hybrid_command()
+    # async def shards(self, ctx: Context):
+    #     """
+    #     View the bot shard latency.
+    #     """
+
+    #     embed = Embed(title=f"Total shards [{self.bot.shard_count}]")
+
+    #     for shard in self.bot.shards:
+    #         guilds = [g for g in self.bot.guilds if g.shard_id == shard]
+    #         users = sum([g.member_count for g in guilds])
+    #         shard_indicator = f"{config.EMOJIS.MISC.CONNECTION}" if ctx.guild.shard_id == shard else ""
+    #         embed.add_field(
+    #             name=f"Shard {shard} {shard_indicator}",
+    #             value=f"**ping**: ``{round(self.bot.shards.get(shard).latency * 1000)}ms``\n**guilds**: ``{len(guilds)}``\n**users**: ``{users:,}``",
+    #             inline=True,
+    #         )
+    #         embed.set_author(name=ctx.author.display_name, icon_url=ctx.author.display_avatar.url)
+    #         embed.set_footer(text=f"You are on Shard {ctx.guild.shard_id}.", icon_url=f"{self.bot.user.display_avatar.url}")
+
+    #     await ctx.send(embed=embed)
+
+    @hybrid_command(name="shards")
     async def shards(self, ctx: Context):
         """
         View the bot shard latency.
@@ -218,13 +240,19 @@ class Information(Cog):
 
         for shard in self.bot.shards:
             guilds = [g for g in self.bot.guilds if g.shard_id == shard]
-            users = sum([g.member_count for g in guilds])
+            users = sum(g.member_count for g in guilds if g.member_count is not None)
             shard_indicator = f"{config.EMOJIS.MISC.CONNECTION}" if ctx.guild.shard_id == shard else ""
+
             embed.add_field(
                 name=f"Shard {shard} {shard_indicator}",
-                value=f"**ping**: ``{round(self.bot.shards.get(shard).latency * 1000)}ms``\n**guilds**: ``{len(guilds)}``\n**users**: ``{users:,}``",
+                value=(
+                    f"Ping: **{round(self.bot.shards.get(shard).latency * 1000)}ms** \n " # type: ignore
+                    f"Guilds: **{len(guilds)}** \n" 
+                    f"Users: **{users:,}**"
+                )
                 inline=True,
             )
+
             embed.set_author(name=ctx.author.display_name, icon_url=ctx.author.display_avatar.url)
             embed.set_footer(text=f"You are on Shard {ctx.guild.shard_id}.", icon_url=f"{self.bot.user.display_avatar.url}")
 
