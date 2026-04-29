@@ -154,17 +154,17 @@ class CLIENT:
     INVITE_URL: str = "https://discord.com/api/oauth2/authorize?client_id=1420609343283531776&permissions=8&scope=bot%20applications.commands"
     SUPPORT_URL: str = "https://discord.gg/apply"
     #TWITCH_URL: str = "https://twitch.tv/nxyyontop"
-    OWNER_IDS: list = [1137513168965476352]
+    OWNER_IDS: list = [1137513168965476352, 1441842594995900477]
     DESCRIPTION: str = "A bot to manage your Discord server."
 
 class LAVALINK:
     NODE_COUNT: int = 2
-    HOST: str = "expel.best"
+    HOST: str = "swappi.ng"
     PORT: int = 443
-    PASSWORD: str = "publicnodeaccessforallthatneednotwant"
+    PASSWORD: str = "st3dN0de4Y"
     SPOTIFY_CLIENT_ID: str = "4c3c2ba7ad6c4ef4a0c0d793cb979ce8"
     SPOTIFY_CLIENT_SECRET: str = "12dd934e7bca4536bb9f8d86b049a25e"
-    
+
 class RATELIMITS:
     PER_10S: int = 10
     PER_30S: int = 25

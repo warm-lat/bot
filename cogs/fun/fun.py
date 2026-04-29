@@ -5455,1054 +5455,1054 @@ class Fun(Cog):
 
                 await session.save(self.bot.redis)
 
-    @group(name="socials", invoke_without_command=True)
-    async def socials(self, ctx: Context, user: Member | User = parameter(
-            default=lambda ctx: ctx.author,
-        ),
-    ) -> Message:
-        """
-        View your or another user's profile.
-        """
-        if not isinstance(user, User):
-            user = await self.bot.fetch_user(user.id)
+    # @group(name="socials", invoke_without_command=True)
+    # async def socials(self, ctx: Context, user: Member | User = parameter(
+    #         default=lambda ctx: ctx.author,
+    #     ),
+    # ) -> Message:
+    #     """
+    #     View your or another user's profile.
+    #     """
+    #     if not isinstance(user, User):
+    #         user = await self.bot.fetch_user(user.id)
 
-        socials = await self.bot.db.fetchrow(
-            """
-            SELECT * 
-            FROM public.socials
-            WHERE user_id = $1
-            """,
-            user.id
-        )
+    #     socials = await self.bot.db.fetchrow(
+    #         """
+    #         SELECT * 
+    #         FROM public.socials
+    #         WHERE user_id = $1
+    #         """,
+    #         user.id
+    #     )
 
-        friends = await self.bot.db.fetch(
-            """
-            SELECT friends 
-            FROM public.socials_details 
-            WHERE user_id = $1
-            """,
-            user.id
-        )
+    #     friends = await self.bot.db.fetch(
+    #         """
+    #         SELECT friends 
+    #         FROM public.socials_details 
+    #         WHERE user_id = $1
+    #         """,
+    #         user.id
+    #     )
 
-        links = await self.bot.db.fetch(
-            """
-            SELECT * 
-            FROM public.social_links 
-            WHERE user_id = $1
-            """,
-            user.id
-        )
+    #     links = await self.bot.db.fetch(
+    #         """
+    #         SELECT * 
+    #         FROM public.social_links 
+    #         WHERE user_id = $1
+    #         """,
+    #         user.id
+    #     )
 
-        embed = Embed(
-            title=f"{user.name}",
-            url=f"https://discord.com/users/{user.id}",
-        )
+    #     embed = Embed(
+    #         title=f"{user.name}",
+    #         url=f"https://discord.com/users/{user.id}",
+    #     )
 
-        if isinstance(user, Member):
-            support_guild = self.bot.get_guild(1349176135874908181)  
-            support_member = support_guild.get_member(user.id) if support_guild else None
+    #     if isinstance(user, Member):
+    #         support_guild = self.bot.get_guild(1349176135874908181)  
+    #         support_member = support_guild.get_member(user.id) if support_guild else None
             
-            badges = []
-            staff_eligible = False
+    #         badges = []
+    #         staff_eligible = False
             
-            if support_member:  
-                if any(role.id == 1367503266145112125 for role in support_member.roles):
-                    badges.extend([f"{config.EMOJIS.STAFF.DEVELOPER}", f"{config.EMOJIS.STAFF.OWNER}"])
-                    staff_eligible = True
+    #         if support_member:  
+    #             if any(role.id == 1367503266145112125 for role in support_member.roles):
+    #                 badges.extend([f"{config.EMOJIS.STAFF.DEVELOPER}", f"{config.EMOJIS.STAFF.OWNER}"])
+    #                 staff_eligible = True
                     
-                if any(role.id == 1368665247782797335 for role in support_member.roles):
-                    badges.append(f"{config.EMOJIS.STAFF.SUPPORT}")
-                    staff_eligible = True
+    #             if any(role.id == 1368665247782797335 for role in support_member.roles):
+    #                 badges.append(f"{config.EMOJIS.STAFF.SUPPORT}")
+    #                 staff_eligible = True
                     
-                if any(role.id == 1323255508609663098 for role in support_member.roles):
-                    badges.append(f"{config.EMOJIS.STAFF.TRIAL}")
-                    staff_eligible = True
+    #             if any(role.id == 1323255508609663098 for role in support_member.roles):
+    #                 badges.append(f"{config.EMOJIS.STAFF.TRIAL}")
+    #                 staff_eligible = True
 
-                if any(role.id == 1325007612797784144 for role in support_member.roles):
-                    badges.append(f"{config.EMOJIS.STAFF.MODERATOR}")
-                    staff_eligible = True
+    #             if any(role.id == 1325007612797784144 for role in support_member.roles):
+    #                 badges.append(f"{config.EMOJIS.STAFF.MODERATOR}")
+    #                 staff_eligible = True
 
-                if any(role.id == 1318054098666389534 for role in support_member.roles):
-                    badges.append(f"{config.EMOJIS.STAFF.DONOR}")
+    #             if any(role.id == 1318054098666389534 for role in support_member.roles):
+    #                 badges.append(f"{config.EMOJIS.STAFF.DONOR}")
                     
-                if any(role.id == 1422671459565699216 for role in support_member.roles):
-                    badges.append(f"{config.EMOJIS.STAFF.INSTANCE}")
+    #             if any(role.id == 1422671459565699216 for role in support_member.roles):
+    #                 badges.append(f"{config.EMOJIS.STAFF.INSTANCE}")
                 
-            if badges:
-                if staff_eligible:
-                    badges.append(f"{config.EMOJIS.STAFF.SUPPORT}")
-                embed.description = f"{' '.join(badges)}"
-            else:
-                embed.description = "> No badges available."
+    #         if badges:
+    #             if staff_eligible:
+    #                 badges.append(f"{config.EMOJIS.STAFF.SUPPORT}")
+    #             embed.description = f"{' '.join(badges)}"
+    #         else:
+    #             embed.description = "> No badges available."
 
-        if socials and socials.get('bio'):
-            embed.add_field(name="Bio", value=socials['bio'], inline=False)
-        else:
-            embed.add_field(name="Bio", value="> No bio added.", inline=False)
+    #     if socials and socials.get('bio'):
+    #         embed.add_field(name="Bio", value=socials['bio'], inline=False)
+    #     else:
+    #         embed.add_field(name="Bio", value="> No bio added.", inline=False)
 
-        if friends:
-            friends_list = []
-            for row in friends:
-                try:
-                    friend_user = await self.bot.fetch_user(row['friends'])
-                    friends_list.append(f"> {friend_user.name}")
-                except Exception:
-                    friends_list.append(f"> Unknown User ({row['friends']})")
+    #     if friends:
+    #         friends_list = []
+    #         for row in friends:
+    #             try:
+    #                 friend_user = await self.bot.fetch_user(row['friends'])
+    #                 friends_list.append(f"> {friend_user.name}")
+    #             except Exception:
+    #                 friends_list.append(f"> Unknown User ({row['friends']})")
 
-            embed.add_field(name="Friends", value="\n".join(friends_list), inline=False)
-        else:
-            embed.add_field(name="Friends", value="> No friends added.", inline=False)
+    #         embed.add_field(name="Friends", value="\n".join(friends_list), inline=False)
+    #     else:
+    #         embed.add_field(name="Friends", value="> No friends added.", inline=False)
 
-        embed.add_field(
-            name="Creation",
-            value=f"> {format_dt(user.created_at, 'R')}",
-            inline=False
-        )
+    #     embed.add_field(
+    #         name="Creation",
+    #         value=f"> {format_dt(user.created_at, 'R')}",
+    #         inline=False
+    #     )
 
-        if user.banner:
-            embed.set_image(url=user.banner.url)
+    #     if user.banner:
+    #         embed.set_image(url=user.banner.url)
 
-        view = View()
-        for link in links:
-            view.add_item(Button(label=link['type'], url=link['url'], style=ButtonStyle.link))
+    #     view = View()
+    #     for link in links:
+    #         view.add_item(Button(label=link['type'], url=link['url'], style=ButtonStyle.link))
 
-        return await ctx.send(embed=embed, view=view)
+    #     return await ctx.send(embed=embed, view=view)
 
 
-    @socials.command(name="bio")
-    async def socials_bio(self, ctx: Context, *, bio: str = None):
-        """
-        Set your bio for the social embed. If no bio is specified and a bio exists, it will be removed.
-        """
-        check = await self.bot.db.fetchrow(
-            """
-            SELECT * FROM public.socials 
-            WHERE user_id = $1
-            """, 
-            ctx.author.id
-        )
+    # @socials.command(name="bio")
+    # async def socials_bio(self, ctx: Context, *, bio: str = None):
+    #     """
+    #     Set your bio for the social embed. If no bio is specified and a bio exists, it will be removed.
+    #     """
+    #     check = await self.bot.db.fetchrow(
+    #         """
+    #         SELECT * FROM public.socials 
+    #         WHERE user_id = $1
+    #         """, 
+    #         ctx.author.id
+    #     )
 
-        if bio:
-            if len(bio) > 200:
-                return await ctx.warn("Bio must be 200 characters or less.")
+    #     if bio:
+    #         if len(bio) > 200:
+    #             return await ctx.warn("Bio must be 200 characters or less.")
 
-            if check:
-                await self.bot.db.execute(
-                    """
-                    UPDATE public.socials SET bio = $1 
-                    WHERE user_id = $2
-                    """, 
-                    bio, 
-                    ctx.author.id
-                )
-            else:
-                await self.bot.db.execute(
-                    """
-                    INSERT INTO public.socials 
-                    (user_id, bio) 
-                    VALUES ($1, $2)
-                    """, 
-                    ctx.author.id, 
-                    bio
-                )
-            await ctx.approve(f"Bio successfully set to **{bio}**.")
-        else:
-            if check and check['bio'] is not None:
-                await ctx.prompt("Are you sure you want to remove your bio?")
-                await self.bot.db.execute(
-                    """
-                    UPDATE public.socials SET bio = NULL 
-                    WHERE user_id = $1
-                    """, 
-                    ctx.author.id
-                )
-                await ctx.approve("Bio successfully removed.")
-            else:
-                await ctx.warn("You don't have a bio to remove or set.")
+    #         if check:
+    #             await self.bot.db.execute(
+    #                 """
+    #                 UPDATE public.socials SET bio = $1 
+    #                 WHERE user_id = $2
+    #                 """, 
+    #                 bio, 
+    #                 ctx.author.id
+    #             )
+    #         else:
+    #             await self.bot.db.execute(
+    #                 """
+    #                 INSERT INTO public.socials 
+    #                 (user_id, bio) 
+    #                 VALUES ($1, $2)
+    #                 """, 
+    #                 ctx.author.id, 
+    #                 bio
+    #             )
+    #         await ctx.approve(f"Bio successfully set to **{bio}**.")
+    #     else:
+    #         if check and check['bio'] is not None:
+    #             await ctx.prompt("Are you sure you want to remove your bio?")
+    #             await self.bot.db.execute(
+    #                 """
+    #                 UPDATE public.socials SET bio = NULL 
+    #                 WHERE user_id = $1
+    #                 """, 
+    #                 ctx.author.id
+    #             )
+    #             await ctx.approve("Bio successfully removed.")
+    #         else:
+    #             await ctx.warn("You don't have a bio to remove or set.")
 
-    @socials.command(name="friends")
-    async def socials_friends(self, ctx: Context, *, friends: Member):
-        """
-        Add or remove a friend for the social embed. If the friend already exists, remove the entry.
-        """
-        await self.bot.db.execute(
-            """
-            INSERT INTO public.socials (user_id) 
-            VALUES ($1)
-            ON CONFLICT (user_id) 
-            DO NOTHING
-            """,
-            ctx.author.id
-        )
+    # @socials.command(name="friends")
+    # async def socials_friends(self, ctx: Context, *, friends: Member):
+    #     """
+    #     Add or remove a friend for the social embed. If the friend already exists, remove the entry.
+    #     """
+    #     await self.bot.db.execute(
+    #         """
+    #         INSERT INTO public.socials (user_id) 
+    #         VALUES ($1)
+    #         ON CONFLICT (user_id) 
+    #         DO NOTHING
+    #         """,
+    #         ctx.author.id
+    #     )
 
-        await self.bot.db.execute(
-            """
-            INSERT INTO public.socials (user_id) 
-            VALUES ($1)
-            ON CONFLICT (user_id) 
-            DO NOTHING
-            """,
-            friends.id
-        )
+    #     await self.bot.db.execute(
+    #         """
+    #         INSERT INTO public.socials (user_id) 
+    #         VALUES ($1)
+    #         ON CONFLICT (user_id) 
+    #         DO NOTHING
+    #         """,
+    #         friends.id
+    #     )
 
-        check = await self.bot.db.fetchrow(
-            """
-            SELECT * FROM public.socials_details 
-            WHERE user_id = $1 
-            AND friends = $2
-            """,
-            ctx.author.id,
-            friends.id
-        )
+    #     check = await self.bot.db.fetchrow(
+    #         """
+    #         SELECT * FROM public.socials_details 
+    #         WHERE user_id = $1 
+    #         AND friends = $2
+    #         """,
+    #         ctx.author.id,
+    #         friends.id
+    #     )
 
-        if check:
-            await ctx.prompt(f"Are you sure you want to remove {friends.mention} from your friends list?")
-            await self.bot.db.execute(
-                """
-                DELETE FROM public.socials_details 
-                WHERE user_id = $1 
-                AND friends = $2
-                """,
-                ctx.author.id,
-                friends.id
-            )
-            await self.bot.db.execute(
-                """
-                DELETE FROM public.socials_details 
-                WHERE user_id = $1 
-                AND friends = $2
-                """,
-                friends.id,
-                ctx.author.id
-            )
-            await ctx.approve(f"Friend **{friends}** has been removed.")
-        else:
-            await ctx.confirm(f"{friends.mention} would you like to be friends with {ctx.author.mention}?", user=friends)
+    #     if check:
+    #         await ctx.prompt(f"Are you sure you want to remove {friends.mention} from your friends list?")
+    #         await self.bot.db.execute(
+    #             """
+    #             DELETE FROM public.socials_details 
+    #             WHERE user_id = $1 
+    #             AND friends = $2
+    #             """,
+    #             ctx.author.id,
+    #             friends.id
+    #         )
+    #         await self.bot.db.execute(
+    #             """
+    #             DELETE FROM public.socials_details 
+    #             WHERE user_id = $1 
+    #             AND friends = $2
+    #             """,
+    #             friends.id,
+    #             ctx.author.id
+    #         )
+    #         await ctx.approve(f"Friend **{friends}** has been removed.")
+    #     else:
+    #         await ctx.confirm(f"{friends.mention} would you like to be friends with {ctx.author.mention}?", user=friends)
 
-            await self.bot.db.execute(
-                """
-                INSERT INTO public.socials_details 
-                (user_id, friends) 
-                VALUES ($1, $2)
-                """,
-                ctx.author.id,
-                friends.id
-            )
-            await self.bot.db.execute(
-                """
-                INSERT INTO public.socials_details 
-                (user_id, friends) 
-                VALUES ($1, $2)
-                """,
-                friends.id,
-                ctx.author.id
-            )
-            await ctx.approve(f"Friend **{friends}** has been added successfully.")
-            await self.generate_profile_image(ctx.author, force_update=True)
+    #         await self.bot.db.execute(
+    #             """
+    #             INSERT INTO public.socials_details 
+    #             (user_id, friends) 
+    #             VALUES ($1, $2)
+    #             """,
+    #             ctx.author.id,
+    #             friends.id
+    #         )
+    #         await self.bot.db.execute(
+    #             """
+    #             INSERT INTO public.socials_details 
+    #             (user_id, friends) 
+    #             VALUES ($1, $2)
+    #             """,
+    #             friends.id,
+    #             ctx.author.id
+    #         )
+    #         await ctx.approve(f"Friend **{friends}** has been added successfully.")
+    #         await self.generate_profile_image(ctx.author, force_update=True)
 
-    @socials.command(name="links")
-    async def socials_links(
-        self, 
-        ctx: Context, 
-        type: Literal["instagram", "youtube", "github", "discord", "twitter", "twitch", "reddit", "pinterest", "snapchat", "tiktok"],
-        url: Optional[str] = None
-    ):
-        """
-        Add or remove a link to your social embed.
-        """
-        url_patterns = {
-            "instagram": r"https?://(www\.)?instagram\.com/.*",
-            "youtube": r"https?://(www\.)?(youtube\.com|youtu\.be)/.*",
-            "github": r"https?://(www\.)?github\.com/.*",
-            "discord": r"https?://(www\.)?(discord\.gg|discord\.com/invite)/.*",
-            "twitter": r"https?://(www\.)?twitter\.com/.*",
-            "twitch": r"https?://(www\.)?twitch\.tv/.*",
-            "reddit": r"https?://(www\.)?reddit\.com/.*",
-            "pinterest": r"https?://(www\.)?pinterest\.com/.*",
-            "snapchat": r"https?://(www\.)?snapchat\.com/.*",
-            "tiktok": r"https?://(www\.)?tiktok\.com/.*",
-        }
+    # @socials.command(name="links")
+    # async def socials_links(
+    #     self, 
+    #     ctx: Context, 
+    #     type: Literal["instagram", "youtube", "github", "discord", "twitter", "twitch", "reddit", "pinterest", "snapchat", "tiktok"],
+    #     url: Optional[str] = None
+    # ):
+    #     """
+    #     Add or remove a link to your social embed.
+    #     """
+    #     url_patterns = {
+    #         "instagram": r"https?://(www\.)?instagram\.com/.*",
+    #         "youtube": r"https?://(www\.)?(youtube\.com|youtu\.be)/.*",
+    #         "github": r"https?://(www\.)?github\.com/.*",
+    #         "discord": r"https?://(www\.)?(discord\.gg|discord\.com/invite)/.*",
+    #         "twitter": r"https?://(www\.)?twitter\.com/.*",
+    #         "twitch": r"https?://(www\.)?twitch\.tv/.*",
+    #         "reddit": r"https?://(www\.)?reddit\.com/.*",
+    #         "pinterest": r"https?://(www\.)?pinterest\.com/.*",
+    #         "snapchat": r"https?://(www\.)?snapchat\.com/.*",
+    #         "tiktok": r"https?://(www\.)?tiktok\.com/.*",
+    #     }
 
-        if url:
-            if not url.startswith(("http://", "https://")):
-                return await ctx.warn("Please provide a valid URL starting with http:// or https://")
+    #     if url:
+    #         if not url.startswith(("http://", "https://")):
+    #             return await ctx.warn("Please provide a valid URL starting with http:// or https://")
 
-            if not re.match(url_patterns[type], url):
-                return await ctx.warn(f"Please provide a valid {type} URL") 
+    #         if not re.match(url_patterns[type], url):
+    #             return await ctx.warn(f"Please provide a valid {type} URL") 
             
-            try:
-                await self.bot.db.execute(
-                    """
-                    INSERT INTO public.social_links (user_id, type, url)
-                    VALUES ($1, $2, $3)
-                    ON CONFLICT (user_id, type) 
-                    DO UPDATE SET url = $3
-                    """,
-                    ctx.author.id,
-                    type,
-                    url
-                )
-                await ctx.approve(f"Successfully set your {type} link to {url}")
-                await self.generate_profile_image(ctx.author, force_update=True)
+    #         try:
+    #             await self.bot.db.execute(
+    #                 """
+    #                 INSERT INTO public.social_links (user_id, type, url)
+    #                 VALUES ($1, $2, $3)
+    #                 ON CONFLICT (user_id, type) 
+    #                 DO UPDATE SET url = $3
+    #                 """,
+    #                 ctx.author.id,
+    #                 type,
+    #                 url
+    #             )
+    #             await ctx.approve(f"Successfully set your {type} link to {url}")
+    #             await self.generate_profile_image(ctx.author, force_update=True)
 
 
-            except Exception as e:
-                return await ctx.warn(f"Failed to set link: {e}")
-        else:
-            try:
-                await ctx.prompt(f"Are you sure you want to remove your {type} link?")
-                await self.generate_profile_image(ctx.author, force_update=True)
-                result = await self.bot.db.execute(
-                    """
-                    DELETE FROM public.social_links 
-                    WHERE user_id = $1 AND type = $2
-                    """,
-                    ctx.author.id,
-                    type
-                )
-                if result == "DELETE 1":
-                    return await ctx.approve(f"Successfully removed your {type} link.")
-                else:
-                    return await ctx.warn(f"No {type} link found to remove.")
+    #         except Exception as e:
+    #             return await ctx.warn(f"Failed to set link: {e}")
+    #     else:
+    #         try:
+    #             await ctx.prompt(f"Are you sure you want to remove your {type} link?")
+    #             await self.generate_profile_image(ctx.author, force_update=True)
+    #             result = await self.bot.db.execute(
+    #                 """
+    #                 DELETE FROM public.social_links 
+    #                 WHERE user_id = $1 AND type = $2
+    #                 """,
+    #                 ctx.author.id,
+    #                 type
+    #             )
+    #             if result == "DELETE 1":
+    #                 return await ctx.approve(f"Successfully removed your {type} link.")
+    #             else:
+    #                 return await ctx.warn(f"No {type} link found to remove.")
             
-            except Exception as e:
-                return await ctx.warn(f"Failed to remove link: {e}")
+    #         except Exception as e:
+    #             return await ctx.warn(f"Failed to remove link: {e}")
 
-    @socials.command(name="background")
-    async def socials_background(self, ctx: Context, *, url: str = None):
-        """Set your profile background. Send a URL or attach a file (images, GIFs, or videos under 30s)."""
-        if not url and not ctx.message.attachments:
-            await ctx.prompt("Are you sure you want to remove your background?")
-            await self.bot.db.execute(
-                """
-                UPDATE public.socials 
-                SET background_url = NULL 
-                WHERE user_id = $1
-                """,
-                ctx.author.id
-            )
-            return await ctx.approve("Background successfully removed!")
+    # @socials.command(name="background")
+    # async def socials_background(self, ctx: Context, *, url: str = None):
+    #     """Set your profile background. Send a URL or attach a file (images, GIFs, or videos under 30s)."""
+    #     if not url and not ctx.message.attachments:
+    #         await ctx.prompt("Are you sure you want to remove your background?")
+    #         await self.bot.db.execute(
+    #             """
+    #             UPDATE public.socials 
+    #             SET background_url = NULL 
+    #             WHERE user_id = $1
+    #             """,
+    #             ctx.author.id
+    #         )
+    #         return await ctx.approve("Background successfully removed!")
         
-        media_url = url or ctx.message.attachments[0].url
-        if not media_url.startswith(('http://', 'https://')):
-            return await ctx.warn("Please provide a valid URL or attachment")
+    #     media_url = url or ctx.message.attachments[0].url
+    #     if not media_url.startswith(('http://', 'https://')):
+    #         return await ctx.warn("Please provide a valid URL or attachment")
 
-        try:
-            async with aiohttp.ClientSession() as session:
-                async with session.get(media_url) as resp:
-                    if resp.status != 200:
-                        return await ctx.warn("Failed to fetch media")
+    #     try:
+    #         async with aiohttp.ClientSession() as session:
+    #             async with session.get(media_url) as resp:
+    #                 if resp.status != 200:
+    #                     return await ctx.warn("Failed to fetch media")
                     
-                    content_type = resp.headers.get('content-type', '')
+    #                 content_type = resp.headers.get('content-type', '')
                     
-                    allowed_types = {
-                        'image/jpeg', 'image/png', 'image/gif',
-                        'video/mp4', 'video/webm', 'video/quicktime'
-                    }
-                    if content_type not in allowed_types:
-                        return await ctx.warn("Invalid file type. Only jpg, png, gif, mp4, webm, and mov files are allowed.")
+    #                 allowed_types = {
+    #                     'image/jpeg', 'image/png', 'image/gif',
+    #                     'video/mp4', 'video/webm', 'video/quicktime'
+    #                 }
+    #                 if content_type not in allowed_types:
+    #                     return await ctx.warn("Invalid file type. Only jpg, png, gif, mp4, webm, and mov files are allowed.")
                     
-                    media_data = await resp.read()
-                    magic_bytes = media_data[:8]
+    #                 media_data = await resp.read()
+    #                 magic_bytes = media_data[:8]
                     
-                    valid_signatures = {
-                        b'\xFF\xD8\xFF': 'jpg', 
-                        b'\x89PNG\r\n\x1A\n': 'png',
-                        b'GIF87a': 'gif',  
-                        b'GIF89a': 'gif', 
-                        b'\x00\x00\x00': 'mp4', 
-                        b'\x1A\x45\xDF\xA3': 'webm'  
-                    }
+    #                 valid_signatures = {
+    #                     b'\xFF\xD8\xFF': 'jpg', 
+    #                     b'\x89PNG\r\n\x1A\n': 'png',
+    #                     b'GIF87a': 'gif',  
+    #                     b'GIF89a': 'gif', 
+    #                     b'\x00\x00\x00': 'mp4', 
+    #                     b'\x1A\x45\xDF\xA3': 'webm'  
+    #                 }
                     
-                    is_valid = False
-                    for signature in valid_signatures:
-                        if magic_bytes.startswith(signature):
-                            is_valid = True
-                            break
+    #                 is_valid = False
+    #                 for signature in valid_signatures:
+    #                     if magic_bytes.startswith(signature):
+    #                         is_valid = True
+    #                         break
                             
-                    if not is_valid:
-                        return await ctx.warn("Invalid file format detected.")
+    #                 if not is_valid:
+    #                     return await ctx.warn("Invalid file format detected.")
                     
-                    content_length = len(media_data)
-                    if content_length > 10 * 1024 * 1024: 
-                        return await ctx.warn("File must be under 10MB")
+    #                 content_length = len(media_data)
+    #                 if content_length > 10 * 1024 * 1024: 
+    #                     return await ctx.warn("File must be under 10MB")
 
-                    if content_type.startswith('video/'):
-                        video_buffer = io.BytesIO(media_data)
+    #                 if content_type.startswith('video/'):
+    #                     video_buffer = io.BytesIO(media_data)
                         
-                        probe = await asyncio.create_subprocess_exec(
-                            'ffprobe',
-                            '-v', 'error',
-                            '-show_entries', 'format=duration',
-                            '-of', 'default=noprint_wrappers=1:nokey=1',
-                            'pipe:0',
-                            stdin=asyncio.subprocess.PIPE,
-                            stdout=asyncio.subprocess.PIPE,
-                            stderr=asyncio.subprocess.PIPE
-                        )
-                        stdout, stderr = await probe.communicate(input=media_data)
+    #                     probe = await asyncio.create_subprocess_exec(
+    #                         'ffprobe',
+    #                         '-v', 'error',
+    #                         '-show_entries', 'format=duration',
+    #                         '-of', 'default=noprint_wrappers=1:nokey=1',
+    #                         'pipe:0',
+    #                         stdin=asyncio.subprocess.PIPE,
+    #                         stdout=asyncio.subprocess.PIPE,
+    #                         stderr=asyncio.subprocess.PIPE
+    #                     )
+    #                     stdout, stderr = await probe.communicate(input=media_data)
                         
-                        if probe.returncode != 0:
-                            return await ctx.warn("Invalid video file")
+    #                     if probe.returncode != 0:
+    #                         return await ctx.warn("Invalid video file")
                             
-                        try:
-                            duration = float(stdout.decode().strip())
-                            if duration > 30:
-                                return await ctx.warn("Video must be under 30 seconds")
-                        except:
-                            return await ctx.warn("Failed to process video")
+    #                     try:
+    #                         duration = float(stdout.decode().strip())
+    #                         if duration > 30:
+    #                             return await ctx.warn("Video must be under 30 seconds")
+    #                     except:
+    #                         return await ctx.warn("Failed to process video")
                     
-                    ext = mimetypes.guess_extension(content_type) or '.mp4'
-                    filename = f"{ctx.author.id}_{int(time.time())}{ext}"
+    #                 ext = mimetypes.guess_extension(content_type) or '.mp4'
+    #                 filename = f"{ctx.author.id}_{int(time.time())}{ext}"
                     
-                    headers = {"AccessKey": "bc5e2ae5-5433-4030-bbaaf49ef043-9766-4d31"}
-                    async with session.put(
-                        f"https://ny.storage.bunnycdn.com/warm2/socials/{filename}",
-                        headers=headers,
-                        data=media_data
-                    ) as upload:
-                        if upload.status != 201:
-                            return await ctx.warn("Failed to upload media")
+    #                 headers = {"AccessKey": "bc5e2ae5-5433-4030-bbaaf49ef043-9766-4d31"}
+    #                 async with session.put(
+    #                     f"https://ny.storage.bunnycdn.com/warm2/socials/{filename}",
+    #                     headers=headers,
+    #                     data=media_data
+    #                 ) as upload:
+    #                     if upload.status != 201:
+    #                         return await ctx.warn("Failed to upload media")
                         
-                        cdn_url = f"https://r2.warm.lat/socials/{filename}"
-                        await self.bot.db.execute(
-                            """
-                            UPDATE public.socials 
-                            SET background_url = $1 
-                            WHERE user_id = $2
-                            """,
-                            cdn_url,
-                            ctx.author.id
-                        )
-                        await ctx.approve("Background successfully set!")
-                        await self.generate_profile_image(ctx.author, force_update=True)
-        except Exception as e:
-            return await ctx.warn(f"Failed to set background: {e}")
+    #                     cdn_url = f"https://r2.warm.lat/socials/{filename}"
+    #                     await self.bot.db.execute(
+    #                         """
+    #                         UPDATE public.socials 
+    #                         SET background_url = $1 
+    #                         WHERE user_id = $2
+    #                         """,
+    #                         cdn_url,
+    #                         ctx.author.id
+    #                     )
+    #                     await ctx.approve("Background successfully set!")
+    #                     await self.generate_profile_image(ctx.author, force_update=True)
+    #     except Exception as e:
+    #         return await ctx.warn(f"Failed to set background: {e}")
 
-    @socials.command(name="audio")
-    async def socials_audio(self, ctx: Context, *, url: str = None):
-        """Set your profile audio. Send a URL, attachment, or Discord message link containing audio."""
-        if not url and not ctx.message.attachments:
-            await ctx.prompt("Are you sure you want to remove your audio?")
-            await self.bot.db.execute(
-                """
-                UPDATE public.socials 
-                SET audio_url = NULL, 
-                    audio_title = NULL 
-                WHERE user_id = $1
-                """,
-                ctx.author.id
-            )
-            return await ctx.approve("Audio successfully removed!")
+    # @socials.command(name="audio")
+    # async def socials_audio(self, ctx: Context, *, url: str = None):
+    #     """Set your profile audio. Send a URL, attachment, or Discord message link containing audio."""
+    #     if not url and not ctx.message.attachments:
+    #         await ctx.prompt("Are you sure you want to remove your audio?")
+    #         await self.bot.db.execute(
+    #             """
+    #             UPDATE public.socials 
+    #             SET audio_url = NULL, 
+    #                 audio_title = NULL 
+    #             WHERE user_id = $1
+    #             """,
+    #             ctx.author.id
+    #         )
+    #         return await ctx.approve("Audio successfully removed!")
 
-        if ctx.message.attachments:
-            media_url = ctx.message.attachments[0].url
-            original_filename = ctx.message.attachments[0].filename
-        elif url and "discord.com/channels/" in url:
-            try:
-                _, _, _, guild_id, channel_id, message_id = url.split('/')
-                channel = self.bot.get_channel(int(channel_id))
-                message = await channel.fetch_message(int(message_id))
+    #     if ctx.message.attachments:
+    #         media_url = ctx.message.attachments[0].url
+    #         original_filename = ctx.message.attachments[0].filename
+    #     elif url and "discord.com/channels/" in url:
+    #         try:
+    #             _, _, _, guild_id, channel_id, message_id = url.split('/')
+    #             channel = self.bot.get_channel(int(channel_id))
+    #             message = await channel.fetch_message(int(message_id))
                 
-                audio_attachment = next(
-                    (a for a in message.attachments if a.filename.endswith(('.mp3', '.wav', '.ogg', '.m4a'))), 
-                    None
-                )
-                if not audio_attachment:
-                    return await ctx.warn("No valid audio file found in the linked message")
+    #             audio_attachment = next(
+    #                 (a for a in message.attachments if a.filename.endswith(('.mp3', '.wav', '.ogg', '.m4a'))), 
+    #                 None
+    #             )
+    #             if not audio_attachment:
+    #                 return await ctx.warn("No valid audio file found in the linked message")
                 
-                media_url = audio_attachment.url
-                original_filename = audio_attachment.filename
-            except Exception:
-                return await ctx.warn("Invalid Discord message link or missing permissions")
-        else:
-            if not url:
-                return await ctx.warn("Please provide a valid URL or attachment")
-            media_url = url
-            original_filename = url.split('/')[-1]
+    #             media_url = audio_attachment.url
+    #             original_filename = audio_attachment.filename
+    #         except Exception:
+    #             return await ctx.warn("Invalid Discord message link or missing permissions")
+    #     else:
+    #         if not url:
+    #             return await ctx.warn("Please provide a valid URL or attachment")
+    #         media_url = url
+    #         original_filename = url.split('/')[-1]
             
-        if not media_url.startswith(('http://', 'https://')):
-            return await ctx.warn("Please provide a valid URL or attachment")
+    #     if not media_url.startswith(('http://', 'https://')):
+    #         return await ctx.warn("Please provide a valid URL or attachment")
 
-        try:
-            await ctx.typing()
-            async with aiohttp.ClientSession() as session:
-                async with session.get(media_url) as resp:
-                    if resp.status != 200:
-                        return await ctx.warn("Failed to fetch audio")
+    #     try:
+    #         await ctx.typing()
+    #         async with aiohttp.ClientSession() as session:
+    #             async with session.get(media_url) as resp:
+    #                 if resp.status != 200:
+    #                     return await ctx.warn("Failed to fetch audio")
                     
-                    content_type = resp.headers.get('content-type', '')
+    #                 content_type = resp.headers.get('content-type', '')
                     
-                    allowed_types = {
-                        'audio/mpeg', 'audio/mp3', 'audio/wav', 
-                        'audio/ogg', 'audio/mp4', 'audio/x-m4a'
-                    }
-                    if content_type not in allowed_types:
-                        return await ctx.warn("Invalid file type. Only mp3, wav, ogg, and m4a files are allowed.")
+    #                 allowed_types = {
+    #                     'audio/mpeg', 'audio/mp3', 'audio/wav', 
+    #                     'audio/ogg', 'audio/mp4', 'audio/x-m4a'
+    #                 }
+    #                 if content_type not in allowed_types:
+    #                     return await ctx.warn("Invalid file type. Only mp3, wav, ogg, and m4a files are allowed.")
                     
-                    media_data = await resp.read()
-                    magic_bytes = media_data[:8]
+    #                 media_data = await resp.read()
+    #                 magic_bytes = media_data[:8]
                     
-                    valid_signatures = {
-                        b'ID3': 'mp3',
-                        b'\xFF\xFB': 'mp3', 
-                        b'\xFF\xF3': 'mp3',
-                        b'\xFF\xF2': 'mp3',  
-                        b'RIFF': 'wav',
-                        b'OggS': 'ogg',
-                        b'ftyp': 'm4a',
-                        b'\x00\x00\x00': 'm4a' 
-                    }
+    #                 valid_signatures = {
+    #                     b'ID3': 'mp3',
+    #                     b'\xFF\xFB': 'mp3', 
+    #                     b'\xFF\xF3': 'mp3',
+    #                     b'\xFF\xF2': 'mp3',  
+    #                     b'RIFF': 'wav',
+    #                     b'OggS': 'ogg',
+    #                     b'ftyp': 'm4a',
+    #                     b'\x00\x00\x00': 'm4a' 
+    #                 }
                     
-                    is_valid = False
-                    detected_format = None
-                    for signature, format_type in valid_signatures.items():
-                        if magic_bytes.startswith(signature):
-                            is_valid = True
-                            detected_format = format_type
-                            break
+    #                 is_valid = False
+    #                 detected_format = None
+    #                 for signature, format_type in valid_signatures.items():
+    #                     if magic_bytes.startswith(signature):
+    #                         is_valid = True
+    #                         detected_format = format_type
+    #                         break
                             
-                    if not is_valid:
-                        return await ctx.warn("Invalid audio format detected.")
+    #                 if not is_valid:
+    #                     return await ctx.warn("Invalid audio format detected.")
                     
-                    content_length = len(media_data)
-                    if content_length > 10 * 1024 * 1024:
-                        return await ctx.warn("Audio file must be under 10MB")
-                    elif content_length < 1024:  
-                        return await ctx.warn("File is too small to be a valid audio file")
+    #                 content_length = len(media_data)
+    #                 if content_length > 10 * 1024 * 1024:
+    #                     return await ctx.warn("Audio file must be under 10MB")
+    #                 elif content_length < 1024:  
+    #                     return await ctx.warn("File is too small to be a valid audio file")
 
-                    header_check = media_data[:1024].lower()
-                    suspicious_patterns = [
-                        b'<script', b'<?php', b'<%', b'#!/',  
-                        b'ELF',
-                        b'MZ',   
-                        b'PK',   
-                        b'#!',   
-                        b'eval(', b'exec(', b'system(', 
-                        b'.exe', b'.dll', b'.sh', b'.bat'  
-                    ]
+    #                 header_check = media_data[:1024].lower()
+    #                 suspicious_patterns = [
+    #                     b'<script', b'<?php', b'<%', b'#!/',  
+    #                     b'ELF',
+    #                     b'MZ',   
+    #                     b'PK',   
+    #                     b'#!',   
+    #                     b'eval(', b'exec(', b'system(', 
+    #                     b'.exe', b'.dll', b'.sh', b'.bat'  
+    #                 ]
                     
-                    for pattern in suspicious_patterns:
-                        if pattern in header_check:
-                            return await ctx.warn("Potentially malicious file detected")
+    #                 for pattern in suspicious_patterns:
+    #                     if pattern in header_check:
+    #                         return await ctx.warn("Potentially malicious file detected")
 
-                    def calculate_entropy(data):
-                        if not data:
-                            return 0
-                        entropy = 0
-                        for x in range(256):
-                            p_x = data.count(x)/len(data)
-                            if p_x > 0:
-                                entropy += - p_x*math.log2(p_x)
-                        return entropy
+    #                 def calculate_entropy(data):
+    #                     if not data:
+    #                         return 0
+    #                     entropy = 0
+    #                     for x in range(256):
+    #                         p_x = data.count(x)/len(data)
+    #                         if p_x > 0:
+    #                             entropy += - p_x*math.log2(p_x)
+    #                     return entropy
 
-                    entropy = calculate_entropy(header_check)
-                    if entropy > 7.5: 
-                        return await ctx.warn("Suspicious file structure detected")
+    #                 entropy = calculate_entropy(header_check)
+    #                 if entropy > 7.5: 
+    #                     return await ctx.warn("Suspicious file structure detected")
 
-                    original_filename = original_filename.split('?')[0]
+    #                 original_filename = original_filename.split('?')[0]
                     
-                    old_audio = await self.bot.db.fetchval(
-                        """
-                        SELECT audio_url FROM public.socials 
-                        WHERE user_id = $1
-                        """, 
-                        ctx.author.id
-                    )
+    #                 old_audio = await self.bot.db.fetchval(
+    #                     """
+    #                     SELECT audio_url FROM public.socials 
+    #                     WHERE user_id = $1
+    #                     """, 
+    #                     ctx.author.id
+    #                 )
 
-                    try:
-                        process = await asyncio.create_subprocess_shell(
-                            f'ffprobe -i pipe:0 -v error',
-                            stdin=asyncio.subprocess.PIPE,
-                            stdout=asyncio.subprocess.PIPE,
-                            stderr=asyncio.subprocess.PIPE
-                        )
+    #                 try:
+    #                     process = await asyncio.create_subprocess_shell(
+    #                         f'ffprobe -i pipe:0 -v error',
+    #                         stdin=asyncio.subprocess.PIPE,
+    #                         stdout=asyncio.subprocess.PIPE,
+    #                         stderr=asyncio.subprocess.PIPE
+    #                     )
                         
-                        stdout, stderr = await asyncio.wait_for(
-                            process.communicate(input=media_data),
-                            timeout=10.0
-                        )
+    #                     stdout, stderr = await asyncio.wait_for(
+    #                         process.communicate(input=media_data),
+    #                         timeout=10.0
+    #                     )
                             
-                        if process.returncode != 0:
-                            return await ctx.warn("Invalid audio file")
+    #                     if process.returncode != 0:
+    #                         return await ctx.warn("Invalid audio file")
                             
-                        ext = mimetypes.guess_extension(content_type) or f'.{detected_format}'
+    #                     ext = mimetypes.guess_extension(content_type) or f'.{detected_format}'
                     
-                    except Exception as e:
-                        return await ctx.warn(f"Failed to process audio: {e}")
+    #                 except Exception as e:
+    #                     return await ctx.warn(f"Failed to process audio: {e}")
                     
-                    if not ext.lower() in ['.mp3', '.wav', '.ogg', '.m4a']:
-                        ext = f'.{detected_format}'
+    #                 if not ext.lower() in ['.mp3', '.wav', '.ogg', '.m4a']:
+    #                     ext = f'.{detected_format}'
                         
-                    filename = f"audio_{ctx.author.id}_{int(time.time())}{ext}"
+    #                 filename = f"audio_{ctx.author.id}_{int(time.time())}{ext}"
                     
-                    headers = {"AccessKey": "bc5e2ae5-5433-4030-bbaaf49ef043-9766-4d31"}
-                    async with session.put(
-                        f"https://ny.storage.bunnycdn.com/warm2/socials/{filename}",
-                        headers=headers,
-                        data=media_data
-                    ) as upload:
-                        if upload.status != 201:
-                            return await ctx.warn("Failed to upload audio")
+    #                 headers = {"AccessKey": "bc5e2ae5-5433-4030-bbaaf49ef043-9766-4d31"}
+    #                 async with session.put(
+    #                     f"https://ny.storage.bunnycdn.com/warm2/socials/{filename}",
+    #                     headers=headers,
+    #                     data=media_data
+    #                 ) as upload:
+    #                     if upload.status != 201:
+    #                         return await ctx.warn("Failed to upload audio")
                         
-                        cdn_url = f"https://bunny.warm.lat/socials/{filename}"
-                        await self.bot.db.execute(
-                            """
-                            UPDATE public.socials 
-                            SET audio_url = $1,
-                                audio_title = $2
-                            WHERE user_id = $3
-                            """,
-                            cdn_url,
-                            original_filename,
-                            ctx.author.id
-                        )
-                        await ctx.approve(f"Audio successfully set! Title: {original_filename}")
+    #                     cdn_url = f"https://bunny.warm.lat/socials/{filename}"
+    #                     await self.bot.db.execute(
+    #                         """
+    #                         UPDATE public.socials 
+    #                         SET audio_url = $1,
+    #                             audio_title = $2
+    #                         WHERE user_id = $3
+    #                         """,
+    #                         cdn_url,
+    #                         original_filename,
+    #                         ctx.author.id
+    #                     )
+    #                     await ctx.approve(f"Audio successfully set! Title: {original_filename}")
 
-                        if old_audio:
-                            old_filename = old_audio.split('/')[-1]
-                            try:
-                                async with session.delete(
-                                    f"https://ny.storage.bunnycdn.com/warm2/socials/{old_filename}",
-                                    headers=headers
-                                ) as delete:
-                                    print(f"Deleted old audio: {delete.status}")
-                            except Exception as e:
-                                print(f"Failed to delete old audio: {e}")
+    #                     if old_audio:
+    #                         old_filename = old_audio.split('/')[-1]
+    #                         try:
+    #                             async with session.delete(
+    #                                 f"https://ny.storage.bunnycdn.com/warm2/socials/{old_filename}",
+    #                                 headers=headers
+    #                             ) as delete:
+    #                                 print(f"Deleted old audio: {delete.status}")
+    #                         except Exception as e:
+    #                             print(f"Failed to delete old audio: {e}")
 
-                        await self.generate_profile_image(ctx.author, force_update=True)
-        except Exception as e:
-            return await ctx.warn(f"Failed to set audio: {e}")
+    #                     await self.generate_profile_image(ctx.author, force_update=True)
+    #     except Exception as e:
+    #         return await ctx.warn(f"Failed to set audio: {e}")
 
-    @socials.command(name="togglefriends")
-    async def socials_togglefriends(self, ctx: Context):
-        """Toggle the visibility of your friends list."""
-        current = await self.bot.db.fetchval(
-            """
-            SELECT show_friends 
-            FROM public.socials 
-            WHERE user_id = $1
-            """,
-            ctx.author.id
-        )
+    # @socials.command(name="togglefriends")
+    # async def socials_togglefriends(self, ctx: Context):
+    #     """Toggle the visibility of your friends list."""
+    #     current = await self.bot.db.fetchval(
+    #         """
+    #         SELECT show_friends 
+    #         FROM public.socials 
+    #         WHERE user_id = $1
+    #         """,
+    #         ctx.author.id
+    #     )
         
-        new_value = not current if current is not None else False
-        await self.bot.db.execute(
-            """
-            UPDATE public.socials 
-            SET show_friends = $1 
-            WHERE user_id = $2
-            """,
-            new_value,
-            ctx.author.id
-        )
-        await ctx.approve(f"Friends list visibility {'enabled' if new_value else 'disabled'}!")
-        await self.generate_profile_image(ctx.author, force_update=True)
+    #     new_value = not current if current is not None else False
+    #     await self.bot.db.execute(
+    #         """
+    #         UPDATE public.socials 
+    #         SET show_friends = $1 
+    #         WHERE user_id = $2
+    #         """,
+    #         new_value,
+    #         ctx.author.id
+    #     )
+    #     await ctx.approve(f"Friends list visibility {'enabled' if new_value else 'disabled'}!")
+    #     await self.generate_profile_image(ctx.author, force_update=True)
 
-    @socials.command(name="toggleactivity")
-    async def socials_toggleactivity(self, ctx: Context):
-        """Toggle the visibility of your activity status."""
-        support_guild = self.bot.get_guild(1349176135874908181)
-        if not support_guild or not support_guild.get_member(ctx.author.id):
-            return await ctx.warn("You must be in the support server to use this feature!")
+    # @socials.command(name="toggleactivity")
+    # async def socials_toggleactivity(self, ctx: Context):
+    #     """Toggle the visibility of your activity status."""
+    #     support_guild = self.bot.get_guild(1349176135874908181)
+    #     if not support_guild or not support_guild.get_member(ctx.author.id):
+    #         return await ctx.warn("You must be in the support server to use this feature!")
 
-        current = await self.bot.db.fetchval(
-            """
-            SELECT show_activity 
-            FROM public.socials 
-            WHERE user_id = $1
-            """,
-            ctx.author.id
-        )
+    #     current = await self.bot.db.fetchval(
+    #         """
+    #         SELECT show_activity 
+    #         FROM public.socials 
+    #         WHERE user_id = $1
+    #         """,
+    #         ctx.author.id
+    #     )
         
-        new_value = not current if current is not None else False
-        await self.bot.db.execute(
-            """
-            UPDATE public.socials 
-            SET show_activity = $1 
-            WHERE user_id = $2
-            """,
-            new_value,
-            ctx.author.id
-        )
-        await ctx.approve(f"Activity status visibility {'enabled' if new_value else 'disabled'}!")
-        await self.generate_profile_image(ctx.author, force_update=True)
+    #     new_value = not current if current is not None else False
+    #     await self.bot.db.execute(
+    #         """
+    #         UPDATE public.socials 
+    #         SET show_activity = $1 
+    #         WHERE user_id = $2
+    #         """,
+    #         new_value,
+    #         ctx.author.id
+    #     )
+    #     await ctx.approve(f"Activity status visibility {'enabled' if new_value else 'disabled'}!")
+    #     await self.generate_profile_image(ctx.author, force_update=True)
 
-    @socials.group(name="colors", invoke_without_command=True)
-    async def socials_colors(self, ctx: Context):
-        """View your saved color sets."""
-        linear_colors = await self.bot.db.fetch(
-            """
-            SELECT name, color 
-            FROM public.socials_saved_colors 
-            WHERE user_id = $1 AND type = 'linear'
-            """, 
-            ctx.author.id
-        )
+    # @socials.group(name="colors", invoke_without_command=True)
+    # async def socials_colors(self, ctx: Context):
+    #     """View your saved color sets."""
+    #     linear_colors = await self.bot.db.fetch(
+    #         """
+    #         SELECT name, color 
+    #         FROM public.socials_saved_colors 
+    #         WHERE user_id = $1 AND type = 'linear'
+    #         """, 
+    #         ctx.author.id
+    #     )
         
-        gradient_sets = await self.bot.db.fetch(
-            """
-            SELECT DISTINCT name 
-            FROM public.socials_saved_gradients 
-            WHERE user_id = $1
-            """,
-            ctx.author.id
-        )
+    #     gradient_sets = await self.bot.db.fetch(
+    #         """
+    #         SELECT DISTINCT name 
+    #         FROM public.socials_saved_gradients 
+    #         WHERE user_id = $1
+    #         """,
+    #         ctx.author.id
+    #     )
 
-        embed = discord.Embed(title="Your Saved Colors")
+    #     embed = discord.Embed(title="Your Saved Colors")
         
-        if linear_colors:
-            linear_text = "\n".join(f"• **{row['name']}**: {row['color']}" for row in linear_colors)
-            embed.add_field(name="Linear Colors", value=linear_text, inline=False)
+    #     if linear_colors:
+    #         linear_text = "\n".join(f"• **{row['name']}**: {row['color']}" for row in linear_colors)
+    #         embed.add_field(name="Linear Colors", value=linear_text, inline=False)
             
-        if gradient_sets:
-            gradient_text = "\n".join(f"• **{row['name']}**" for row in gradient_sets)
-            embed.add_field(name="Gradient Sets", value=gradient_text, inline=False)
+    #     if gradient_sets:
+    #         gradient_text = "\n".join(f"• **{row['name']}**" for row in gradient_sets)
+    #         embed.add_field(name="Gradient Sets", value=gradient_text, inline=False)
             
-        if not linear_colors and not gradient_sets:
-            embed.description = "No saved colors! Use `colors save` to save some."
+    #     if not linear_colors and not gradient_sets:
+    #         embed.description = "No saved colors! Use `colors save` to save some."
             
-        await ctx.send(embed=embed)
+    #     await ctx.send(embed=embed)
 
-    @socials_colors.command(name="save")
-    async def colors_save(self, ctx: Context, type: Literal["linear", "gradient"], name: str):
-        """Save your current color setup with a name."""
-        if len(name) > 32:
-            return await ctx.warn("Name must be 32 characters or less!")
+    # @socials_colors.command(name="save")
+    # async def colors_save(self, ctx: Context, type: Literal["linear", "gradient"], name: str):
+    #     """Save your current color setup with a name."""
+    #     if len(name) > 32:
+    #         return await ctx.warn("Name must be 32 characters or less!")
 
-        if type == "linear":
-            current = await self.bot.db.fetchval(
-                """
-                SELECT linear_color FROM public.socials 
-                WHERE user_id = $1
-                """, 
-                ctx.author.id
-            )
-            if not current:
-                return await ctx.warn("No linear color set to save!")
+    #     if type == "linear":
+    #         current = await self.bot.db.fetchval(
+    #             """
+    #             SELECT linear_color FROM public.socials 
+    #             WHERE user_id = $1
+    #             """, 
+    #             ctx.author.id
+    #         )
+    #         if not current:
+    #             return await ctx.warn("No linear color set to save!")
                 
-            await self.bot.db.execute(
-                """
-                INSERT INTO public.socials_saved_colors (user_id, name, color, type)
-                VALUES ($1, $2, $3, 'linear')
-                ON CONFLICT (user_id, name) 
-                DO UPDATE SET color = $3
-                """,
-                ctx.author.id, name, current
-            )
-        else:
-            colors = await self.bot.db.fetch(
-                """
-                SELECT color, position 
-                FROM public.socials_gradients 
-                WHERE user_id = $1 
-                ORDER BY position
-                """,
-                ctx.author.id
-            )
-            if not colors:
-                return await ctx.warn("No gradient colors set to save!")
+    #         await self.bot.db.execute(
+    #             """
+    #             INSERT INTO public.socials_saved_colors (user_id, name, color, type)
+    #             VALUES ($1, $2, $3, 'linear')
+    #             ON CONFLICT (user_id, name) 
+    #             DO UPDATE SET color = $3
+    #             """,
+    #             ctx.author.id, name, current
+    #         )
+    #     else:
+    #         colors = await self.bot.db.fetch(
+    #             """
+    #             SELECT color, position 
+    #             FROM public.socials_gradients 
+    #             WHERE user_id = $1 
+    #             ORDER BY position
+    #             """,
+    #             ctx.author.id
+    #         )
+    #         if not colors:
+    #             return await ctx.warn("No gradient colors set to save!")
                 
-            await self.bot.db.execute(
-                """
-                DELETE FROM public.socials_saved_gradients 
-                WHERE user_id = $1 AND name = $2
-                """,
-                ctx.author.id, name
-            )
+    #         await self.bot.db.execute(
+    #             """
+    #             DELETE FROM public.socials_saved_gradients 
+    #             WHERE user_id = $1 AND name = $2
+    #             """,
+    #             ctx.author.id, name
+    #         )
             
-            for color in colors:
-                await self.bot.db.execute(
-                    """
-                    INSERT INTO public.socials_saved_gradients 
-                    (user_id, name, color, position)
-                    VALUES ($1, $2, $3, $4)
-                    """,
-                    ctx.author.id, name, color['color'], color['position']
-                )
+    #         for color in colors:
+    #             await self.bot.db.execute(
+    #                 """
+    #                 INSERT INTO public.socials_saved_gradients 
+    #                 (user_id, name, color, position)
+    #                 VALUES ($1, $2, $3, $4)
+    #                 """,
+    #                 ctx.author.id, name, color['color'], color['position']
+    #             )
                 
-        await ctx.approve(f"Saved {type} colors as **{name}**!")
+    #     await ctx.approve(f"Saved {type} colors as **{name}**!")
 
-    @socials.command(name="apply")
-    async def socials_apply(self, ctx: Context, element: Literal["text_underline", "bold_text", "status", "bio", "social_icons"], *, name: str):
-        """Apply a saved color set to a profile element."""
-        linear = await self.bot.db.fetchrow(
-            """
-            SELECT color FROM public.socials_saved_colors 
-            WHERE user_id = $1 AND name = $2 AND type = 'linear'
-            """,
-            ctx.author.id, name
-        )
+    # @socials.command(name="apply")
+    # async def socials_apply(self, ctx: Context, element: Literal["text_underline", "bold_text", "status", "bio", "social_icons"], *, name: str):
+    #     """Apply a saved color set to a profile element."""
+    #     linear = await self.bot.db.fetchrow(
+    #         """
+    #         SELECT color FROM public.socials_saved_colors 
+    #         WHERE user_id = $1 AND name = $2 AND type = 'linear'
+    #         """,
+    #         ctx.author.id, name
+    #     )
         
-        gradient = await self.bot.db.fetch(
-            """
-            SELECT color, position FROM public.socials_saved_gradients 
-            WHERE user_id = $1 AND name = $2 
-            ORDER BY position
-            """,
-            ctx.author.id, name
-        )
+    #     gradient = await self.bot.db.fetch(
+    #         """
+    #         SELECT color, position FROM public.socials_saved_gradients 
+    #         WHERE user_id = $1 AND name = $2 
+    #         ORDER BY position
+    #         """,
+    #         ctx.author.id, name
+    #     )
         
-        if not linear and not gradient:
-            return await ctx.warn(f"No saved colors found with name **{name}**!")
+    #     if not linear and not gradient:
+    #         return await ctx.warn(f"No saved colors found with name **{name}**!")
 
-        await self.bot.db.execute(
-            """
-            UPDATE public.socials 
-            SET {}_color_type = $1,
-                {}_linear_color = $2,
-                {}_gradient_name = $3
-            WHERE user_id = $4
-            """.format(element, element, element),
-            'linear' if linear else 'gradient',
-            linear['color'] if linear else None,
-            name if gradient else None,
-            ctx.author.id
-        )
+    #     await self.bot.db.execute(
+    #         """
+    #         UPDATE public.socials 
+    #         SET {}_color_type = $1,
+    #             {}_linear_color = $2,
+    #             {}_gradient_name = $3
+    #         WHERE user_id = $4
+    #         """.format(element, element, element),
+    #         'linear' if linear else 'gradient',
+    #         linear['color'] if linear else None,
+    #         name if gradient else None,
+    #         ctx.author.id
+    #     )
         
-        await ctx.approve(f"Applied **{name}** to {element.replace('_', ' ')}!")
-        await self.generate_profile_image(ctx.author, force_update=True)
+    #     await ctx.approve(f"Applied **{name}** to {element.replace('_', ' ')}!")
+    #     await self.generate_profile_image(ctx.author, force_update=True)
 
-    @socials.command(name="remove")
-    async def socials_remove(self, ctx: Context, element: Literal["text_underline", "bold_text", "status", "bio", "social_icons"]):
-        """Remove colors from a profile element, resetting it to default."""
-        await self.bot.db.execute(
-            """
-            UPDATE public.socials 
-            SET {}_color_type = 'linear',
-                {}_linear_color = '#ffffff',
-                {}_gradient_name = NULL
-            WHERE user_id = $1
-            """.format(element, element, element),
-            ctx.author.id
-        )
+    # @socials.command(name="remove")
+    # async def socials_remove(self, ctx: Context, element: Literal["text_underline", "bold_text", "status", "bio", "social_icons"]):
+    #     """Remove colors from a profile element, resetting it to default."""
+    #     await self.bot.db.execute(
+    #         """
+    #         UPDATE public.socials 
+    #         SET {}_color_type = 'linear',
+    #             {}_linear_color = '#ffffff',
+    #             {}_gradient_name = NULL
+    #         WHERE user_id = $1
+    #         """.format(element, element, element),
+    #         ctx.author.id
+    #     )
         
-        await ctx.approve(f"Removed colors from {element.replace('_', ' ')}!")
-        await self.generate_profile_image(ctx.author, force_update=True)
+    #     await ctx.approve(f"Removed colors from {element.replace('_', ' ')}!")
+    #     await self.generate_profile_image(ctx.author, force_update=True)
 
-    @socials_colors.group(name="gradient", invoke_without_command=True)
-    async def colors_gradient(self, ctx: Context, name: str = None):
-        """View a specific gradient set or list all your gradients."""
-        if name:
-            colors = await self.bot.db.fetch(
-                """
-                SELECT color, position 
-                FROM public.socials_saved_gradients 
-                WHERE user_id = $1 AND name = $2 
-                ORDER BY position
-                """,
-                ctx.author.id, name
-            )
-            if not colors:
-                return await ctx.warn(f"No gradient set found named **{name}**")
+    # @socials_colors.group(name="gradient", invoke_without_command=True)
+    # async def colors_gradient(self, ctx: Context, name: str = None):
+    #     """View a specific gradient set or list all your gradients."""
+    #     if name:
+    #         colors = await self.bot.db.fetch(
+    #             """
+    #             SELECT color, position 
+    #             FROM public.socials_saved_gradients 
+    #             WHERE user_id = $1 AND name = $2 
+    #             ORDER BY position
+    #             """,
+    #             ctx.author.id, name
+    #         )
+    #         if not colors:
+    #             return await ctx.warn(f"No gradient set found named **{name}**")
                 
-            embed = discord.Embed(title=f"Gradient Set: {name}")
-            for color in colors:
-                embed.add_field(
-                    name=f"Position: {color['position']}%",
-                    value=f"Color: {color['color']}",
-                    inline=True
-                )
-        else:
-            sets = await self.bot.db.fetch(
-                """
-                SELECT DISTINCT name 
-                FROM public.socials_saved_gradients 
-                WHERE user_id = $1
-                """,
-                ctx.author.id
-            )
-            if not sets:
-                return await ctx.warn("No gradient sets saved! Use `colors gradient create` to make one.")
+    #         embed = discord.Embed(title=f"Gradient Set: {name}")
+    #         for color in colors:
+    #             embed.add_field(
+    #                 name=f"Position: {color['position']}%",
+    #                 value=f"Color: {color['color']}",
+    #                 inline=True
+    #             )
+    #     else:
+    #         sets = await self.bot.db.fetch(
+    #             """
+    #             SELECT DISTINCT name 
+    #             FROM public.socials_saved_gradients 
+    #             WHERE user_id = $1
+    #             """,
+    #             ctx.author.id
+    #         )
+    #         if not sets:
+    #             return await ctx.warn("No gradient sets saved! Use `colors gradient create` to make one.")
                 
-            embed = discord.Embed(title="Your Gradient Sets")
-            embed.description = "\n".join(f"• **{row['name']}**" for row in sets)
+    #         embed = discord.Embed(title="Your Gradient Sets")
+    #         embed.description = "\n".join(f"• **{row['name']}**" for row in sets)
             
-        await ctx.send(embed=embed)
+    #     await ctx.send(embed=embed)
 
-    @colors_gradient.command(name="create")
-    async def gradient_create(self, ctx: Context, name: str):
-        """Create a new gradient set."""
-        if len(name) > 32:
-            return await ctx.warn("Name must be 32 characters or less!")
+    # @colors_gradient.command(name="create")
+    # async def gradient_create(self, ctx: Context, name: str):
+    #     """Create a new gradient set."""
+    #     if len(name) > 32:
+    #         return await ctx.warn("Name must be 32 characters or less!")
             
-        exists = await self.bot.db.fetchval(
-            """
-            SELECT EXISTS(
-                SELECT 1 FROM public.socials_saved_gradients 
-                WHERE user_id = $1 AND name = $2
-            )
-            """,
-            ctx.author.id, name
-        )
-        if exists:
-            return await ctx.warn(f"A gradient set named **{name}** already exists!")
+    #     exists = await self.bot.db.fetchval(
+    #         """
+    #         SELECT EXISTS(
+    #             SELECT 1 FROM public.socials_saved_gradients 
+    #             WHERE user_id = $1 AND name = $2
+    #         )
+    #         """,
+    #         ctx.author.id, name
+    #     )
+    #     if exists:
+    #         return await ctx.warn(f"A gradient set named **{name}** already exists!")
             
-        await ctx.approve(f"Created gradient set **{name}**! Add colors with `colors gradient add {name} #color position%`")
+    #     await ctx.approve(f"Created gradient set **{name}**! Add colors with `colors gradient add {name} #color position%`")
 
-    @colors_gradient.command(name="add")
-    async def gradient_add(self, ctx: Context, name: str, color: str, position: str):
-        """Add a color to a gradient set. Color must be hex (#RRGGBB) and position must be 0-100%."""
-        if not re.match(r'^#(?:[0-9a-fA-F]{3}){1,2}$', color):
-            return await ctx.warn("Invalid hex color! Must be in format #RRGGBB")
+    # @colors_gradient.command(name="add")
+    # async def gradient_add(self, ctx: Context, name: str, color: str, position: str):
+    #     """Add a color to a gradient set. Color must be hex (#RRGGBB) and position must be 0-100%."""
+    #     if not re.match(r'^#(?:[0-9a-fA-F]{3}){1,2}$', color):
+    #         return await ctx.warn("Invalid hex color! Must be in format #RRGGBB")
             
-        try:
-            position = int(position.strip('%'))
-            if not 0 <= position <= 100:
-                raise ValueError
-        except ValueError:
-            return await ctx.warn("Position must be between 0% and 100%")
+    #     try:
+    #         position = int(position.strip('%'))
+    #         if not 0 <= position <= 100:
+    #             raise ValueError
+    #     except ValueError:
+    #         return await ctx.warn("Position must be between 0% and 100%")
             
-        count = await self.bot.db.fetchval(
-            """
-            SELECT COUNT(*) FROM public.socials_saved_gradients 
-            WHERE user_id = $1 AND name = $2
-            """,
-            ctx.author.id, name
-        )
+    #     count = await self.bot.db.fetchval(
+    #         """
+    #         SELECT COUNT(*) FROM public.socials_saved_gradients 
+    #         WHERE user_id = $1 AND name = $2
+    #         """,
+    #         ctx.author.id, name
+    #     )
         
-        if count >= 8:
-            return await ctx.warn("You can only have up to 8 colors in a gradient!")
+    #     if count >= 8:
+    #         return await ctx.warn("You can only have up to 8 colors in a gradient!")
             
-        await self.bot.db.execute(
-            """
-            INSERT INTO public.socials_saved_gradients 
-            (user_id, name, color, position)
-            VALUES ($1, $2, $3, $4)
-            ON CONFLICT (user_id, name, position) 
-            DO UPDATE SET color = $3
-            """,
-            ctx.author.id, name, color.lower(), position
-        )
-        await ctx.approve(f"Added {color} at position {position}% to gradient **{name}**")
+    #     await self.bot.db.execute(
+    #         """
+    #         INSERT INTO public.socials_saved_gradients 
+    #         (user_id, name, color, position)
+    #         VALUES ($1, $2, $3, $4)
+    #         ON CONFLICT (user_id, name, position) 
+    #         DO UPDATE SET color = $3
+    #         """,
+    #         ctx.author.id, name, color.lower(), position
+    #     )
+    #     await ctx.approve(f"Added {color} at position {position}% to gradient **{name}**")
 
-    @colors_gradient.command(name="remove")
-    async def gradient_remove(self, ctx: Context, name: str, position: str):
-        """Remove a color from a gradient set by its position."""
-        try:
-            position = int(position.strip('%'))
-        except ValueError:
-            return await ctx.warn("Position must be a number between 0-100%")
+    # @colors_gradient.command(name="remove")
+    # async def gradient_remove(self, ctx: Context, name: str, position: str):
+    #     """Remove a color from a gradient set by its position."""
+    #     try:
+    #         position = int(position.strip('%'))
+    #     except ValueError:
+    #         return await ctx.warn("Position must be a number between 0-100%")
             
-        result = await self.bot.db.execute(
-            """
-            DELETE FROM public.socials_saved_gradients 
-            WHERE user_id = $1 AND name = $2 AND position = $3
-            """,
-            ctx.author.id, name, position
-        )
+    #     result = await self.bot.db.execute(
+    #         """
+    #         DELETE FROM public.socials_saved_gradients 
+    #         WHERE user_id = $1 AND name = $2 AND position = $3
+    #         """,
+    #         ctx.author.id, name, position
+    #     )
         
-        if result == "DELETE 0":
-            return await ctx.warn(f"No color found at position {position}% in gradient **{name}**")
+    #     if result == "DELETE 0":
+    #         return await ctx.warn(f"No color found at position {position}% in gradient **{name}**")
             
-        await ctx.approve(f"Removed color at position {position}% from gradient **{name}**")
+    #     await ctx.approve(f"Removed color at position {position}% from gradient **{name}**")
 
-    @colors_gradient.command(name="delete")
-    async def gradient_delete(self, ctx: Context, name: str):
-        """Delete an entire gradient set."""
-        await ctx.prompt(f"Are you sure you want to delete gradient set **{name}**?")
+    # @colors_gradient.command(name="delete")
+    # async def gradient_delete(self, ctx: Context, name: str):
+    #     """Delete an entire gradient set."""
+    #     await ctx.prompt(f"Are you sure you want to delete gradient set **{name}**?")
         
-        result = await self.bot.db.execute(
-            """
-            DELETE FROM public.socials_saved_gradients 
-            WHERE user_id = $1 AND name = $2
-            """,
-            ctx.author.id, name
-        )
+    #     result = await self.bot.db.execute(
+    #         """
+    #         DELETE FROM public.socials_saved_gradients 
+    #         WHERE user_id = $1 AND name = $2
+    #         """,
+    #         ctx.author.id, name
+    #     )
         
-        if result == "DELETE 0":
-            return await ctx.warn(f"No gradient set found named **{name}**")
+    #     if result == "DELETE 0":
+    #         return await ctx.warn(f"No gradient set found named **{name}**")
             
-        await ctx.approve(f"Deleted gradient set **{name}**")
+    #     await ctx.approve(f"Deleted gradient set **{name}**")
 
-    @socials.group(name="click", invoke_without_command=True)
-    async def socials_click(self, ctx: Context):
-        """Toggle the click-to-enter feature for your profile."""
-        current = await self.bot.db.fetchval(
-            """
-            SELECT click_enabled 
-            FROM public.socials 
-            WHERE user_id = $1
-            """,
-            ctx.author.id
-        )
+    # @socials.group(name="click", invoke_without_command=True)
+    # async def socials_click(self, ctx: Context):
+    #     """Toggle the click-to-enter feature for your profile."""
+    #     current = await self.bot.db.fetchval(
+    #         """
+    #         SELECT click_enabled 
+    #         FROM public.socials 
+    #         WHERE user_id = $1
+    #         """,
+    #         ctx.author.id
+    #     )
         
-        new_value = not current if current is not None else True
-        await self.bot.db.execute(
-            """
-            UPDATE public.socials 
-            SET click_enabled = $1 
-            WHERE user_id = $2
-            """,
-            new_value,
-            ctx.author.id
-        )
-        await ctx.approve(f"Click to enter {'enabled' if new_value else 'disabled'}!")
-        await self.generate_profile_image(ctx.author, force_update=True)
+    #     new_value = not current if current is not None else True
+    #     await self.bot.db.execute(
+    #         """
+    #         UPDATE public.socials 
+    #         SET click_enabled = $1 
+    #         WHERE user_id = $2
+    #         """,
+    #         new_value,
+    #         ctx.author.id
+    #     )
+    #     await ctx.approve(f"Click to enter {'enabled' if new_value else 'disabled'}!")
+    #     await self.generate_profile_image(ctx.author, force_update=True)
 
-    @socials_click.command(name="text")
-    async def socials_click_text(self, ctx: Context, *, text: str = None):
-        """Set the text shown on the click-to-enter screen."""
-        if not text:
-            await ctx.prompt("Are you sure you want to reset your click text?")
-            await self.bot.db.execute(
-                """
-                UPDATE public.socials 
-                SET click_text = 'Click to enter...' 
-                WHERE user_id = $1
-                """,
-                ctx.author.id
-            )
-            return await ctx.approve("Click text reset to default")
+    # @socials_click.command(name="text")
+    # async def socials_click_text(self, ctx: Context, *, text: str = None):
+    #     """Set the text shown on the click-to-enter screen."""
+    #     if not text:
+    #         await ctx.prompt("Are you sure you want to reset your click text?")
+    #         await self.bot.db.execute(
+    #             """
+    #             UPDATE public.socials 
+    #             SET click_text = 'Click to enter...' 
+    #             WHERE user_id = $1
+    #             """,
+    #             ctx.author.id
+    #         )
+    #         return await ctx.approve("Click text reset to default")
 
-        if len(text) > 40:
-            return await ctx.warn("Text must be 40 characters or less.")
+    #     if len(text) > 40:
+    #         return await ctx.warn("Text must be 40 characters or less.")
 
-        await self.bot.db.execute(
-            """
-            UPDATE public.socials 
-            SET click_text = $1 
-            WHERE user_id = $2
-            """,
-            text,
-            ctx.author.id
-        )
-        await ctx.approve(f"Click text set to: {text}")
-        await self.generate_profile_image(ctx.author, force_update=True)
+    #     await self.bot.db.execute(
+    #         """
+    #         UPDATE public.socials 
+    #         SET click_text = $1 
+    #         WHERE user_id = $2
+    #         """,
+    #         text,
+    #         ctx.author.id
+    #     )
+    #     await ctx.approve(f"Click text set to: {text}")
+    #     await self.generate_profile_image(ctx.author, force_update=True)
 
-    @socials.command(name="setguild")
-    async def socials_setguild(self, ctx: Context, *, invite: str = None):
-        """Set your featured Discord guild. Send without an invite to remove it."""
-        if invite:
-            try:
-                invite = await self.bot.fetch_invite(invite)
-                perm_invite = await invite.channel.create_invite(max_age=0, max_uses=0)
+    # @socials.command(name="setguild")
+    # async def socials_setguild(self, ctx: Context, *, invite: str = None):
+    #     """Set your featured Discord guild. Send without an invite to remove it."""
+    #     if invite:
+    #         try:
+    #             invite = await self.bot.fetch_invite(invite)
+    #             perm_invite = await invite.channel.create_invite(max_age=0, max_uses=0)
                 
-                await self.bot.db.execute(
-                    """
-                    UPDATE public.socials 
-                    SET discord_guild = $1 
-                    WHERE user_id = $2
-                    """,
-                    str(perm_invite.url),
-                    ctx.author.id
-                )
-                await ctx.approve(f"Featured guild set to {invite.guild.name}!")
-                asyncio.create_task(self.generate_profile_image(ctx.author, force_update=True))
-            except:
-                return await ctx.warn("Invalid invite link or missing permissions!")
-        else:
-            await ctx.prompt("Are you sure you want to remove your featured guild?")
-            await self.bot.db.execute(
-                """
-                UPDATE public.socials 
-                SET discord_guild = NULL 
-                WHERE user_id = $1
-                """,
-                ctx.author.id
-            )
-            await ctx.approve("Featured guild removed!")
-            await self.generate_profile_image(ctx.author, force_update=True)
+    #             await self.bot.db.execute(
+    #                 """
+    #                 UPDATE public.socials 
+    #                 SET discord_guild = $1 
+    #                 WHERE user_id = $2
+    #                 """,
+    #                 str(perm_invite.url),
+    #                 ctx.author.id
+    #             )
+    #             await ctx.approve(f"Featured guild set to {invite.guild.name}!")
+    #             asyncio.create_task(self.generate_profile_image(ctx.author, force_update=True))
+    #         except:
+    #             return await ctx.warn("Invalid invite link or missing permissions!")
+    #     else:
+    #         await ctx.prompt("Are you sure you want to remove your featured guild?")
+    #         await self.bot.db.execute(
+    #             """
+    #             UPDATE public.socials 
+    #             SET discord_guild = NULL 
+    #             WHERE user_id = $1
+    #             """,
+    #             ctx.author.id
+    #         )
+    #         await ctx.approve("Featured guild removed!")
+    #         await self.generate_profile_image(ctx.author, force_update=True)
 
     @hybrid_command(name="blend", description="Mix two emojis together", aliases=["emix", "emojimix", "mixemoji"], brief="Mix two emojis together", fallback="emojis")
     @discord.app_commands.allowed_installs(guilds=True, users=True)
