@@ -966,7 +966,7 @@ class Audio(Cog):
                             f"{Fore.CYAN}Processing Spotify playlist: {playlist_name} with {spotify_tracks.track_count} tracks")
 
                         for spotify_track in spotify_tracks.tracks:
-                            search_query = f"ytmsearch:{spotify_track.author} - {spotify_track.title}"
+                            search_query = f"scsearch:{spotify_track.author} - {spotify_track.title}"
                             log.info(
                                 f"{Fore.CYAN}Searching SoundCloud for: {search_query}")
 
@@ -1007,7 +1007,7 @@ class Audio(Cog):
                             )
                     else:
                         spotify_track = spotify_tracks[0]
-                        search_query = f"ytmsearch:{spotify_track.author} - {spotify_track.title}"
+                        search_query = f"ytsearch:{spotify_track.author} - {spotify_track.title}"
                         log.info(
                             f"{Fore.CYAN}Searching Youtube for single track: {search_query}")
 
@@ -1429,13 +1429,13 @@ class Audio(Cog):
         Pause the current track.
         """
 
-        if not ctx.voice.is_playing:  # type: ignore
+        if not ctx.voice.is_playing:
             return await ctx.warn("I'm not playing anything!")
 
-        elif ctx.voice.is_paused:  # type: ignore
+        elif ctx.voice.is_paused:
             return await ctx.warn("The track is already paused!")
 
-        await ctx.voice.set_pause(True)  # type: ignore
+        await ctx.voice.set_pause(True)
         return await ctx.message.add_reaction("✅")
 
     @command()
@@ -1447,13 +1447,13 @@ class Audio(Cog):
         if not ctx.voice.current:
             return await ctx.warn("I'm not playing anything!")
 
-        elif not ctx.voice.is_paused:  # type: ignore
+        elif not ctx.voice.is_paused:
             return await ctx.warn("The track is not paused!")
 
-        await ctx.voice.set_pause(False)  # type: ignore
+        await ctx.voice.set_pause(False)
 
         try:
-            invite = await ctx.author.voice.channel.create_invite(
+            invite = await ctx.author.voice.channel.create_invite( # type: ignore
                 target_type=discord.InviteTarget.embedded_application,
                 target_application_id=1420609343283531776
             )
