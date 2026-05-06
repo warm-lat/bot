@@ -426,7 +426,7 @@ class Owner(
         await ctx.message.delete()
 
     @sudo.command(
-        name="avatar", aliases=["pfp"], example="https://r2.warm.lat/pfp.jpg"
+        name="avatar", aliases=["pfp"], example="https://r2.warm.lat/bot.jpg"
     )
     async def sudo_avatar(
         self,
@@ -444,7 +444,7 @@ class Owner(
         await self.bot.user.edit(avatar=attachment.buffer)
         return await ctx.check()
 
-    @sudo.command(name="banner", example="https://r2.warm.lat/pfp.jpg")
+    @sudo.command(name="banner", example="https://r2.warm.lat/bot.jpg")
     async def sudo_banner(
         self,
         ctx: Context,

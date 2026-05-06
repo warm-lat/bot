@@ -223,7 +223,7 @@ class InfoImageGenerator:
         text_width = int(draw.textlength(powered_text, font=powered_font))
         
         async with aiohttp.ClientSession() as session:
-            async with session.get("https://r2.warm.lat/pfp.jpg") as resp:
+            async with session.get("https://r2.warm.lat/bot.jpg") as resp:
                 if resp.status == 200:
                     logo_data = await resp.read()
                     logo = Image.open(BytesIO(logo_data))
@@ -357,7 +357,7 @@ class InfoImageGenerator:
         text_width = int(draw.textlength(powered_text, font=powered_font))
         
         async with aiohttp.ClientSession() as session:
-            async with session.get("https://r2.warm.lat/pfp.jpg") as resp:
+            async with session.get("https://r2.warm.lat/bot.jpg") as resp:
                 if resp.status == 200:
                     logo_data = await resp.read()
                     logo = Image.open(BytesIO(logo_data))
@@ -509,7 +509,7 @@ class InfoImageGenerator:
         text_width = int(draw.textlength(powered_text, font=powered_font))
         
         async with aiohttp.ClientSession() as session:
-            async with session.get("https://r2.warm.lat/pfp.jpg") as resp:
+            async with session.get("https://r2.warm.lat/bot.jpg") as resp:
                 if resp.status == 200:
                     logo_data = await resp.read()
                     logo = Image.open(BytesIO(logo_data))
